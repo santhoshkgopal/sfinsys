@@ -1,0 +1,2265 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Sfinsys PWA</title>
+
+    <!-- Android Web App Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="application-name" content="Sfinsys">
+
+    <!-- Dynamic Favicon & Manifest -->
+    <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='128' fill='%23f59e0b'/><text x='50%' y='68%' font-family='Arial, sans-serif' font-weight='900' font-size='340' fill='%230f172a' text-anchor='middle'>S</text></svg>">
+    <link id="manifestLink" rel="manifest" href="">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Inter Font & Mobile Custom Styling -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        * {
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #1e293b;
+            overscroll-behavior-y: none;
+        }
+
+        /* High contrast for form inputs */
+        input, select, textarea {
+            color: #000000 !important;
+            font-weight: 700 !important;
+            -webkit-text-fill-color: #000000 !important;
+            opacity: 1 !important;
+        }
+
+        /* Select option items strictly forced to black color */
+        select option {
+            color: #000000 !important;
+            background-color: #ffffff !important;
+            font-weight: 700 !important;
+            -webkit-text-fill-color: #000000 !important;
+        }
+
+        /* Safe area spacing for mobile notches and gesture bars */
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 1rem); }
+        .pt-safe { padding-top: env(safe-area-inset-top, 1rem); }
+
+        /* Hide scrollbars */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Modal Sheet Animation */
+        .sheet-up {
+            animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white !important; color: black !important; }
+            #appMainContent { display: block !important; background: white !important; }
+        }
+
+        .print-only { display: none; }
+
+        /* Toast Animation */
+        .toast-slide {
+            animation: toastIn 0.3s ease-out forwards, toastOut 0.3s ease-in 2.7s forwards;
+        }
+        @keyframes toastIn {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes toastOut {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(-100%); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-900 text-slate-100 antialiased overflow-x-hidden">
+
+    <!-- Toast Notification Overlay -->
+    <div id="toastNotification" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 hidden bg-emerald-600 text-white px-5 py-3 rounded-2xl shadow-2xl font-bold text-xs flex items-center gap-2 border border-emerald-400">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-sm"></i>
+        <span id="toastMessage">Action completed successfully!</span>
+    </div>
+
+    <!-- ==================== SECURITY USER LOGIN & PIN OVERLAY ==================== -->
+    <div id="loginOverlay" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-between p-6 pt-safe pb-safe no-print">
+        <div class="w-full max-w-sm my-auto text-center">
+            <!-- App Logo Badge -->
+            <div class="w-20 h-20 bg-gradient-to-br from-amber-400 to-amber-600 rounded-3xl text-indigo-950 font-black text-5xl flex items-center justify-center mx-auto mb-4 shadow-2xl border-2 border-amber-300 transform active:scale-95 transition">
+                S
+            </div>
+
+            <h2 class="text-xl font-black text-white tracking-wide">Sfinsys</h2>
+            <p class="text-[11px] text-slate-400 mt-1 font-medium">Secure Banking Ledger</p>
+
+            <div class="mt-6 space-y-4">
+                <!-- User Login Credential Input -->
+                <div class="text-left">
+                    <label class="block text-[10px] font-bold text-amber-400 mb-1 uppercase tracking-wider">Username / User ID</label>
+                    <input type="text" id="loginUsernameInput" placeholder="Enter Username" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-2 focus:ring-amber-400" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;">
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-amber-400 mb-2 uppercase tracking-wider">4-Digit Security PIN</label>
+                    <div class="flex justify-center gap-3 mb-4">
+                        <div id="dot-0" class="w-4 h-4 rounded-full border-2 border-amber-400 bg-transparent"></div>
+                        <div id="dot-1" class="w-4 h-4 rounded-full border-2 border-amber-400 bg-transparent"></div>
+                        <div id="dot-2" class="w-4 h-4 rounded-full border-2 border-amber-400 bg-transparent"></div>
+                        <div id="dot-3" class="w-4 h-4 rounded-full border-2 border-amber-400 bg-transparent"></div>
+                    </div>
+                    <input type="password" id="loginPinInput" maxlength="4" readonly class="sr-only">
+                    <p id="loginErrorMsg" class="text-xs text-rose-400 mt-1 font-bold hidden flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Incorrect Credentials or PIN!
+                    </p>
+                </div>
+
+                <!-- On-Screen Numeric Keypad -->
+                <div class="grid grid-cols-3 gap-3 max-w-[260px] mx-auto pt-2">
+                    <button onclick="pressPinKey('1')" class="h-14 bg-slate-900 active:bg-amber-500 active:text-indigo-950 border border-slate-800 rounded-2xl text-xl font-black text-white transition flex items-center justify-center shadow">1</button>
+                    <button onclick="pressPinKey('2')" class="h-14 bg-slate-900 active:bg-amber-500 active:text-indigo-950 border border-slate-800 rounded-2xl text-xl font-black text-white transition flex items-center justify-center shadow">2</button>
+                    <button onclick="pressPinKey('3')" class="h-14 bg-slate-900 active:bg-amber-500 active:text-indigo-950 border border-slate-800 rounded-2xl text-xl font-black text-white transition flex items-center justify-center shadow">3</button>
+                    <button onclick="pressPinKey('4')" class="h-14 bg-slate-900 active:bg-amber-500 active:text-indigo-950 border border-slate-800 rounded-2xl text-xl font-black text-white transition flex items-center justify-center shadow">4</button>
+                    <button onclick="pressPinKey('5')" class="h-14 bg-slate-900 active:bg-amber-500 active:text-indigo-950 border border-slate-800 rounded-2xl text-xl font-black text-white transition flex items-center justify-center shadow">5</button>
+                    <button onclick="pressPinKey('6')" class="h-14 bg-slate-900 active:bg-amber-500 active:text-indigo-950 border border-slate-800 rounded-2xl text-xl font-black text-white transition flex items-center justify-center shadow">6</button>
+                    <button onclick="pressPinKey('7')" class="h-14 bg-slate-900 active:bg-amber-500 active:text-indigo-950 border border-slate-800 rounded-2xl text-xl font-black text-white transition flex items-center justify-center shadow">7</button>
+                    <button onclick="pressPinKey('8')" class="h-14 bg-slate-900 active:bg-amber-500 active:text-indigo-950 border border-slate-800 rounded-2xl text-xl font-black text-white transition flex items-center justify-center shadow">8</button>
+                    <button onclick="pressPinKey('9')" class="h-14 bg-slate-900 active:bg-amber-500 active:text-indigo-950 border border-slate-800 rounded-2xl text-xl font-black text-white transition flex items-center justify-center shadow">9</button>
+                    <button onclick="clearPinKey()" class="h-14 bg-slate-900/50 text-rose-400 active:bg-rose-500 active:text-white border border-slate-800/80 rounded-2xl text-base font-bold transition flex items-center justify-center">C</button>
+                    <button onclick="pressPinKey('0')" class="h-14 bg-slate-900 active:bg-amber-500 active:text-indigo-950 border border-slate-800 rounded-2xl text-xl font-black text-white transition flex items-center justify-center shadow">0</button>
+                    <button onclick="deletePinKey()" class="h-14 bg-slate-900/50 text-amber-400 active:bg-amber-500 active:text-indigo-950 border border-slate-800/80 rounded-2xl text-base font-bold transition flex items-center justify-center"><i class="fa-solid fa-backspace"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center text-[11px] text-slate-500 pb-2 flex flex-col items-center justify-center gap-1">
+            <span>User: <strong class="text-white font-mono" id="displayUsernameLabel">admin</strong> | PIN: <strong class="text-white font-mono">1234</strong></span>
+        </div>
+    </div>
+
+    <!-- ==================== MAIN APP SHELL ==================== -->
+    <div id="appMainContent" class="flex-grow flex flex-col hidden bg-slate-100 text-slate-800 min-h-screen">
+
+        <!-- Top Mobile Bar -->
+        <header class="bg-slate-950 text-white sticky top-0 z-30 pt-safe no-print border-b border-slate-800 shadow-md">
+            <div class="px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl text-indigo-950 flex items-center justify-center font-black text-xl shadow border border-amber-300">
+                        S
+                    </div>
+                    <div>
+                        <h1 class="font-black text-sm text-white leading-tight">Sfinsys</h1>
+                        <p class="text-[10px] text-amber-400 font-semibold" id="topBarSubtitle">Master Combined Ledger</p>
+                    </div>
+                </div>
+
+                <!-- Top Quick Actions -->
+                <div class="flex items-center space-x-2">
+                    <button id="installPWABtn" onclick="triggerPWAInstall()" class="hidden bg-amber-500 hover:bg-amber-400 text-indigo-950 px-2.5 py-1.5 rounded-xl text-[11px] font-black transition flex items-center gap-1 shadow">
+                        <i class="fa-solid fa-download"></i>
+                        <span>Install</span>
+                    </button>
+                    <button onclick="openModal('passcodeModal')" class="p-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 rounded-xl border border-amber-500/30 transition flex items-center gap-1" title="Change Security PIN">
+                        <i class="fa-solid fa-key text-xs"></i>
+                    </button>
+                    <button onclick="openModal('backupModal')" class="p-2 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-xl border border-slate-700 transition" title="Backup & Sync">
+                        <i class="fa-solid fa-database text-xs"></i>
+                    </button>
+                    <button onclick="handleLogout()" class="p-2 bg-rose-950/80 hover:bg-rose-900 text-rose-300 rounded-xl border border-rose-800/50 transition" title="Lock App">
+                        <i class="fa-solid fa-lock text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic Body Views -->
+        <main class="flex-grow p-4 pb-24 overflow-y-auto max-w-2xl mx-auto w-full no-print">
+
+            <!-- TAB 1: DASHBOARD / OVERVIEW -->
+            <section id="tab-dashboard" class="space-y-4">
+                
+                <!-- Admin Greeting & Seasonal Banner (Compact Layout) -->
+                <div class="bg-gradient-to-r from-amber-500 via-amber-600 to-indigo-900 text-white p-2.5 rounded-xl shadow-md border border-amber-400/30 flex items-center justify-between">
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <span id="seasonalGreetingIcon" class="text-sm">☀️</span>
+                            <span id="seasonalGreetingText" class="text-[10px] font-bold uppercase tracking-wider text-amber-200">Good Day</span>
+                        </div>
+                        <h2 class="text-sm font-black text-white leading-tight mt-0.5" id="dashboardAdminName">Welcome, Admin</h2>
+                        <p class="text-[9px] text-amber-100 font-medium leading-tight" id="seasonalSubtext">Have a productive day managing your ledger.</p>
+                    </div>
+                    <div class="w-8 h-8 bg-slate-950/40 backdrop-blur-md rounded-lg flex items-center justify-center text-amber-400 border border-amber-400/30 shrink-0">
+                        <i class="fa-solid fa-user-shield text-sm"></i>
+                    </div>
+                </div>
+
+                <!-- Selected Party Banner & Autocomplete Customer Search -->
+                <div class="bg-slate-900 text-white p-4 rounded-2xl border border-slate-800 shadow-sm space-y-3">
+                    <div class="flex items-center justify-between">
+                        <label class="block text-[10px] font-bold text-amber-400 uppercase tracking-wider">Active Account & Quick Search</label>
+                        <span class="text-[10px] text-slate-400" id="partySearchCount">0 Parties</span>
+                    </div>
+
+                    <!-- Autocomplete Instant Search Input (Triggers at 3 letters) -->
+                    <div class="relative">
+                        <input type="text" id="mainCustomerSearchInput" oninput="handleCustomerSearchInput()" placeholder="Type at least 3 letters to search name..." class="w-full pl-9 pr-8 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs font-bold text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
+                        <button onclick="clearMainCustomerSearch()" id="clearCustomerSearchBtn" class="hidden absolute right-2.5 top-2.5 text-slate-400 hover:text-white p-0.5">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                        </button>
+
+                        <!-- Autocomplete Suggestions Dropdown -->
+                        <div id="autocompleteSuggestions" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-amber-500/50 rounded-xl shadow-2xl z-50 max-h-48 overflow-y-auto text-black">
+                            <!-- Dynamic Autocomplete Results -->
+                        </div>
+                    </div>
+
+                    <!-- Customer / Party Select Dropdown (Strictly Black Font) -->
+                    <div>
+                        <select id="partyFilterSelect" onchange="onPartyFilterChange()" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs font-black focus:ring-2 focus:ring-amber-400 focus:outline-none" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                            <option value="" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-weight: 800;">-- Master Combined Ledger (All Parties) --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- UPI Payment QR Code Section -->
+                <div id="mainViewUpiQrCard" class="hidden bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-950 text-white p-4 rounded-2xl border border-emerald-800/60 shadow-md">
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="space-y-1">
+                            <span class="text-[9px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-950/80 border border-emerald-700/50 px-2 py-0.5 rounded-md">Direct UPI Payment QR</span>
+                            <h4 id="qrCardPartyName" class="font-extrabold text-sm text-white mt-1">-</h4>
+                            <p class="text-[11px] text-slate-300 font-bold" id="qrCardUpiId">UPI ID: -</p>
+                            <p class="text-[10px] text-slate-400 font-medium" id="qrCardPayee">Payee: -</p>
+                            <p class="text-[10px] text-emerald-300 font-medium" id="qrCardBank">Account: -</p>
+                        </div>
+                        <div class="bg-white p-2 rounded-xl shadow-lg border border-slate-200 text-center shrink-0">
+                            <img id="mainPartyQrCodeImg" src="" alt="UPI Payment QR Code" class="w-24 h-24 object-contain mx-auto">
+                            <p class="text-[8px] font-black text-slate-700 mt-1 uppercase">Scan & Pay via UPI</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Metrics Cards Grid -->
+                <div class="grid grid-cols-2 gap-3">
+                    <!-- Net Outstanding Principal -->
+                    <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm col-span-2">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Net Principal Balance</p>
+                                <h3 id="statNetOutstanding" class="text-2xl font-black text-slate-900 mt-0.5">₹0.00</h3>
+                            </div>
+                            <div class="w-10 h-10 bg-indigo-50 text-indigo-900 rounded-xl flex items-center justify-center text-lg font-bold">
+                                <i class="fa-solid fa-scale-balanced"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Credit Given -->
+                    <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
+                        <p class="text-[10px] font-bold text-rose-500 uppercase tracking-wider">Total Given</p>
+                        <h3 id="statTotalGiven" class="text-base font-black text-rose-600 mt-1">₹0.00</h3>
+                    </div>
+
+                    <!-- Principal Received -->
+                    <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
+                        <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Principal Rec.</p>
+                        <h3 id="statTotalReceived" class="text-base font-black text-emerald-600 mt-1">₹0.00</h3>
+                    </div>
+
+                    <!-- Gross Accrued Interest -->
+                    <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
+                        <p class="text-[10px] font-bold text-amber-500 uppercase tracking-wider">Gross Interest</p>
+                        <h3 id="statTotalInterest" class="text-base font-black text-amber-600 mt-1">₹0.00</h3>
+                    </div>
+
+                    <!-- Interest Paid -->
+                    <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
+                        <p class="text-[10px] font-bold text-purple-500 uppercase tracking-wider">Interest Paid</p>
+                        <h3 id="statInterestPaid" class="text-base font-black text-purple-600 mt-1">₹0.00</h3>
+                    </div>
+
+                    <!-- Total Payable Highlight Card -->
+                    <div class="bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 text-white p-4 rounded-2xl border border-indigo-800/80 shadow-md col-span-2 flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] font-bold text-amber-400 uppercase tracking-wider">TOTAL PAYABLE AMOUNT</p>
+                            <h3 id="statTotalPayable" class="text-2xl font-black text-emerald-400 mt-0.5">₹0.00</h3>
+                            <p class="text-[9px] text-indigo-200 mt-0.5">Formula: Principal Balance + Pending Unpaid Interest</p>
+                        </div>
+                        <div class="w-11 h-11 bg-amber-500 text-indigo-950 font-black rounded-2xl flex items-center justify-center text-xl shadow">
+                            S
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Action Buttons -->
+                <div class="grid grid-cols-2 gap-3 pt-2">
+                    <button onclick="openModal('transactionModal')" class="py-3.5 bg-blue-600 active:bg-blue-700 text-white font-bold text-xs rounded-2xl shadow transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-circle-plus"></i>
+                        <span>Add Entry</span>
+                    </button>
+                    <button onclick="openModal('partyModal')" class="py-3.5 bg-emerald-600 active:bg-emerald-700 text-white font-bold text-xs rounded-2xl shadow transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>New Party</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- TAB 2: TRANSACTION LEDGER ENTRIES -->
+            <section id="tab-entries" class="space-y-3 hidden">
+                <!-- Search & Filters Bar -->
+                <div class="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-2">
+                    <div class="relative flex-grow">
+                        <input type="text" id="searchInput" oninput="renderLedgerTable()" placeholder="Search entries, notes..." class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
+                    </div>
+                    <select id="typeFilter" onchange="renderLedgerTable()" class="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 text-xs font-black focus:outline-none" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        <option value="ALL">All</option>
+                        <option value="GIVEN">Given</option>
+                        <option value="RECEIVED">Received</option>
+                        <option value="INTEREST_PAID">Int. Paid</option>
+                    </select>
+                </div>
+
+                <!-- Export Bar & Date Range Statement Download -->
+                <div class="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
+                    <div class="flex items-center justify-between text-xs font-bold text-slate-700">
+                        <span><i class="fa-solid fa-calendar-days text-amber-500 mr-1"></i> Statement Date-wise Filter</span>
+                        <button onclick="resetLedgerDateFilter()" class="text-[10px] text-rose-600 hover:underline">Reset Dates</button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                            <label class="block text-[10px] text-slate-500 font-bold mb-0.5">From Date</label>
+                            <input type="date" id="ledgerStartDate" onchange="renderLedgerTable()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-black text-xs" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-500 font-bold mb-0.5">To Date</label>
+                            <input type="date" id="ledgerEndDate" onchange="renderLedgerTable()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-black text-xs" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center pt-1 border-t border-slate-100 text-xs">
+                        <button onclick="exportToCSV()" class="text-emerald-700 font-bold hover:underline flex items-center gap-1.5">
+                            <i class="fa-solid fa-file-excel"></i> Export Filtered CSV
+                        </button>
+                        <button onclick="openPartyPrintModal()" class="text-slate-800 font-extrabold hover:underline flex items-center gap-1.5">
+                            <i class="fa-solid fa-print text-amber-500"></i> Statement Print / PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Entries List -->
+                <div id="mobileLedgerList" class="space-y-2.5">
+                    <!-- Dynamic Entry Cards -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="p-8 text-center text-slate-400 bg-white rounded-2xl border border-slate-200 hidden">
+                    <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center text-xl font-black mx-auto mb-2">S</div>
+                    <p class="font-bold text-xs text-slate-600">No transaction records found.</p>
+                </div>
+            </section>
+
+            <!-- TAB 3: PARTY ACCOUNTS -->
+            <section id="tab-parties" class="space-y-3 hidden">
+                <div class="flex justify-between items-center px-1">
+                    <h3 class="font-extrabold text-xs text-slate-600 uppercase tracking-wider">Party / Borrower Accounts</h3>
+                    <div class="flex items-center gap-2">
+                        <button onclick="generateMasterPrintView()" class="bg-indigo-900 text-amber-400 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 shadow">
+                            <i class="fa-solid fa-file-pdf"></i> Master PDF
+                        </button>
+                        <button onclick="openModal('partyModal')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 shadow">
+                            <i class="fa-solid fa-plus"></i> Add Party
+                        </button>
+                    </div>
+                </div>
+
+                <div id="partiesList" class="space-y-2.5">
+                    <!-- Dynamic Party List Cards -->
+                </div>
+            </section>
+
+            <!-- TAB 4: FIXED & COMPOUND INTEREST CALCULATOR -->
+            <section id="tab-interest" class="space-y-4 hidden">
+                <div class="bg-slate-950 text-white p-4 rounded-2xl border border-slate-800 shadow-md">
+                    <div class="flex items-center space-x-2 mb-2">
+                        <div class="w-5 h-5 bg-amber-500 text-indigo-950 font-black text-xs rounded flex items-center justify-center">S</div>
+                        <h2 class="font-extrabold text-xs uppercase tracking-wider text-amber-400">Flexible Interest Engine</h2>
+                    </div>
+                    <p class="text-xs text-slate-300 mb-4">Supports Simple, Local Monthly, and Annual/Monthly Compound Interest calculation.</p>
+
+                    <form id="interestCalcForm" onsubmit="applyMainInterestSettings(event)" class="space-y-3 text-xs">
+                        <div>
+                            <label class="block font-bold text-slate-300 mb-1">Calculation System</label>
+                            <select id="calcSystem" onchange="onInterestSystemChange()" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2.5 text-xs font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                                <option value="zero_interest">Zero Interest / Interest Free (0%)</option>
+                                <option value="rupee_monthly" selected>Local Rate (₹ / ₹100 / month)</option>
+                                <option value="simple_pa">Simple Interest (% per annum)</option>
+                                <option value="compound_pa">Compound Interest (% p.a.)</option>
+                                <option value="compound_pm">Compound Interest (% p.m.)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label id="rateLabel" class="block font-bold text-slate-300 mb-1">Rate (₹ / ₹100 / mo)</label>
+                            <input type="number" id="calcRate" step="0.01" value="2" required onchange="applyMainInterestSettings(event)" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2.5 text-xs font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-bold text-slate-300 mb-1">Calculation Start Date</label>
+                                <input type="date" id="calcStartDate" onchange="applyMainInterestSettings(event)" required class="w-full bg-white border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-300 mb-1">As Of Date</label>
+                                <input type="date" id="calcEndDate" onchange="applyMainInterestSettings(event)" required class="w-full bg-white border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Breakdown Result Box -->
+                    <div id="calcResultBox" class="mt-4 p-3.5 bg-slate-900 border border-slate-800 rounded-xl space-y-1.5 text-xs">
+                        <div class="flex justify-between"><span class="text-slate-400">Principal Balance:</span> <span id="resPrincipal" class="font-bold text-white">₹0.00</span></div>
+                        <div class="flex justify-between text-amber-400"><span>Gross Fixed/Compound Interest:</span> <span id="resInterest" class="font-bold">₹0.00</span></div>
+                        <div class="flex justify-between text-purple-400"><span>Interest Repaid:</span> <span id="resInterestPaid" class="font-bold">₹0.00</span></div>
+                        <div class="flex justify-between text-amber-200"><span>Pending Unpaid Interest:</span> <span id="resNetInterest" class="font-bold">₹0.00</span></div>
+                        <div class="border-t border-slate-800 pt-1.5 flex justify-between font-black text-white">
+                            <span>TOTAL PAYABLE AMOUNT:</span> <span id="resTotal" class="text-emerald-400 text-sm">₹0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: SECURITY & PASSCODE SETTINGS -->
+            <section id="tab-settings" class="space-y-4 hidden">
+                <!-- Dedicated Passcode Box -->
+                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <h3 class="font-extrabold text-xs text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-key text-amber-500"></i> Change User Credentials & Passcode
+                        </h3>
+                        <span class="text-[10px] bg-amber-100 text-amber-800 font-extrabold px-2 py-0.5 rounded-full">Security</span>
+                    </div>
+
+                    <p class="text-xs text-slate-500">Update your login username and 4-digit PIN required to unlock this ledger on launch.</p>
+
+                    <button onclick="openModal('passcodeModal')" class="w-full py-3 bg-slate-950 active:bg-slate-800 text-amber-400 font-black rounded-xl shadow transition flex items-center justify-center gap-2 text-xs">
+                        <i class="fa-solid fa-shield-halved"></i> Change Username & Security PIN
+                    </button>
+                </div>
+
+                <!-- Backup & Sync Box -->
+                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
+                    <h3 class="font-extrabold text-xs text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-database text-indigo-600"></i> Backup & Restore Data
+                    </h3>
+                    <div class="space-y-2">
+                        <button onclick="downloadBackupJSON()" class="w-full bg-emerald-600 active:bg-emerald-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow transition">
+                            <i class="fa-solid fa-download mr-1"></i> Export Backup (.JSON)
+                        </button>
+                        <div class="pt-2">
+                            <input type="file" id="restoreFile" accept=".json" class="w-full text-xs font-bold mb-2" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                            <button onclick="restoreBackupJSON()" class="w-full bg-blue-600 active:bg-blue-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow transition">
+                                <i class="fa-solid fa-upload mr-1"></i> Import JSON Backup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DESIGNED & DEVELOPED FOOTER CREDITS FOR MAIN WINDOW -->
+            <div class="mt-8 text-center pt-4 border-t border-slate-800 text-[11px] text-slate-400 no-print">
+                <p class="font-bold tracking-wide">Design and Developed by <span class="text-amber-400 font-extrabold">Santhoshgopal</span></p>
+            </div>
+
+        </main>
+
+        <!-- ==================== PRINT STATEMENT CONTAINER ==================== -->
+        <div id="printContainer" class="print-only p-6 bg-white text-slate-900 max-w-4xl mx-auto">
+            <!-- Individual Statement Dynamic Markup -->
+            <div id="individualPrintContent">
+                <div class="flex justify-between items-start border-b-2 border-slate-900 pb-4 mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-amber-500 text-indigo-950 font-black text-2xl rounded-xl flex items-center justify-center border border-amber-600">
+                            S
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-black text-slate-900 uppercase tracking-tight">Sfinsys</h1>
+                            <p class="text-xs font-bold text-slate-600">Official Borrower Payment Statement</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-slate-500">Statement Date: <span id="printDate" class="font-bold text-slate-900"></span></p>
+                        <p class="text-xs text-slate-500">Filter Range: <span id="printFilterRange" class="font-bold text-slate-900">All Dates</span></p>
+                    </div>
+                </div>
+
+                <!-- Borrower Profile Details & QR Code -->
+                <div class="grid grid-cols-3 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 mb-4 text-xs">
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Party / Borrower Details</p>
+                        <p class="text-base font-black text-slate-900" id="printPartyName">-</p>
+                        <p class="text-slate-700 font-bold" id="printPartyPhone">Phone: -</p>
+                        <p class="text-slate-700 font-bold" id="printPartyRef">ID Ref: -</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Banking & Payment Terms</p>
+                        <p class="text-xs font-bold text-slate-900" id="printPartyBank">Bank Account: -</p>
+                        <p class="text-xs font-bold text-slate-900" id="printPartyUpi">UPI ID: -</p>
+                        <p class="text-xs font-extrabold text-amber-700 mt-1" id="printPartyRate">Interest Rate: -</p>
+                    </div>
+                    <div class="text-center flex flex-col items-center justify-center border-l border-slate-200 pl-2">
+                        <img id="printPartyQrImg" src="" alt="UPI QR Code" class="w-20 h-20 object-contain hidden border p-1 bg-white rounded">
+                        <p id="printPartyQrLabel" class="text-[8px] font-bold text-slate-600 mt-0.5 hidden">Scan to Pay via UPI</p>
+                    </div>
+                </div>
+
+                <!-- Financial Summary Cards -->
+                <div class="grid grid-cols-4 gap-3 mb-6 text-center">
+                    <div class="p-3 bg-rose-50 border border-rose-200 rounded-xl">
+                        <p class="text-[9px] font-bold text-rose-700 uppercase">Total Credit Given</p>
+                        <p id="printTotalGiven" class="text-sm font-black text-rose-900">₹0.00</p>
+                    </div>
+                    <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
+                        <p class="text-[9px] font-bold text-emerald-700 uppercase">Principal Received</p>
+                        <p id="printTotalReceived" class="text-sm font-black text-emerald-900">₹0.00</p>
+                    </div>
+                    <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                        <p class="text-[9px] font-bold text-amber-700 uppercase">Pending Principal</p>
+                        <p id="printNetBalance" class="text-sm font-black text-slate-900">₹0.00</p>
+                    </div>
+                    <div class="p-3 bg-indigo-900 text-white rounded-xl">
+                        <p class="text-[9px] font-bold text-amber-400 uppercase">TOTAL PAYABLE</p>
+                        <p id="printTotalPayable" class="text-sm font-black text-emerald-300">₹0.00</p>
+                    </div>
+                </div>
+
+                <!-- Breakdown Sub-Summary -->
+                <div class="flex justify-between items-center text-xs font-bold border-t border-b border-slate-200 py-2 mb-4">
+                    <span>Gross Accrued Interest: <strong id="printGrossInterest" class="text-amber-700">₹0.00</strong></span>
+                    <span>Interest Paid to Date: <strong id="printInterestPaid" class="text-purple-700">₹0.00</strong></span>
+                    <span>Pending Unpaid Interest: <strong id="printPendingInterest" class="text-rose-700">₹0.00</strong></span>
+                </div>
+
+                <!-- History Table -->
+                <h3 class="font-extrabold text-xs uppercase tracking-wider text-slate-800 mb-2">Filtered Statement History</h3>
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100 border-b border-slate-300 text-[10px] uppercase font-bold text-slate-700">
+                            <th class="p-2">Date</th>
+                            <th class="p-2">Type</th>
+                            <th class="p-2">Mode</th>
+                            <th class="p-2">Particulars / Notes</th>
+                            <th class="p-2 text-right">Amount (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="printHistoryTable">
+                        <!-- Dynamic Rows -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Master Statement Dynamic Container -->
+            <div id="masterPrintContent" class="hidden">
+                <div class="flex justify-between items-start border-b-2 border-slate-900 pb-4 mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-amber-500 text-indigo-950 font-black text-2xl rounded-xl flex items-center justify-center border border-amber-600">
+                            S
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-black text-slate-900 uppercase tracking-tight">Sfinsys</h1>
+                            <p class="text-xs font-bold text-slate-600">MASTER STATEMENT - ALL CUSTOMERS</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-slate-500">Generated Date: <span id="masterPrintDate" class="font-bold text-slate-900"></span></p>
+                        <p class="text-xs text-slate-500">Parties Count: <span id="masterPartyCount" class="font-bold text-slate-900">0</span></p>
+                    </div>
+                </div>
+
+                <!-- Master Metrics Summary -->
+                <div class="grid grid-cols-4 gap-3 mb-6 text-center">
+                    <div class="p-3 bg-slate-100 border border-slate-300 rounded-xl">
+                        <p class="text-[9px] font-bold text-slate-600 uppercase">Total Given</p>
+                        <p id="masterTotalGiven" class="text-sm font-black text-rose-800">₹0.00</p>
+                    </div>
+                    <div class="p-3 bg-slate-100 border border-slate-300 rounded-xl">
+                        <p class="text-[9px] font-bold text-slate-600 uppercase">Total Principal Rec.</p>
+                        <p id="masterTotalReceived" class="text-sm font-black text-emerald-800">₹0.00</p>
+                    </div>
+                    <div class="p-3 bg-slate-100 border border-slate-300 rounded-xl">
+                        <p class="text-[9px] font-bold text-slate-600 uppercase">Net Principal Outstanding</p>
+                        <p id="masterNetBalance" class="text-sm font-black text-amber-800">₹0.00</p>
+                    </div>
+                    <div class="p-3 bg-slate-900 text-white rounded-xl">
+                        <p class="text-[9px] font-bold text-amber-400 uppercase">GROSS TOTAL PAYABLE</p>
+                        <p id="masterTotalPayable" class="text-sm font-black text-emerald-400">₹0.00</p>
+                    </div>
+                </div>
+
+                <!-- Master Table -->
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="bg-slate-900 text-white text-[9px] uppercase font-bold">
+                            <th class="p-2">#</th>
+                            <th class="p-2">Customer / Borrower</th>
+                            <th class="p-2">Phone</th>
+                            <th class="p-2 text-right">Credit Given</th>
+                            <th class="p-2 text-right">Principal Rec.</th>
+                            <th class="p-2 text-right">Pending Principal</th>
+                            <th class="p-2 text-right">Gross Interest</th>
+                            <th class="p-2 text-right">Int. Paid</th>
+                            <th class="p-2 text-right">Total Payable</th>
+                        </tr>
+                    </thead>
+                    <tbody id="masterTableBody">
+                        <!-- Dynamic Rows -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- STATEMENT BOTTOM FOOTER CREDITS -->
+            <div class="mt-8 pt-4 border-t border-slate-300 flex justify-between items-end text-[10px] text-slate-500">
+                <div>
+                    <p class="font-bold text-slate-700">Design and Developed by Santhoshgopal</p>
+                    <p>Computer generated statement from Sfinsys. No signature required.</p>
+                </div>
+                <div class="text-right">
+                    <p class="border-t border-slate-400 pt-2 px-8 font-bold text-slate-800">Authorized Signature</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== ANDROID BOTTOM NAVIGATION BAR ==================== -->
+        <nav class="fixed bottom-0 inset-x-0 bg-slate-950 border-t border-slate-800 z-40 pb-safe no-print shadow-2xl">
+            <div class="max-w-2xl mx-auto flex justify-around items-center h-16 px-2 text-[10px] font-bold text-slate-400">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="flex-1 flex flex-col items-center justify-center py-1 text-amber-400 transition">
+                    <i class="fa-solid fa-chart-pie text-base mb-0.5"></i>
+                    <span>Metrics</span>
+                </button>
+
+                <button onclick="switchTab('entries')" id="nav-entries" class="flex-1 flex flex-col items-center justify-center py-1 hover:text-white transition">
+                    <i class="fa-solid fa-list-check text-base mb-0.5"></i>
+                    <span>Ledger</span>
+                </button>
+
+                <!-- Floating Center Add Action Button -->
+                <button onclick="openModal('transactionModal')" class="w-12 h-12 bg-gradient-to-tr from-amber-500 to-amber-400 text-indigo-950 rounded-full flex items-center justify-center text-xl shadow-xl -mt-5 border-4 border-slate-950 transform active:scale-90 transition">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+
+                <button onclick="switchTab('parties')" id="nav-parties" class="flex-1 flex flex-col items-center justify-center py-1 hover:text-white transition">
+                    <i class="fa-solid fa-address-book text-base mb-0.5"></i>
+                    <span>Parties</span>
+                </button>
+
+                <button onclick="switchTab('settings')" id="nav-settings" class="flex-1 flex flex-col items-center justify-center py-1 hover:text-white transition">
+                    <i class="fa-solid fa-shield-halved text-base mb-0.5"></i>
+                    <span>Security</span>
+                </button>
+            </div>
+        </nav>
+    </div>
+
+    <!-- ==================== MOBILE BOTTOM SHEET MODALS ==================== -->
+
+    <!-- Dedicated Modal: Change Passcode & Username Sheet -->
+    <div id="passcodeModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden no-print">
+        <div class="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl sheet-up max-h-[90vh] overflow-y-auto text-slate-800">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-amber-500 text-indigo-950 rounded-xl font-black text-sm flex items-center justify-center">
+                        <i class="fa-solid fa-key"></i>
+                    </div>
+                    <h3 class="font-black text-slate-900 text-sm">Change Credentials & PIN</h3>
+                </div>
+                <button onclick="closeModal('passcodeModal')" class="text-slate-400 hover:text-slate-600 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <form id="passcodeForm" onsubmit="handlePasscodeChangeSubmit(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Username / User ID *</label>
+                    <input type="text" id="modalUsername" required placeholder="admin" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 font-bold focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Current Passcode *</label>
+                    <input type="password" id="modalCurrentPin" maxlength="10" required placeholder="••••" inputmode="numeric" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-center text-lg font-black tracking-widest focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">New 4-Digit PIN *</label>
+                        <input type="password" id="modalNewPin" maxlength="4" required placeholder="••••" inputmode="numeric" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-center text-lg font-black tracking-widest focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Confirm New PIN *</label>
+                        <input type="password" id="modalConfirmPin" maxlength="4" required placeholder="••••" inputmode="numeric" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-center text-lg font-black tracking-widest focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                    </div>
+                </div>
+
+                <p id="modalPasscodeError" class="text-xs text-rose-500 font-bold hidden flex items-center gap-1">
+                    <i class="fa-solid fa-circle-exclamation"></i> <span id="modalErrorText">Errors</span>
+                </p>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('passcodeModal')" class="px-4 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold">Cancel</button>
+                    <button type="submit" class="px-5 py-3 bg-slate-950 text-amber-400 font-extrabold rounded-xl shadow flex items-center gap-1.5">
+                        <i class="fa-solid fa-lock"></i> Save Security Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: New / Edit Party -->
+    <div id="partyModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden no-print">
+        <div class="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl sheet-up max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
+                <h3 id="partyModalTitle" class="font-extrabold text-slate-900 text-sm">Add Party Account</h3>
+                <button onclick="closeModal('partyModal')" class="text-slate-400 hover:text-slate-600 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="partyForm" onsubmit="saveParty(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="partyEditId">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Party / Borrower Name *</label>
+                    <input type="text" id="partyName" required placeholder="e.g. Ramesh Kumar" oninput="updatePartyModalQrPreview()" class="w-full border border-slate-200 rounded-xl p-3 font-bold focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block font-bold text-slate-700">Mobile / Phone Number</label>
+                            <!-- Directly Pick Phone Contacts Button -->
+                            <button type="button" onclick="pickContactForParty()" class="text-[10px] text-amber-700 font-extrabold hover:underline flex items-center gap-1 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
+                                <i class="fa-solid fa-address-book"></i> Contacts
+                            </button>
+                        </div>
+                        <div class="relative">
+                            <input type="tel" id="partyPhone" placeholder="+91 9876543210" class="w-full border border-slate-200 rounded-xl p-3 font-bold pr-9" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                            <button type="button" onclick="pickContactForParty()" class="absolute right-2.5 top-2.5 text-slate-500 hover:text-amber-600 p-1" title="Pick from contacts">
+                                <i class="fa-solid fa-user-plus text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">ID Ref (Aadhaar / PAN)</label>
+                        <input type="text" id="partyRef" placeholder="e.g. ID Ref: XXXX-1234" class="w-full border border-slate-200 rounded-xl p-3 font-bold" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                    </div>
+                </div>
+
+                <!-- Banking & UPI QR Integration Section -->
+                <div class="p-3.5 bg-emerald-50/60 border border-emerald-200 rounded-2xl space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="font-black text-xs text-emerald-950 flex items-center gap-1">
+                            <i class="fa-solid fa-qrcode text-emerald-600"></i> Bank Account & UPI QR Details
+                        </span>
+                        <span class="text-[9px] bg-emerald-200 text-emerald-900 font-bold px-2 py-0.5 rounded-full">Auto QR Generator</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-700">Bank Account No / IFSC</label>
+                            <input type="text" id="partyBankAcc" placeholder="e.g. 987654321 (SBIN000123)" class="w-full border border-slate-300 rounded-xl p-2 font-bold" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-700">UPI VPA / PhonePe / GPay</label>
+                            <input type="text" id="partyUpiId" placeholder="e.g. ramesh@upi" oninput="updatePartyModalQrPreview()" class="w-full border border-slate-300 rounded-xl p-2 font-bold" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        </div>
+                    </div>
+
+                    <!-- Live Dynamic QR Code Preview -->
+                    <div id="modalQrPreviewBox" class="hidden bg-white p-3 rounded-xl border border-emerald-200 flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-500 uppercase">Generated Payment QR</p>
+                            <p class="text-xs font-black text-slate-900" id="previewQrUpiText">ramesh@upi</p>
+                            <p class="text-[9px] text-emerald-700 font-bold">Auto-links to UPI payments</p>
+                        </div>
+                        <img id="modalPartyQrImg" src="" alt="Dynamic QR" class="w-16 h-16 object-contain border rounded p-1 bg-white">
+                    </div>
+                </div>
+
+                <!-- Enhanced Interest Terms (Simple & Compound Interest Options) -->
+                <div class="p-3 bg-amber-50/50 border border-amber-200 rounded-xl space-y-2">
+                    <label class="block font-bold text-amber-950">Interest Terms</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-600">Calculation Method</label>
+                            <select id="partyCalcSystem" onchange="onPartyModalSystemChange()" class="w-full border border-slate-300 rounded-lg p-2 font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                                <option value="zero_interest">Zero Interest / Free (0%)</option>
+                                <option value="rupee_monthly" selected>₹ / ₹100 / Month</option>
+                                <option value="simple_pa">Simple % p.a.</option>
+                                <option value="compound_pa">Compound % p.a me</option>
+                                <option value="compound_pm">Compound % p.m.</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-600">Interest Rate</label>
+                            <input type="number" id="partyCalcRate" step="0.01" value="2" required class="w-full border border-slate-300 rounded-lg p-2 font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Address / Notes</label>
+                    <textarea id="partyNotes" rows="2" placeholder="Address, reference..." class="w-full border border-slate-200 rounded-xl p-3 font-bold" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('partyModal')" class="px-4 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold">Cancel</button>
+                    <button type="submit" class="px-5 py-3 bg-slate-950 text-amber-400 font-extrabold rounded-xl shadow">Save Party</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Add / Edit Transaction -->
+    <div id="transactionModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden no-print">
+        <div class="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl sheet-up max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-3 border-b border-slate-100 pb-3">
+                <h3 id="txnModalTitle" class="font-extrabold text-slate-900 text-sm">Add Ledger Entry</h3>
+                <button onclick="closeModal('transactionModal')" class="text-slate-400 hover:text-slate-600 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="transactionForm" onsubmit="saveTransaction(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="txnEditId">
+                <input type="hidden" id="txnDocDataUrl">
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Party Account *</label>
+                    <select id="txnPartyId" required class="w-full border border-slate-200 rounded-xl p-3 font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;"></select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Entry Type *</label>
+                        <select id="txnType" required class="w-full border border-slate-200 rounded-xl p-3 font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                            <option value="GIVEN">Credit Given</option>
+                            <option value="RECEIVED">Principal Rec.</option>
+                            <option value="INTEREST_PAID">Interest Paid</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Amount (₹) *</label>
+                        <input type="number" id="txnAmount" step="0.01" required placeholder="0.00" inputmode="decimal" class="w-full border border-slate-200 rounded-xl p-3 font-black text-sm" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Date *</label>
+                        <input type="date" id="txnDate" required class="w-full border border-slate-200 rounded-xl p-2.5 font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Payment Mode</label>
+                        <select id="txnMode" class="w-full border border-slate-200 rounded-xl p-2.5 font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                            <option value="Cash">Cash</option>
+                            <option value="UPI">UPI (GPay/PhonePe)</option>
+                            <option value="NEFT/RTGS">Bank NEFT/RTGS</option>
+                            <option value="Cheque">Cheque</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Particulars / Description</label>
+                    <input type="text" id="txnNote" placeholder="e.g. Monthly interest paid..." class="w-full border border-slate-200 rounded-xl p-3 font-bold" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Attach Receipt Image</label>
+                    <input type="file" id="txnDocFile" accept="image/*" onchange="handleFileSelect(event)" class="w-full text-xs font-bold file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:bg-slate-100 file:font-bold" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                    <div id="imagePreviewContainer" class="mt-2 hidden">
+                        <img id="imagePreview" src="" class="h-20 rounded-xl border border-slate-200 object-cover">
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('transactionModal')" class="px-4 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold">Cancel</button>
+                    <button type="submit" class="px-5 py-3 bg-blue-600 text-white font-extrabold rounded-xl shadow">Save Entry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Backup & Sync -->
+    <div id="backupModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4 text-slate-800">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                <h3 class="font-extrabold text-slate-900 text-sm">Backup & Data Transfer</h3>
+                <button onclick="closeModal('backupModal')" class="text-slate-400 p-1"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-xs text-slate-500">Export your ledger data as JSON to sync across phones.</p>
+            <button onclick="downloadBackupJSON()" class="w-full bg-emerald-600 text-white py-3 rounded-xl text-xs font-extrabold shadow">Download JSON Backup</button>
+        </div>
+    </div>
+
+    <!-- Modal: Date-Wise Print Statement Selector & Master PDF Option -->
+    <div id="printModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+        <div class="bg-white w-full max-w-md rounded-3xl p-5 shadow-2xl space-y-4 text-slate-800">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                <h3 class="font-extrabold text-slate-900 text-sm">Statement & Master PDF Options</h3>
+                <button onclick="closeModal('printModal')" class="text-slate-400 p-1"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Party Account *</label>
+                <select id="printPartySelect" class="w-full border border-slate-300 rounded-xl p-3 font-black text-xs" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;"></select>
+            </div>
+
+            <!-- Statement Date Filter Options -->
+            <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+                <label class="block text-xs font-extrabold text-slate-800"><i class="fa-solid fa-calendar text-amber-500 mr-1"></i> Statement Date Range Filter</label>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                        <label class="block text-[10px] text-slate-500 font-bold mb-0.5">From Date</label>
+                        <input type="date" id="printModalStartDate" class="w-full border border-slate-300 rounded-xl p-2 font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-500 font-bold mb-0.5">To Date</label>
+                        <input type="date" id="printModalEndDate" class="w-full border border-slate-300 rounded-xl p-2 font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons Grid -->
+            <div class="space-y-2 pt-2">
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="shareStatementWhatsApp()" class="py-3 bg-emerald-600 active:bg-emerald-700 text-white font-black rounded-xl text-xs shadow flex items-center justify-center gap-1.5">
+                        <i class="fa-brands fa-whatsapp text-sm"></i> Share WhatsApp
+                    </button>
+                    <button onclick="generateIndividualPrintView()" class="py-3 bg-slate-950 text-amber-400 font-black rounded-xl text-xs shadow flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-print"></i> Single Statement
+                    </button>
+                </div>
+                <!-- Master Statement Button -->
+                <button onclick="generateMasterPrintView()" class="w-full py-3 bg-indigo-900 hover:bg-indigo-950 text-white font-black rounded-xl text-xs shadow flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-users-viewfinder text-amber-400"></i> Master Statement (All Customers PDF)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== APPLICATION LOGIC & PWA REGISTRATION ==================== -->
+    <script>
+        // State Variables
+        let parties = [];
+        let transactions = [];
+        let deferredPrompt = null;
+        let appUsername = "admin";
+        let appPin = "1234";
+        let enteredKeypadPin = "";
+
+        // Dynamic Seasonal & Time Greetings Engine
+        function updateDashboardGreetings() {
+            const now = new Date();
+            const hours = now.getHours();
+            const month = now.getMonth(); // 0 - 11
+            const date = now.getDate();
+
+            let timeGreeting = "Good Day";
+            let timeIcon = "☀️";
+            let subtext = "Have a productive day managing your ledger.";
+
+            // Time-based Greetings
+            if (hours >= 5 && hours < 12) {
+                timeGreeting = "Good Morning";
+                timeIcon = "🌅";
+            } else if (hours >= 12 && hours < 17) {
+                timeGreeting = "Good Afternoon";
+                timeIcon = "☀️";
+            } else if (hours >= 17 && hours < 22) {
+                timeGreeting = "Good Evening";
+                timeIcon = "🌆";
+            } else {
+                timeGreeting = "Good Night";
+                timeIcon = "🌙";
+            }
+
+            // Seasonal / Festival Greetings Override
+            // New Year (Jan 1)
+            if (month === 0 && date === 1) {
+                timeGreeting = "Happy New Year";
+                timeIcon = "🎉";
+                subtext = "Wishing you financial success & happiness in the new year!";
+            }
+            // Pongal / Makar Sankranti (Jan 14-16)
+            else if (month === 0 && date >= 14 && date <= 16) {
+                timeGreeting = "Happy Pongal & Sankranti";
+                timeIcon = "🌾";
+                subtext = "May this festival of harvest bring prosperity to your business!";
+            }
+            // Republic Day (Jan 26)
+            else if (month === 0 && date === 26) {
+                timeGreeting = "Happy Republic Day";
+                timeIcon = "🇮🇳";
+                subtext = "Wishing you a proud & prosperous Republic Day!";
+            }
+            // Independence Day (Aug 15)
+            else if (month === 7 && date === 15) {
+                timeGreeting = "Happy Independence Day";
+                timeIcon = "🇮🇳";
+                subtext = "Celebrating freedom and growth!";
+            }
+            // Gandhi Jayanti (Oct 2)
+            else if (month === 9 && date === 2) {
+                timeGreeting = "Happy Gandhi Jayanti";
+                timeIcon = "🕊️";
+                subtext = "Truth, simplicity & honest accounting.";
+            }
+            // Diwali season check (Oct/Nov approximation)
+            else if (month === 10 && date >= 1 && date <= 15) {
+                timeGreeting = "Happy Diwali";
+                timeIcon = "🪔";
+                subtext = "May the lights of Diwali bring wealth & prosperity!";
+            }
+            // Christmas (Dec 25)
+            else if (month === 11 && date === 25) {
+                timeGreeting = "Merry Christmas";
+                timeIcon = "🎄";
+                subtext = "Wishing you joy, peace and good health!";
+            }
+
+            const greetingTextEl = document.getElementById('seasonalGreetingText');
+            const greetingIconEl = document.getElementById('seasonalGreetingIcon');
+            const greetingSubtextEl = document.getElementById('seasonalSubtext');
+            const adminNameEl = document.getElementById('dashboardAdminName');
+
+            if (greetingTextEl) greetingTextEl.innerText = timeGreeting;
+            if (greetingIconEl) greetingIconEl.innerText = timeIcon;
+            if (greetingSubtextEl) greetingSubtextEl.innerText = subtext;
+            if (adminNameEl) adminNameEl.innerText = `Welcome, ${appUsername}`;
+        }
+
+        // Toast Notification Trigger
+        function showToast(msg, icon = "fa-circle-check") {
+            const toast = document.getElementById('toastNotification');
+            document.getElementById('toastMessage').innerText = msg;
+            document.getElementById('toastIcon').className = `fa-solid ${icon} text-sm`;
+            toast.classList.remove('hidden');
+            toast.classList.add('toast-slide');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+                toast.classList.remove('toast-slide');
+            }, 3000);
+        }
+
+        // INR Currency Formatter
+        const formatINR = (amt) => {
+            return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2 }).format(amt || 0);
+        };
+
+        // Date Formatter (DD-MM-YYYY)
+        function formatDateDDMMYYYY(dateInput) {
+            if (!dateInput) return '-';
+            let d = new Date(dateInput);
+            if (isNaN(d.getTime())) return dateInput;
+            const day = String(d.getDate()).padStart(2, '0');
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            return `${day}-${month}-${d.getFullYear()}`;
+        }
+
+        // Helper: Generate UPI QR Code URL
+        function generateUpiQrUrl(upiId, name = '', amount = '') {
+            if (!upiId) return '';
+            const cleanedUpi = upiId.trim();
+            let upiUri = `upi://pay?pa=${encodeURIComponent(cleanedUpi)}&pn=${encodeURIComponent(name || 'Sfinsys Ledger')}&cu=INR`;
+            if (amount && parseFloat(amount) > 0) {
+                upiUri += `&am=${encodeURIComponent(amount)}`;
+            }
+            return `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiUri)}`;
+        }
+
+        // DIRECT MOBILE PHONE CONTACTS PICKER FUNCTION
+        async function pickContactForParty() {
+            if ('contacts' in navigator && 'ContactsManager' in window) {
+                const props = ['name', 'tel'];
+                try {
+                    const contacts = await navigator.contacts.select(props, { multiple: false });
+                    if (contacts && contacts.length > 0) {
+                        const contact = contacts[0];
+                        
+                        // Extract mobile phone number
+                        if (contact.tel && contact.tel.length > 0) {
+                            let rawNum = contact.tel[0];
+                            // Clean up number formatting (spaces, dashes, parentheses)
+                            let cleanNum = rawNum.replace(/[\s\-\(\)]/g, '');
+                            document.getElementById('partyPhone').value = cleanNum;
+                        }
+
+                        // Pre-fill party name if empty
+                        const partyNameInput = document.getElementById('partyName');
+                        if (contact.name && contact.name.length > 0 && !partyNameInput.value.trim()) {
+                            partyNameInput.value = contact.name[0];
+                            updatePartyModalQrPreview();
+                        }
+
+                        showToast("Contact loaded successfully!", "fa-address-book");
+                    }
+                } catch (err) {
+                    console.log('Contact picker error or cancelled:', err);
+                }
+            } else {
+                alert("Direct Contact fetching is supported on Chrome/Edge on mobile phones. Please type the number manually.");
+            }
+        }
+
+        // Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            loadStorage();
+            checkSessionLogin();
+            setDefaultDates();
+            populatePartyDropdowns();
+            renderLedgerTable();
+            renderPartiesList();
+            updateStats();
+            setupPWAManifest();
+            registerServiceWorker();
+            updateDashboardGreetings();
+            document.getElementById('printDate').innerText = formatDateDDMMYYYY(new Date());
+
+            // Close Autocomplete dropdown on outside click
+            document.addEventListener('click', (e) => {
+                const searchBox = document.getElementById('mainCustomerSearchInput');
+                const autocomplete = document.getElementById('autocompleteSuggestions');
+                if (searchBox && autocomplete && !searchBox.contains(e.target) && !autocomplete.contains(e.target)) {
+                    autocomplete.classList.add('hidden');
+                }
+            });
+        });
+
+        // PWA Manifest Generation
+        function setupPWAManifest() {
+            const manifestObj = {
+                name: "Sfinsys Banking & Credit Ledger",
+                short_name: "Sfinsys",
+                start_url: ".",
+                display: "standalone",
+                background_color: "#0f172a",
+                theme_color: "#0f172a",
+                icons: [{
+                    src: document.getElementById('faviconLink').href,
+                    sizes: "512x512",
+                    type: "image/svg+xml",
+                    purpose: "any maskable"
+                }]
+            };
+            const blob = new Blob([JSON.stringify(manifestObj)], { type: 'application/json' });
+            document.getElementById('manifestLink').href = URL.createObjectURL(blob);
+        }
+
+        // Service Worker
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                const swCode = `
+                    self.addEventListener('install', (e) => e.waitUntil(self.skipWaiting()));
+                    self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
+                    self.addEventListener('fetch', (e) => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
+                `;
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
+            }
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installPWABtn').classList.remove('hidden');
+        });
+
+        function triggerPWAInstall() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(() => {
+                    deferredPrompt = null;
+                    document.getElementById('installPWABtn').classList.add('hidden');
+                });
+            }
+        }
+
+        // Touch Keypad Handling for PIN Entry
+        function pressPinKey(digit) {
+            if (enteredKeypadPin.length < 4) {
+                enteredKeypadPin += digit;
+                updatePinDots();
+                if (enteredKeypadPin.length === 4) {
+                    setTimeout(verifyPinKeypad, 150);
+                }
+            }
+        }
+
+        function deletePinKey() {
+            if (enteredKeypadPin.length > 0) {
+                enteredKeypadPin = enteredKeypadPin.slice(0, -1);
+                updatePinDots();
+            }
+        }
+
+        function clearPinKey() {
+            enteredKeypadPin = "";
+            updatePinDots();
+        }
+
+        function updatePinDots() {
+            for (let i = 0; i < 4; i++) {
+                const dot = document.getElementById(`dot-${i}`);
+                if (i < enteredKeypadPin.length) {
+                    dot.classList.add('bg-amber-400');
+                    dot.classList.remove('bg-transparent');
+                } else {
+                    dot.classList.remove('bg-amber-400');
+                    dot.classList.add('bg-transparent');
+                }
+            }
+        }
+
+        function verifyPinKeypad() {
+            const enteredUser = document.getElementById('loginUsernameInput').value.trim();
+            if (enteredUser.toLowerCase() === appUsername.toLowerCase() && enteredKeypadPin === appPin) {
+                sessionStorage.setItem('sfinsys_auth', 'true');
+                document.getElementById('loginErrorMsg').classList.add('hidden');
+                checkSessionLogin();
+            } else {
+                document.getElementById('loginErrorMsg').classList.remove('hidden');
+                clearPinKey();
+            }
+        }
+
+        // Authentication PIN Handler
+        function checkSessionLogin() {
+            if (sessionStorage.getItem('sfinsys_auth') === 'true') {
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('appMainContent').classList.remove('hidden');
+                updateDashboardGreetings();
+            } else {
+                clearPinKey();
+                document.getElementById('loginUsernameInput').value = appUsername;
+                document.getElementById('displayUsernameLabel').innerText = appUsername;
+                document.getElementById('loginOverlay').classList.remove('hidden');
+                document.getElementById('appMainContent').classList.add('hidden');
+            }
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem('sfinsys_auth');
+            checkSessionLogin();
+        }
+
+        // Passcode and Username Change Handler
+        function handlePasscodeChangeSubmit(e) {
+            e.preventDefault();
+            const newUser = document.getElementById('modalUsername').value.trim();
+            const curPin = document.getElementById('modalCurrentPin').value;
+            const newPin = document.getElementById('modalNewPin').value;
+            const confPin = document.getElementById('modalConfirmPin').value;
+            const errorBox = document.getElementById('modalPasscodeError');
+            const errorText = document.getElementById('modalErrorText');
+
+            errorBox.classList.add('hidden');
+
+            if (!newUser) {
+                errorText.innerText = "Username cannot be empty!";
+                errorBox.classList.remove('hidden');
+                return;
+            }
+
+            if (curPin !== appPin) {
+                errorText.innerText = "Current Passcode is incorrect!";
+                errorBox.classList.remove('hidden');
+                return;
+            }
+
+            if (!/^\d{4}$/.test(newPin)) {
+                errorText.innerText = "New Passcode must be exactly 4 digits!";
+                errorBox.classList.remove('hidden');
+                return;
+            }
+
+            if (newPin !== confPin) {
+                errorText.innerText = "New Passcode and Confirmation do not match!";
+                errorBox.classList.remove('hidden');
+                return;
+            }
+
+            appUsername = newUser;
+            appPin = newPin;
+            saveStorage();
+            closeModal('passcodeModal');
+            document.getElementById('passcodeForm').reset();
+            document.getElementById('displayUsernameLabel').innerText = appUsername;
+            updateDashboardGreetings();
+            showToast("Security credentials updated successfully!");
+        }
+
+        // Local Storage System
+        function loadStorage() {
+            try {
+                if (localStorage.getItem('sfinsys_parties')) parties = JSON.parse(localStorage.getItem('sfinsys_parties'));
+                else if (localStorage.getItem('santhoshgopal_parties')) parties = JSON.parse(localStorage.getItem('santhoshgopal_parties'));
+
+                if (localStorage.getItem('sfinsys_transactions')) transactions = JSON.parse(localStorage.getItem('sfinsys_transactions'));
+                else if (localStorage.getItem('santhoshgopal_transactions')) transactions = JSON.parse(localStorage.getItem('santhoshgopal_transactions'));
+
+                if (localStorage.getItem('sfinsys_pin')) appPin = localStorage.getItem('sfinsys_pin');
+                else if (localStorage.getItem('santhoshgopal_pin')) appPin = localStorage.getItem('santhoshgopal_pin');
+
+                if (localStorage.getItem('sfinsys_username')) appUsername = localStorage.getItem('sfinsys_username');
+            } catch (err) { console.error(err); }
+        }
+
+        function saveStorage() {
+            try {
+                localStorage.setItem('sfinsys_parties', JSON.stringify(parties));
+                localStorage.setItem('sfinsys_transactions', JSON.stringify(transactions));
+                localStorage.setItem('sfinsys_pin', appPin);
+                localStorage.setItem('sfinsys_username', appUsername);
+            } catch (err) { alert("Storage full: Attached files are too large."); }
+        }
+
+        function setDefaultDates() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('txnDate').value = today;
+            document.getElementById('calcEndDate').value = today;
+            document.getElementById('printModalEndDate').value = today;
+            document.getElementById('ledgerEndDate').value = today;
+            
+            let d = new Date();
+            d.setDate(d.getDate() - 30);
+            const pastDate = d.toISOString().split('T')[0];
+            document.getElementById('calcStartDate').value = pastDate;
+        }
+
+        function resetLedgerDateFilter() {
+            document.getElementById('ledgerStartDate').value = '';
+            document.getElementById('ledgerEndDate').value = new Date().toISOString().split('T')[0];
+            renderLedgerTable();
+        }
+
+        // Bottom Nav Tab Switching
+        function switchTab(tabName) {
+            ['dashboard', 'entries', 'parties', 'interest', 'settings'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                document.getElementById(`nav-${t}`)?.classList.remove('text-amber-400');
+                document.getElementById(`nav-${t}`)?.classList.add('hover:text-white');
+            });
+
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            document.getElementById(`nav-${tabName}`)?.classList.add('text-amber-400');
+        }
+
+        // Party Modal Live QR Preview Trigger
+        function updatePartyModalQrPreview() {
+            const upiId = document.getElementById('partyUpiId').value.trim();
+            const partyName = document.getElementById('partyName').value.trim();
+            const qrBox = document.getElementById('modalQrPreviewBox');
+            const qrImg = document.getElementById('modalPartyQrImg');
+            const qrText = document.getElementById('previewQrUpiText');
+
+            if (upiId) {
+                qrText.innerText = upiId;
+                qrImg.src = generateUpiQrUrl(upiId, partyName);
+                qrBox.classList.remove('hidden');
+            } else {
+                qrBox.classList.add('hidden');
+            }
+        }
+
+        function onPartyModalSystemChange() {
+            const system = document.getElementById('partyCalcSystem').value;
+            const rateInput = document.getElementById('partyCalcRate');
+
+            if (system === 'zero_interest') {
+                rateInput.value = 0;
+                rateInput.disabled = true;
+            } else {
+                rateInput.disabled = false;
+                if (parseFloat(rateInput.value) === 0) {
+                    rateInput.value = (system === 'rupee_monthly' || system === 'compound_pm') ? 2 : 12;
+                }
+            }
+        }
+
+        // Open Party Modal (New / Edit)
+        function editParty(pid) {
+            const party = parties.find(p => p.id === pid);
+            if (!party) return;
+            document.getElementById('partyEditId').value = party.id;
+            document.getElementById('partyName').value = party.name;
+            document.getElementById('partyPhone').value = party.phone || '';
+            document.getElementById('partyRef').value = party.ref || '';
+            document.getElementById('partyBankAcc').value = party.bankAcc || '';
+            document.getElementById('partyUpiId').value = party.upiId || '';
+            document.getElementById('partyNotes').value = party.notes || '';
+            document.getElementById('partyCalcSystem').value = party.calcSystem || 'rupee_monthly';
+            
+            onPartyModalSystemChange();
+            document.getElementById('partyCalcRate').value = party.calcSystem === 'zero_interest' ? 0 : (party.calcRate !== undefined ? party.calcRate : 2);
+            document.getElementById('partyModalTitle').innerText = "Edit Party Account";
+            
+            updatePartyModalQrPreview();
+            openModal('partyModal');
+        }
+
+        function saveParty(e) {
+            e.preventDefault();
+            const editId = document.getElementById('partyEditId').value;
+            const name = document.getElementById('partyName').value.trim();
+            const phone = document.getElementById('partyPhone').value.trim();
+            const ref = document.getElementById('partyRef').value.trim();
+            const bankAcc = document.getElementById('partyBankAcc').value.trim();
+            const upiId = document.getElementById('partyUpiId').value.trim();
+            const notes = document.getElementById('partyNotes').value.trim();
+            const calcSystem = document.getElementById('partyCalcSystem').value;
+            const calcRate = calcSystem === 'zero_interest' ? 0 : (parseFloat(document.getElementById('partyCalcRate').value) || 0);
+
+            if (!name) return;
+
+            if (editId) {
+                const party = parties.find(p => p.id === editId);
+                if (party) Object.assign(party, { name, phone, ref, bankAcc, upiId, notes, calcSystem, calcRate });
+            } else {
+                parties.push({ id: 'p_' + Date.now(), name, phone, ref, bankAcc, upiId, notes, calcSystem, calcRate });
+            }
+
+            saveStorage();
+            populatePartyDropdowns();
+            renderPartiesList();
+            closeModal('partyModal');
+            document.getElementById('partyForm').reset();
+            document.getElementById('partyEditId').value = '';
+            document.getElementById('partyModalTitle').innerText = "Add Party Account";
+            updateStats();
+            showToast("Party Profile Saved!");
+        }
+
+        // AUTOCOMPLETE SEARCH (Triggers after typing 3 letters) with Black Font Color
+        function handleCustomerSearchInput() {
+            const query = document.getElementById('mainCustomerSearchInput').value.trim();
+            const autocompleteBox = document.getElementById('autocompleteSuggestions');
+            const clearBtn = document.getElementById('clearCustomerSearchBtn');
+
+            if (query.length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+
+            if (query.length < 3) {
+                autocompleteBox.classList.add('hidden');
+                autocompleteBox.innerHTML = '';
+                filterPartyDropdownOptions();
+                return;
+            }
+
+            const lower = query.toLowerCase();
+            const matches = parties.filter(p => 
+                p.name.toLowerCase().includes(lower) || 
+                (p.phone && p.phone.toLowerCase().includes(lower)) ||
+                (p.ref && p.ref.toLowerCase().includes(lower))
+            );
+
+            if (matches.length > 0) {
+                autocompleteBox.innerHTML = matches.map(p => `
+                    <div onclick="selectPartyFromAutocomplete('${p.id}')" class="px-4 py-2.5 hover:bg-slate-100 cursor-pointer border-b border-slate-200 last:border-0 flex justify-between items-center text-xs">
+                        <div>
+                            <p class="font-extrabold text-black" style="color: #000000 !important;">${p.name}</p>
+                            <p class="text-[10px] text-slate-600 font-semibold">${p.phone ? p.phone : 'No Phone'}</p>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
+                    </div>
+                `).join('');
+                autocompleteBox.classList.remove('hidden');
+            } else {
+                autocompleteBox.innerHTML = `<div class="px-4 py-3 text-xs text-slate-500 italic">No nearest names matching "${query}"</div>`;
+                autocompleteBox.classList.remove('hidden');
+            }
+
+            filterPartyDropdownOptions();
+        }
+
+        function selectPartyFromAutocomplete(partyId) {
+            const party = parties.find(p => p.id === partyId);
+            if (!party) return;
+            
+            document.getElementById('mainCustomerSearchInput').value = party.name;
+            document.getElementById('autocompleteSuggestions').classList.add('hidden');
+            
+            const selectEl = document.getElementById('partyFilterSelect');
+            selectEl.value = partyId;
+            onPartyFilterChange();
+        }
+
+        // Main Window Customer Search & Filter Dropdown Handler (Master Ledger & Customer names explicitly in black font)
+        function filterPartyDropdownOptions() {
+            const query = document.getElementById('mainCustomerSearchInput').value.toLowerCase().trim();
+            const selectEl = document.getElementById('partyFilterSelect');
+
+            const currentVal = selectEl.value;
+            selectEl.innerHTML = '<option value="" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-weight: 800;">-- Master Combined Ledger (All Parties) --</option>';
+
+            const sortedParties = [...parties].sort((a,b) => a.name.localeCompare(b.name));
+            let matchCount = 0;
+
+            sortedParties.forEach(p => {
+                const matchName = p.name.toLowerCase().includes(query);
+                const matchPhone = p.phone && p.phone.toLowerCase().includes(query);
+                const matchRef = p.ref && p.ref.toLowerCase().includes(query);
+
+                if (!query || matchName || matchPhone || matchRef) {
+                    matchCount++;
+                    selectEl.innerHTML += `<option value="${p.id}" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-weight: 800;">${p.name} ${p.phone ? `(${p.phone})` : ''}</option>`;
+                }
+            });
+
+            document.getElementById('partySearchCount').innerText = `${matchCount} Parties`;
+            
+            if ([...selectEl.options].some(o => o.value === currentVal)) {
+                selectEl.value = currentVal;
+            }
+        }
+
+        function clearMainCustomerSearch() {
+            document.getElementById('mainCustomerSearchInput').value = '';
+            document.getElementById('autocompleteSuggestions').classList.add('hidden');
+            filterPartyDropdownOptions();
+            document.getElementById('partyFilterSelect').value = '';
+            onPartyFilterChange();
+        }
+
+        function populatePartyDropdowns() {
+            filterPartyDropdownOptions();
+            
+            const txnSel = document.getElementById('txnPartyId');
+            const printSel = document.getElementById('printPartySelect');
+
+            const txnVal = txnSel.value;
+            const printVal = printSel ? printSel.value : '';
+
+            txnSel.innerHTML = '<option value="" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-weight: 800;">-- Choose Party --</option>';
+            if (printSel) printSel.innerHTML = '<option value="" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-weight: 800;">-- Select Party --</option>';
+
+            parties.sort((a,b) => a.name.localeCompare(b.name)).forEach(p => {
+                txnSel.innerHTML += `<option value="${p.id}" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-weight: 800;">${p.name}</option>`;
+                if (printSel) printSel.innerHTML += `<option value="${p.id}" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-weight: 800;">${p.name}</option>`;
+            });
+
+            txnSel.value = txnVal;
+            if (printSel) printSel.value = printVal;
+        }
+
+        function onPartyFilterChange() {
+            const pid = document.getElementById('partyFilterSelect').value;
+            const party = parties.find(p => p.id === pid);
+            document.getElementById('topBarSubtitle').innerText = party ? party.name : 'Master Combined Ledger';
+
+            // Display or Hide Main Window UPI QR Code Card
+            const qrCard = document.getElementById('mainViewUpiQrCard');
+            if (party && party.upiId) {
+                document.getElementById('qrCardPartyName').innerText = party.name;
+                document.getElementById('qrCardUpiId').innerText = `UPI ID: ${party.upiId}`;
+                document.getElementById('qrCardPayee').innerText = `Payee: ${party.name}`;
+                document.getElementById('qrCardBank').innerText = party.bankAcc ? `Account: ${party.bankAcc}` : 'Bank: Not specified';
+                
+                const metrics = calculatePartyMetrics(party.id, document.getElementById('calcEndDate').value || new Date().toISOString().split('T')[0]);
+                document.getElementById('mainPartyQrCodeImg').src = generateUpiQrUrl(party.upiId, party.name, metrics.totalPayable);
+                qrCard.classList.remove('hidden');
+            } else {
+                qrCard.classList.add('hidden');
+            }
+
+            if (party) {
+                if (party.calcSystem) {
+                    document.getElementById('calcSystem').value = party.calcSystem;
+                    onInterestSystemChange();
+                }
+                if (party.calcRate !== undefined) document.getElementById('calcRate').value = party.calcRate;
+            }
+
+            renderLedgerTable();
+            updateStats();
+        }
+
+        function getSystemDisplayLabel(sys, rate) {
+            if (sys === 'zero_interest') return '0% (Zero Interest)';
+            if (sys === 'rupee_monthly') return `₹${rate}/₹100/mo`;
+            if (sys === 'simple_pa') return `${rate}% Simple p.a.`;
+            if (sys === 'compound_pa') return `${rate}% Compound p.a.`;
+            if (sys === 'compound_pm') return `${rate}% Compound p.m.`;
+            return `${rate}%`;
+        }
+
+        function renderPartiesList() {
+            const container = document.getElementById('partiesList');
+            if (parties.length === 0) {
+                container.innerHTML = `<div class="text-center text-xs text-slate-400 py-6">No parties added.</div>`;
+                return;
+            }
+
+            const asOfDateStr = document.getElementById('calcEndDate').value || new Date().toISOString().split('T')[0];
+
+            container.innerHTML = parties.map(p => {
+                const metrics = calculatePartyMetrics(p.id, asOfDateStr);
+                const hasQr = Boolean(p.upiId);
+                const qrUrl = hasQr ? generateUpiQrUrl(p.upiId, p.name, metrics.totalPayable) : '';
+
+                return `
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-3">
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <h4 class="font-extrabold text-sm text-slate-900">${p.name}</h4>
+                                <p class="text-[10px] text-slate-500 font-bold"><i class="fa-solid fa-phone mr-1"></i>${p.phone || 'No Phone'}</p>
+                                ${p.bankAcc ? `<p class="text-[10px] text-emerald-800 font-bold"><i class="fa-solid fa-building-columns mr-1"></i>A/C: ${p.bankAcc}</p>` : ''}
+                                ${p.upiId ? `<p class="text-[10px] text-blue-700 font-bold"><i class="fa-solid fa-qrcode mr-1"></i>UPI: ${p.upiId}</p>` : ''}
+                                <p class="text-[10px] text-amber-700 font-bold mt-0.5">Rate: ${getSystemDisplayLabel(p.calcSystem, p.calcRate)}</p>
+                            </div>
+                            
+                            <div class="flex items-center gap-2">
+                                ${hasQr ? `
+                                    <div class="text-center bg-slate-50 p-1.5 rounded-xl border border-slate-200 shrink-0">
+                                        <img src="${qrUrl}" alt="QR" class="w-14 h-14 object-contain mx-auto">
+                                        <span class="text-[7px] font-black text-slate-600 block">UPI QR</span>
+                                    </div>
+                                ` : ''}
+                                <div class="text-right">
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase">Total Payable</span>
+                                    <div class="text-sm font-black text-emerald-600">${formatINR(metrics.totalPayable)}</div>
+                                    <span class="text-[9px] text-slate-500 block">Principal: ${formatINR(metrics.netBalance)}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Icons with WhatsApp Share included -->
+                        <div class="flex justify-between items-center border-t border-slate-100 pt-2.5 text-xs font-bold text-slate-600">
+                            <div class="flex gap-3 text-[10px]">
+                                <div>Gross Int: <span class="text-amber-600 font-black">${formatINR(metrics.grossInterest)}</span></div>
+                                <div>Int Paid: <span class="text-purple-600 font-black">${formatINR(metrics.interestPaidTotal)}</span></div>
+                            </div>
+                            
+                            <div class="flex items-center gap-3 border-l border-slate-200 pl-3">
+                                <button onclick="sharePartyWhatsApp('${p.id}')" class="text-emerald-600 hover:text-emerald-800 p-1.5 bg-emerald-50 rounded-lg transition" title="Share via WhatsApp">
+                                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                                </button>
+                                <button onclick="printSingleParty('${p.id}')" class="text-indigo-600 hover:text-indigo-800 p-1.5 bg-indigo-50 rounded-lg transition" title="Print Statement">
+                                    <i class="fa-solid fa-print"></i>
+                                </button>
+                                <button onclick="editParty('${p.id}')" class="text-blue-600 hover:text-blue-800 p-1.5 bg-blue-50 rounded-lg transition" title="Edit Profile">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button onclick="deleteParty('${p.id}')" class="text-rose-500 hover:text-rose-700 p-1.5 bg-rose-50 rounded-lg transition" title="Delete Party">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function deleteParty(pid) {
+            if (confirm("Delete party and all associated entries?")) {
+                parties = parties.filter(p => p.id !== pid);
+                transactions = transactions.filter(t => t.partyId !== pid);
+                saveStorage();
+                populatePartyDropdowns();
+                renderPartiesList();
+                renderLedgerTable();
+                updateStats();
+                showToast("Party deleted", "fa-trash-can");
+            }
+        }
+
+        // Open Transaction Modal (New / Edit)
+        function editTransaction(id) {
+            const txn = transactions.find(t => t.id === id);
+            if (!txn) return;
+            populatePartyDropdowns();
+            document.getElementById('txnEditId').value = txn.id;
+            document.getElementById('txnPartyId').value = txn.partyId;
+            document.getElementById('txnType').value = txn.type;
+            document.getElementById('txnAmount').value = txn.amount;
+            document.getElementById('txnDate').value = txn.date;
+            document.getElementById('txnMode').value = txn.mode || 'Cash';
+            document.getElementById('txnNote').value = txn.note || '';
+            document.getElementById('txnDocDataUrl').value = txn.docDataUrl || '';
+            if (txn.docDataUrl) {
+                document.getElementById('imagePreview').src = txn.docDataUrl;
+                document.getElementById('imagePreviewContainer').classList.remove('hidden');
+            } else {
+                document.getElementById('imagePreviewContainer').classList.add('hidden');
+            }
+            document.getElementById('txnModalTitle').innerText = "Edit Ledger Entry";
+            openModal('transactionModal');
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    document.getElementById('txnDocDataUrl').value = event.target.result;
+                    document.getElementById('imagePreview').src = event.target.result;
+                    document.getElementById('imagePreviewContainer').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveTransaction(e) {
+            e.preventDefault();
+            const editId = document.getElementById('txnEditId').value;
+            const partyId = document.getElementById('txnPartyId').value;
+            const date = document.getElementById('txnDate').value;
+            const type = document.getElementById('txnType').value;
+            const amount = parseFloat(document.getElementById('txnAmount').value);
+            const mode = document.getElementById('txnMode').value;
+            const note = document.getElementById('txnNote').value.trim();
+            const docDataUrl = document.getElementById('txnDocDataUrl').value;
+
+            if (!partyId || isNaN(amount) || amount <= 0) return;
+
+            if (editId) {
+                const txn = transactions.find(t => t.id === editId);
+                if (txn) Object.assign(txn, { partyId, date, type, amount, mode, note, docDataUrl });
+            } else {
+                transactions.push({ id: 't_' + Date.now(), partyId, date, type, amount, mode, note, docDataUrl });
+            }
+
+            saveStorage();
+            closeModal('transactionModal');
+            document.getElementById('transactionForm').reset();
+            document.getElementById('txnEditId').value = '';
+            document.getElementById('txnModalTitle').innerText = "Add Ledger Entry";
+            document.getElementById('imagePreviewContainer').classList.add('hidden');
+            renderLedgerTable();
+            renderPartiesList();
+            updateStats();
+            showToast("Ledger Entry Saved!");
+        }
+
+        function deleteTransaction(id) {
+            if (confirm("Delete this entry?")) {
+                transactions = transactions.filter(t => t.id !== id);
+                saveStorage();
+                renderLedgerTable();
+                renderPartiesList();
+                updateStats();
+                showToast("Entry deleted", "fa-trash-can");
+            }
+        }
+
+        // ACCURATE INTEREST ENGINE WITH SIMPLE AND COMPOUND OPTIONS
+        function computeInterestAmount(principal, startDateStr, endDateStr, system, rateVal) {
+            if (system === 'zero_interest' || rateVal === 0 || principal <= 0 || !startDateStr || !endDateStr) return 0;
+            const start = new Date(startDateStr);
+            const end = new Date(endDateStr);
+            if (end <= start) return 0;
+
+            const diffDays = (end - start) / (1000 * 60 * 60 * 24);
+
+            if (system === 'rupee_monthly') {
+                return principal * (rateVal / 100) * (diffDays / 30.4375);
+            } else if (system === 'simple_pa') {
+                return principal * (rateVal / 100) * (diffDays / 365.25);
+            } else if (system === 'compound_pa') {
+                const years = diffDays / 365.25;
+                const totalAmount = principal * Math.pow((1 + (rateVal / 100)), years);
+                return totalAmount - principal;
+            } else if (system === 'compound_pm') {
+                const months = diffDays / 30.4375;
+                const totalAmount = principal * Math.pow((1 + (rateVal / 100)), months);
+                return totalAmount - principal;
+            }
+            return 0;
+        }
+
+        // Comprehensive Per-Party Calculation Engine
+        function calculatePartyMetrics(partyId, endDateStr) {
+            const party = parties.find(p => p.id === partyId);
+            const fallbackSys = document.getElementById('calcSystem').value;
+            const fallbackRate = parseFloat(document.getElementById('calcRate').value) || 0;
+
+            const system = party?.calcSystem || fallbackSys;
+            const rate = system === 'zero_interest' ? 0 : (party?.calcRate !== undefined ? party.calcRate : fallbackRate);
+
+            const partyTxns = transactions.filter(t => t.partyId === partyId);
+
+            let totalGiven = 0;
+            let totalReceived = 0;
+            let interestPaidTotal = 0;
+            let grossInterest = 0;
+
+            partyTxns.forEach(t => {
+                if (t.type === 'GIVEN') {
+                    totalGiven += t.amount;
+                    grossInterest += computeInterestAmount(t.amount, t.date, endDateStr, system, rate);
+                } else if (t.type === 'RECEIVED') {
+                    totalReceived += t.amount;
+                } else if (t.type === 'INTEREST_PAID') {
+                    interestPaidTotal += t.amount;
+                }
+            });
+
+            const netBalance = Math.max(0, totalGiven - totalReceived);
+            const pendingInterest = system === 'zero_interest' ? 0 : Math.max(0, grossInterest - interestPaidTotal);
+            const totalPayable = netBalance + pendingInterest;
+
+            return {
+                totalGiven,
+                totalReceived,
+                netBalance,
+                grossInterest,
+                interestPaidTotal,
+                pendingInterest,
+                totalPayable,
+                system,
+                rate
+            };
+        }
+
+        function applyMainInterestSettings(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            renderLedgerTable();
+            renderPartiesList();
+            updateStats();
+        }
+
+        function onInterestSystemChange() {
+            const system = document.getElementById('calcSystem').value;
+            const rateInput = document.getElementById('calcRate');
+
+            if (system === 'zero_interest') {
+                document.getElementById('rateLabel').innerText = 'Rate (Zero Interest)';
+                rateInput.value = 0;
+                rateInput.disabled = true;
+            } else if (system === 'rupee_monthly') {
+                document.getElementById('rateLabel').innerText = 'Rate (₹ / ₹100 / mo)';
+                rateInput.disabled = false;
+                if (parseFloat(rateInput.value) === 0) rateInput.value = 2;
+            } else if (system === 'compound_pm') {
+                document.getElementById('rateLabel').innerText = 'Rate (% Compound p.m.)';
+                rateInput.disabled = false;
+                if (parseFloat(rateInput.value) === 0) rateInput.value = 2;
+            } else if (system === 'compound_pa') {
+                document.getElementById('rateLabel').innerText = 'Rate (% Compound p.a.)';
+                rateInput.disabled = false;
+                if (parseFloat(rateInput.value) === 0) rateInput.value = 12;
+            } else {
+                document.getElementById('rateLabel').innerText = 'Rate (% Simple p.a.)';
+                rateInput.disabled = false;
+                if (parseFloat(rateInput.value) === 0) rateInput.value = 12;
+            }
+            renderLedgerTable();
+            renderPartiesList();
+            updateStats();
+        }
+
+        // Dynamic Table Rendering with Date Range Filters
+        function renderLedgerTable() {
+            const container = document.getElementById('mobileLedgerList');
+            const emptyState = document.getElementById('emptyState');
+            const selectedPartyId = document.getElementById('partyFilterSelect').value;
+            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+            const typeVal = document.getElementById('typeFilter').value;
+
+            const startDate = document.getElementById('ledgerStartDate').value;
+            const endDate = document.getElementById('ledgerEndDate').value;
+
+            let sorted = [...transactions].sort((a,b) => new Date(b.date) - new Date(a.date));
+
+            let filtered = sorted.filter(t => {
+                const party = parties.find(p => p.id === t.partyId);
+                const pName = party ? party.name.toLowerCase() : '';
+                const matchParty = !selectedPartyId || t.partyId === selectedPartyId;
+                const matchType = typeVal === 'ALL' || t.type === typeVal;
+                const matchSearch = !searchVal || pName.includes(searchVal) || (t.note && t.note.toLowerCase().includes(searchVal));
+
+                let matchDate = true;
+                if (startDate && t.date < startDate) matchDate = false;
+                if (endDate && t.date > endDate) matchDate = false;
+
+                return matchParty && matchType && matchSearch && matchDate;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            container.innerHTML = filtered.map(t => {
+                const party = parties.find(p => p.id === t.partyId);
+                let badgeClass = 'bg-rose-100 text-rose-700';
+                let typeLabel = 'GIVEN';
+
+                if (t.type === 'RECEIVED') { badgeClass = 'bg-emerald-100 text-emerald-800'; typeLabel = 'PRINCIPAL REC.'; }
+                else if (t.type === 'INTEREST_PAID') { badgeClass = 'bg-purple-100 text-purple-800'; typeLabel = 'INTEREST PAID'; }
+
+                return `
+                    <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+                        <div>
+                            <div class="flex items-center gap-1.5 mb-1">
+                                <span class="px-2 py-0.5 rounded-md text-[9px] font-black ${badgeClass}">${typeLabel}</span>
+                                <span class="text-[10px] font-bold text-slate-400">${formatDateDDMMYYYY(t.date)}</span>
+                            </div>
+                            <h4 class="font-extrabold text-xs text-slate-900">${party ? party.name : 'Unknown'}</h4>
+                            <p class="text-[10px] text-slate-500 mt-0.5">${t.note || 'No description'} (${t.mode || 'Cash'})</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-black text-slate-900">${formatINR(t.amount)}</div>
+                            
+                            <div class="flex items-center justify-end gap-3 mt-1.5">
+                                <button onclick="editTransaction('${t.id}')" class="text-slate-400 hover:text-blue-600 text-xs p-1 bg-slate-50 hover:bg-blue-50 rounded-lg transition" title="Edit Entry">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button onclick="deleteTransaction('${t.id}')" class="text-slate-400 hover:text-rose-600 text-xs p-1 bg-slate-50 hover:bg-rose-50 rounded-lg transition" title="Delete Entry">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Stats Computation Across Master or Selected Party
+        function updateStats() {
+            const selectedPartyId = document.getElementById('partyFilterSelect').value;
+            const endDateStr = document.getElementById('calcEndDate').value || new Date().toISOString().split('T')[0];
+
+            let totalGiven = 0;
+            let totalReceived = 0;
+            let netBalance = 0;
+            let grossInterest = 0;
+            let interestPaidTotal = 0;
+            let pendingInterest = 0;
+            let totalPayable = 0;
+
+            if (selectedPartyId) {
+                const m = calculatePartyMetrics(selectedPartyId, endDateStr);
+                totalGiven = m.totalGiven;
+                totalReceived = m.totalReceived;
+                netBalance = m.netBalance;
+                grossInterest = m.grossInterest;
+                interestPaidTotal = m.interestPaidTotal;
+                pendingInterest = m.pendingInterest;
+                totalPayable = m.totalPayable;
+            } else {
+                parties.forEach(p => {
+                    const m = calculatePartyMetrics(p.id, endDateStr);
+                    totalGiven += m.totalGiven;
+                    totalReceived += m.totalReceived;
+                    netBalance += m.netBalance;
+                    grossInterest += m.grossInterest;
+                    interestPaidTotal += m.interestPaidTotal;
+                    pendingInterest += m.pendingInterest;
+                    totalPayable += m.totalPayable;
+                });
+            }
+
+            document.getElementById('statTotalGiven').innerText = formatINR(totalGiven);
+            document.getElementById('statTotalReceived').innerText = formatINR(totalReceived);
+            document.getElementById('statNetOutstanding').innerText = formatINR(netBalance);
+            document.getElementById('statTotalInterest').innerText = formatINR(grossInterest);
+            document.getElementById('statInterestPaid').innerText = formatINR(interestPaidTotal);
+            document.getElementById('statTotalPayable').innerText = formatINR(totalPayable);
+
+            document.getElementById('resPrincipal').innerText = formatINR(netBalance);
+            document.getElementById('resInterest').innerText = formatINR(grossInterest);
+            document.getElementById('resInterestPaid').innerText = formatINR(interestPaidTotal);
+            document.getElementById('resNetInterest').innerText = formatINR(pendingInterest);
+            document.getElementById('resTotal').innerText = formatINR(totalPayable);
+        }
+
+        // Modal Controls
+        function openModal(id) {
+            if (id === 'transactionModal') populatePartyDropdowns();
+            if (id === 'passcodeModal') {
+                document.getElementById('modalUsername').value = appUsername;
+                document.getElementById('modalPasscodeError').classList.add('hidden');
+            }
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        // WHATSAPP STATEMENT SHARE FUNCTIONALITY
+        function sharePartyWhatsApp(pid) {
+            const party = parties.find(p => p.id === pid);
+            if (!party) return;
+
+            const endDate = document.getElementById('calcEndDate').value || new Date().toISOString().split('T')[0];
+            const m = calculatePartyMetrics(pid, endDate);
+
+            let msg = `*Sfinsys - Payment Statement*\n`;
+            msg += `------------------------------------\n`;
+            msg += `*Party:* ${party.name}\n`;
+            msg += `*Date:* ${formatDateDDMMYYYY(new Date())}\n\n`;
+            msg += `*Total Credit Given:* ${formatINR(m.totalGiven)}\n`;
+            msg += `*Principal Received:* ${formatINR(m.totalReceived)}\n`;
+            msg += `*Net Principal Balance:* ${formatINR(m.netBalance)}\n`;
+            msg += `*Gross Interest:* ${formatINR(m.grossInterest)}\n`;
+            msg += `*Interest Paid:* ${formatINR(m.interestPaidTotal)}\n`;
+            msg += `*Pending Interest:* ${formatINR(m.pendingInterest)}\n`;
+            msg += `------------------------------------\n`;
+            msg += `*TOTAL PAYABLE:* ${formatINR(m.totalPayable)}\n`;
+            if (party.upiId) {
+                msg += `\n*UPI Pay ID:* ${party.upiId}\n`;
+            }
+            msg += `------------------------------------\n`;
+            msg += `Design and Developed by Santhoshgopal`;
+
+            let phoneNum = party.phone ? party.phone.replace(/[^0-9]/g, '') : '';
+            if (phoneNum && !phoneNum.startsWith('91') && phoneNum.length === 10) {
+                phoneNum = '91' + phoneNum;
+            }
+
+            const encodedMsg = encodeURIComponent(msg);
+            const waUrl = phoneNum ? `https://wa.me/${phoneNum}?text=${encodedMsg}` : `https://api.whatsapp.com/send?text=${encodedMsg}`;
+            window.open(waUrl, '_blank');
+        }
+
+        function shareStatementWhatsApp() {
+            const partyId = document.getElementById('printPartySelect').value || document.getElementById('partyFilterSelect').value;
+            if (!partyId) {
+                alert("Please select a Party to share statement.");
+                return;
+            }
+            sharePartyWhatsApp(partyId);
+        }
+
+        // MASTER STATEMENT FOR ALL CUSTOMERS PRINT/PDF
+        function generateMasterPrintView() {
+            if (parties.length === 0) {
+                alert("No customers found to generate master statement.");
+                return;
+            }
+
+            const todayStr = new Date().toISOString().split('T')[0];
+            document.getElementById('masterPrintDate').innerText = formatDateDDMMYYYY(todayStr);
+            document.getElementById('masterPartyCount').innerText = parties.length;
+
+            let totalGiven = 0;
+            let totalReceived = 0;
+            let totalNetBalance = 0;
+            let grossTotalPayable = 0;
+
+            const tbody = document.getElementById('masterTableBody');
+            
+            const sortedParties = [...parties].sort((a,b) => a.name.localeCompare(b.name));
+
+            tbody.innerHTML = sortedParties.map((p, idx) => {
+                const m = calculatePartyMetrics(p.id, todayStr);
+                totalGiven += m.totalGiven;
+                totalReceived += m.totalReceived;
+                totalNetBalance += m.netBalance;
+                grossTotalPayable += m.totalPayable;
+
+                return `
+                    <tr class="border-b border-slate-200">
+                        <td class="p-2 font-bold">${idx + 1}</td>
+                        <td class="p-2 font-extrabold text-slate-900">${p.name}</td>
+                        <td class="p-2 font-bold text-slate-600">${p.phone || '-'}</td>
+                        <td class="p-2 text-right font-black text-rose-700">${formatINR(m.totalGiven)}</td>
+                        <td class="p-2 text-right font-black text-emerald-700">${formatINR(m.totalReceived)}</td>
+                        <td class="p-2 text-right font-black text-slate-900">${formatINR(m.netBalance)}</td>
+                        <td class="p-2 text-right font-black text-amber-700">${formatINR(m.grossInterest)}</td>
+                        <td class="p-2 text-right font-black text-purple-700">${formatINR(m.interestPaidTotal)}</td>
+                        <td class="p-2 text-right font-black text-emerald-800">${formatINR(m.totalPayable)}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('masterTotalGiven').innerText = formatINR(totalGiven);
+            document.getElementById('masterTotalReceived').innerText = formatINR(totalReceived);
+            document.getElementById('masterNetBalance').innerText = formatINR(totalNetBalance);
+            document.getElementById('masterTotalPayable').innerText = formatINR(grossTotalPayable);
+
+            document.getElementById('individualPrintContent').classList.add('hidden');
+            document.getElementById('masterPrintContent').classList.remove('hidden');
+
+            closeModal('printModal');
+            window.print();
+        }
+
+        // Individual Statement Printing Feature
+        function openPartyPrintModal() {
+            populatePartyDropdowns();
+            const curParty = document.getElementById('partyFilterSelect').value;
+            if (curParty) document.getElementById('printPartySelect').value = curParty;
+            openModal('printModal');
+        }
+
+        function printSingleParty(pid) {
+            document.getElementById('partyFilterSelect').value = pid;
+            onPartyFilterChange();
+            generateIndividualPrintView(pid);
+        }
+
+        function generateIndividualPrintView(targetPartyId) {
+            const partyId = targetPartyId || document.getElementById('printPartySelect').value || document.getElementById('partyFilterSelect').value;
+            if (!partyId) {
+                alert("Please select a specific Party Account to generate the statement.");
+                return;
+            }
+
+            const party = parties.find(p => p.id === partyId);
+            if (!party) return;
+
+            const modalStart = document.getElementById('printModalStartDate').value;
+            const modalEnd = document.getElementById('printModalEndDate').value || new Date().toISOString().split('T')[0];
+            
+            const startDateFilter = modalStart || document.getElementById('ledgerStartDate').value;
+            const endDateFilter = modalEnd || document.getElementById('ledgerEndDate').value || new Date().toISOString().split('T')[0];
+
+            const m = calculatePartyMetrics(partyId, endDateFilter);
+
+            document.getElementById('printDate').innerText = formatDateDDMMYYYY(new Date());
+            
+            let rangeText = "All Dates";
+            if (startDateFilter && endDateFilter) {
+                rangeText = `${formatDateDDMMYYYY(startDateFilter)} to ${formatDateDDMMYYYY(endDateFilter)}`;
+            } else if (endDateFilter) {
+                rangeText = `Up to ${formatDateDDMMYYYY(endDateFilter)}`;
+            }
+            document.getElementById('printFilterRange').innerText = rangeText;
+
+            document.getElementById('printPartyName').innerText = party.name;
+            document.getElementById('printPartyPhone').innerText = `Phone: ${party.phone || 'N/A'}`;
+            document.getElementById('printPartyRef').innerText = `ID Ref: ${party.ref || 'N/A'}`;
+            document.getElementById('printPartyBank').innerText = `Bank Account: ${party.bankAcc || 'N/A'}`;
+            document.getElementById('printPartyUpi').innerText = `UPI ID: ${party.upiId || 'N/A'}`;
+
+            document.getElementById('printPartyRate').innerText = `Interest Rate: ${getSystemDisplayLabel(party.calcSystem, party.calcRate)}`;
+
+            // QR Code for print statement
+            const printQrImg = document.getElementById('printPartyQrImg');
+            const printQrLabel = document.getElementById('printPartyQrLabel');
+            if (party.upiId) {
+                printQrImg.src = generateUpiQrUrl(party.upiId, party.name, m.totalPayable);
+                printQrImg.classList.remove('hidden');
+                printQrLabel.classList.remove('hidden');
+            } else {
+                printQrImg.classList.add('hidden');
+                printQrLabel.classList.add('hidden');
+            }
+
+            document.getElementById('printTotalGiven').innerText = formatINR(m.totalGiven);
+            document.getElementById('printTotalReceived').innerText = formatINR(m.totalReceived);
+            document.getElementById('printNetBalance').innerText = formatINR(m.netBalance);
+            document.getElementById('printGrossInterest').innerText = formatINR(m.grossInterest);
+            document.getElementById('printInterestPaid').innerText = formatINR(m.interestPaidTotal);
+            document.getElementById('printPendingInterest').innerText = formatINR(m.pendingInterest);
+            document.getElementById('printTotalPayable').innerText = formatINR(m.totalPayable);
+
+            // Filter transactions by date range for statement
+            let pTxns = transactions.filter(t => {
+                if (t.partyId !== partyId) return false;
+                if (startDateFilter && t.date < startDateFilter) return false;
+                if (endDateFilter && t.date > endDateFilter) return false;
+                return true;
+            }).sort((a,b) => new Date(a.date) - new Date(b.date));
+
+            const historyTable = document.getElementById('printHistoryTable');
+
+            if (pTxns.length === 0) {
+                historyTable.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">No transaction records found for the selected date range.</td></tr>`;
+            } else {
+                historyTable.innerHTML = pTxns.map(t => `
+                    <tr class="border-b border-slate-200">
+                        <td class="p-2 font-bold">${formatDateDDMMYYYY(t.date)}</td>
+                        <td class="p-2 font-extrabold ${t.type === 'GIVEN' ? 'text-rose-700' : t.type === 'RECEIVED' ? 'text-emerald-700' : 'text-purple-700'}">${t.type}</td>
+                        <td class="p-2 text-slate-600">${t.mode || 'Cash'}</td>
+                        <td class="p-2 text-slate-700">${t.note || '-'}</td>
+                        <td class="p-2 text-right font-black">${formatINR(t.amount)}</td>
+                    </tr>
+                `).join('');
+            }
+
+            document.getElementById('masterPrintContent').classList.add('hidden');
+            document.getElementById('individualPrintContent').classList.remove('hidden');
+
+            closeModal('printModal');
+            window.print();
+        }
+
+        // Export Utilities
+        function exportToCSV() {
+            if (transactions.length === 0) return alert("No entries to export.");
+            
+            const selectedPartyId = document.getElementById('partyFilterSelect').value;
+            const startDate = document.getElementById('ledgerStartDate').value;
+            const endDate = document.getElementById('ledgerEndDate').value;
+
+            let filteredTxns = transactions.filter(t => {
+                if (selectedPartyId && t.partyId !== selectedPartyId) return false;
+                if (startDate && t.date < startDate) return false;
+                if (endDate && t.date > endDate) return false;
+                return true;
+            }).sort((a,b) => new Date(b.date) - new Date(a.date));
+
+            if (filteredTxns.length === 0) return alert("No entries found in selected date range.");
+
+            let csv = "data:text/csv;charset=utf-8,Date,Party,Type,Amount (INR),Mode,Note\n";
+            filteredTxns.forEach(t => {
+                const p = parties.find(x => x.id === t.partyId);
+                csv += `${formatDateDDMMYYYY(t.date)},"${p ? p.name : ''}",${t.type},${t.amount},"${t.mode || 'Cash'}","${t.note || ''}"\n`;
+            });
+            const link = document.createElement("a");
+            link.href = encodeURI(csv);
+            link.download = `Sfinsys_Ledger_${formatDateDDMMYYYY(new Date())}.csv`;
+            link.click();
+        }
+
+        function downloadBackupJSON() {
+            const data = { app: "SfinsysPWA", username: appUsername, pin: appPin, parties, transactions };
+            const link = document.createElement("a");
+            link.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+            link.download = `Sfinsys_Ledger_Backup.json`;
+            link.click();
+        }
+
+        function restoreBackupJSON() {
+            const file = document.getElementById('restoreFile').files[0];
+            if (!file) return alert("Choose a JSON backup file.");
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (imported.parties && imported.transactions) {
+                        parties = imported.parties;
+                        transactions = imported.transactions;
+                        if (imported.pin) appPin = imported.pin;
+                        if (imported.username) appUsername = imported.username;
+                        saveStorage();
+                        populatePartyDropdowns();
+                        renderPartiesList();
+                        renderLedgerTable();
+                        updateStats();
+                        updateDashboardGreetings();
+                        closeModal('backupModal');
+                        showToast("Ledger Restored Successfully!");
+                    }
+                } catch (err) { alert("Invalid backup format."); }
+            };
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>
