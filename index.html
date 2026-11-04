@@ -103,6 +103,9 @@
         <span id="toastMessage">Action completed successfully!</span>
     </div>
 
+    <!-- Hidden Input for Admin Profile Photo Upload -->
+    <input type="file" id="adminPhotoInput" accept="image/*" class="hidden" onchange="handleAdminPhotoUpload(event)">
+
     <!-- ==================== SECURITY USER LOGIN & PIN OVERLAY ==================== -->
     <div id="loginOverlay" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-between p-6 pt-safe pb-safe no-print">
         <div class="w-full max-w-sm my-auto text-center">
@@ -199,18 +202,27 @@
             <!-- TAB 1: DASHBOARD / OVERVIEW -->
             <section id="tab-dashboard" class="space-y-4">
                 
-                <!-- Admin Greeting & Seasonal Banner (Compact Layout) -->
-                <div class="bg-gradient-to-r from-amber-500 via-amber-600 to-indigo-900 text-white p-2.5 rounded-xl shadow-md border border-amber-400/30 flex items-center justify-between">
+                <!-- Admin Greeting & Seasonal Banner with Profile Photo at Top Right Corner -->
+                <div class="bg-gradient-to-r from-amber-500 via-amber-600 to-indigo-900 text-white p-3 rounded-xl shadow-md border border-amber-400/30 flex items-center justify-between relative overflow-hidden">
                     <div>
                         <div class="flex items-center gap-1.5">
                             <span id="seasonalGreetingIcon" class="text-sm">☀️</span>
                             <span id="seasonalGreetingText" class="text-[10px] font-bold uppercase tracking-wider text-amber-200">Good Day</span>
                         </div>
                         <h2 class="text-sm font-black text-white leading-tight mt-0.5" id="dashboardAdminName">Welcome, Admin</h2>
-                        <p class="text-[9px] text-amber-100 font-medium leading-tight" id="seasonalSubtext">Have a productive day managing your ledger.</p>
+                        <p class="text-[9px] text-amber-100 font-medium leading-tight max-w-[210px] sm:max-w-xs" id="seasonalSubtext">Have a productive day managing your ledger.</p>
                     </div>
-                    <div class="w-8 h-8 bg-slate-950/40 backdrop-blur-md rounded-lg flex items-center justify-center text-amber-400 border border-amber-400/30 shrink-0">
-                        <i class="fa-solid fa-user-shield text-sm"></i>
+
+                    <!-- Profile Photo Adding Option on Top Right Corner of Seasonal Greeting -->
+                    <div class="relative group cursor-pointer shrink-0" onclick="triggerProfilePhotoUpload()" title="Click to Upload Profile Photo">
+                        <div class="w-12 h-12 bg-slate-950/40 backdrop-blur-md rounded-full flex items-center justify-center text-amber-400 border-2 border-amber-300/80 shadow-lg overflow-hidden transition transform active:scale-95">
+                            <img id="adminProfileImage" src="" alt="Profile" class="w-full h-full object-cover hidden">
+                            <i id="adminProfileIcon" class="fa-solid fa-user text-lg"></i>
+                        </div>
+                        <!-- Upload Camera Badge -->
+                        <div class="absolute -bottom-1 -right-1 bg-amber-400 text-slate-950 w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold shadow-md border border-slate-950">
+                            <i class="fa-solid fa-camera"></i>
+                        </div>
                     </div>
                 </div>
 
@@ -312,8 +324,37 @@
                     </div>
                 </div>
 
+                <!-- Customer Rating & Review Box Direct to WhatsApp 9481882789 -->
+                <div class="bg-white p-4 rounded-2xl border border-emerald-200 shadow-sm space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-black text-xs text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-star text-amber-500"></i> Customer Rating & Feedback
+                        </h3>
+                        <span class="text-[9px] bg-emerald-100 text-emerald-800 font-extrabold px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <i class="fa-brands fa-whatsapp text-xs"></i> Direct to 9481882789
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 font-medium">Rate your app experience or leave feedback. Ratings are sent directly to support via WhatsApp.</p>
+                    
+                    <!-- Star Rating Interactive Element -->
+                    <div class="flex items-center justify-center space-x-2 py-1" id="starRatingContainer">
+                        <button type="button" onclick="setCustomerRating(1)" class="star-btn text-2xl text-slate-300 hover:text-amber-400 transition" data-star="1"><i class="fa-solid fa-star"></i></button>
+                        <button type="button" onclick="setCustomerRating(2)" class="star-btn text-2xl text-slate-300 hover:text-amber-400 transition" data-star="2"><i class="fa-solid fa-star"></i></button>
+                        <button type="button" onclick="setCustomerRating(3)" class="star-btn text-2xl text-slate-300 hover:text-amber-400 transition" data-star="3"><i class="fa-solid fa-star"></i></button>
+                        <button type="button" onclick="setCustomerRating(4)" class="star-btn text-2xl text-slate-300 hover:text-amber-400 transition" data-star="4"><i class="fa-solid fa-star"></i></button>
+                        <button type="button" onclick="setCustomerRating(5)" class="star-btn text-2xl text-slate-300 hover:text-amber-400 transition" data-star="5"><i class="fa-solid fa-star"></i></button>
+                    </div>
+
+                    <textarea id="customerReviewText" rows="2" placeholder="Write your feedback / review message..." class="w-full border border-slate-200 rounded-xl p-2.5 text-xs font-bold focus:ring-2 focus:ring-emerald-500 focus:outline-none" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;"></textarea>
+                    
+                    <button onclick="sendCustomerReviewWhatsApp()" class="w-full py-2.5 bg-emerald-600 active:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow transition flex items-center justify-center gap-2">
+                        <i class="fa-brands fa-whatsapp text-sm"></i>
+                        <span>Send Review to WhatsApp (9481882789)</span>
+                    </button>
+                </div>
+
                 <!-- Quick Action Buttons -->
-                <div class="grid grid-cols-2 gap-3 pt-2">
+                <div class="grid grid-cols-2 gap-3 pt-1">
                     <button onclick="openModal('transactionModal')" class="py-3.5 bg-blue-600 active:bg-blue-700 text-white font-bold text-xs rounded-2xl shadow transition flex items-center justify-center gap-2">
                         <i class="fa-solid fa-circle-plus"></i>
                         <span>Add Entry</span>
@@ -465,6 +506,27 @@
                     <button onclick="openModal('passcodeModal')" class="w-full py-3 bg-slate-950 active:bg-slate-800 text-amber-400 font-black rounded-xl shadow transition flex items-center justify-center gap-2 text-xs">
                         <i class="fa-solid fa-shield-halved"></i> Change Username & Security PIN
                     </button>
+                </div>
+
+                <!-- Profile Photo Settings Card -->
+                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
+                    <h3 class="font-extrabold text-xs text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-image text-emerald-600"></i> Profile Photo Management
+                    </h3>
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center border text-slate-400 overflow-hidden shrink-0">
+                            <img id="settingsProfileImgPreview" src="" class="w-full h-full object-cover hidden">
+                            <i id="settingsProfileIcon" class="fa-solid fa-user text-xl"></i>
+                        </div>
+                        <div class="space-y-1">
+                            <button onclick="triggerProfilePhotoUpload()" class="bg-slate-900 text-amber-400 font-bold px-3 py-1.5 rounded-xl text-xs shadow">
+                                <i class="fa-solid fa-upload mr-1"></i> Upload Photo
+                            </button>
+                            <button onclick="removeAdminPhoto()" class="bg-rose-50 text-rose-600 font-bold px-3 py-1.5 rounded-xl text-xs border border-rose-200">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Backup & Sync Box -->
@@ -807,7 +869,7 @@
                                 <option value="zero_interest">Zero Interest / Free (0%)</option>
                                 <option value="rupee_monthly" selected>₹ / ₹100 / Month</option>
                                 <option value="simple_pa">Simple % p.a.</option>
-                                <option value="compound_pa">Compound % p.a me</option>
+                                <option value="compound_pa">Compound % p.a.</option>
                                 <option value="compound_pm">Compound % p.m.</option>
                             </select>
                         </div>
@@ -962,6 +1024,8 @@
         let deferredPrompt = null;
         let appUsername = "admin";
         let appPin = "1234";
+        let adminPhotoUrl = "";
+        let selectedCustomerRating = 5;
         let enteredKeypadPin = "";
 
         // Dynamic Seasonal & Time Greetings Engine
@@ -1043,6 +1107,86 @@
             if (greetingIconEl) greetingIconEl.innerText = timeIcon;
             if (greetingSubtextEl) greetingSubtextEl.innerText = subtext;
             if (adminNameEl) adminNameEl.innerText = `Welcome, ${appUsername}`;
+        }
+
+        // Profile Photo Handlers
+        function triggerProfilePhotoUpload() {
+            document.getElementById('adminPhotoInput').click();
+        }
+
+        function handleAdminPhotoUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    adminPhotoUrl = e.target.result;
+                    renderAdminProfilePhoto();
+                    saveStorage();
+                    showToast("Profile photo updated!", "fa-image");
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeAdminPhoto() {
+            adminPhotoUrl = "";
+            renderAdminProfilePhoto();
+            saveStorage();
+            showToast("Profile photo removed", "fa-trash-can");
+        }
+
+        function renderAdminProfilePhoto() {
+            const topImg = document.getElementById('adminProfileImage');
+            const topIcon = document.getElementById('adminProfileIcon');
+            const setImg = document.getElementById('settingsProfileImgPreview');
+            const setIcon = document.getElementById('settingsProfileIcon');
+
+            if (adminPhotoUrl) {
+                if (topImg) { topImg.src = adminPhotoUrl; topImg.classList.remove('hidden'); }
+                if (topIcon) topIcon.classList.add('hidden');
+                if (setImg) { setImg.src = adminPhotoUrl; setImg.classList.remove('hidden'); }
+                if (setIcon) setIcon.classList.add('hidden');
+            } else {
+                if (topImg) topImg.classList.add('hidden');
+                if (topIcon) topIcon.classList.remove('hidden');
+                if (setImg) setImg.classList.add('hidden');
+                if (setIcon) setIcon.classList.remove('hidden');
+            }
+        }
+
+        // Customer Review Star Rating Engine
+        function setCustomerRating(stars) {
+            selectedCustomerRating = stars;
+            const buttons = document.querySelectorAll('#starRatingContainer .star-btn');
+            buttons.forEach((btn, idx) => {
+                if (idx < stars) {
+                    btn.classList.remove('text-slate-300');
+                    btn.classList.add('text-amber-400');
+                } else {
+                    btn.classList.remove('text-amber-400');
+                    btn.classList.add('text-slate-300');
+                }
+            });
+        }
+
+        function sendCustomerReviewWhatsApp() {
+            const reviewText = document.getElementById('customerReviewText').value.trim();
+            const starsStr = "★".repeat(selectedCustomerRating) + "☆".repeat(5 - selectedCustomerRating);
+
+            let msg = `*Customer Review & Rating - Sfinsys*\n`;
+            msg += `------------------------------------\n`;
+            msg += `*Rating:* ${starsStr} (${selectedCustomerRating}/5 Stars)\n`;
+            msg += `*User:* ${appUsername}\n`;
+            msg += `*Date:* ${formatDateDDMMYYYY(new Date())}\n`;
+            if (reviewText) {
+                msg += `*Review:* ${reviewText}\n`;
+            }
+            msg += `------------------------------------\n`;
+            msg += `Sent directly from Sfinsys Banking App`;
+
+            const waNum = "919481882789";
+            const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
+            window.open(waUrl, '_blank');
         }
 
         // Toast Notification Trigger
@@ -1130,6 +1274,8 @@
             setupPWAManifest();
             registerServiceWorker();
             updateDashboardGreetings();
+            renderAdminProfilePhoto();
+            setCustomerRating(5);
             document.getElementById('printDate').innerText = formatDateDDMMYYYY(new Date());
 
             // Close Autocomplete dropdown on outside click
@@ -1170,8 +1316,8 @@
                     self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
                     self.addEventListener('fetch', (e) => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
                 `;
-                const blob = new Blob([swCode], { type: 'application/javascript' });
-                navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
+                const blob = new Blob([JSON.stringify(swCode)], { type: 'application/javascript' });
+                navigator.serviceWorker.register(URL.createObjectURL(new Blob([swCode], {type: 'application/javascript'}))).catch(() => {});
             }
         }
 
@@ -1245,6 +1391,7 @@
                 document.getElementById('loginOverlay').classList.add('hidden');
                 document.getElementById('appMainContent').classList.remove('hidden');
                 updateDashboardGreetings();
+                renderAdminProfilePhoto();
             } else {
                 clearPinKey();
                 document.getElementById('loginUsernameInput').value = appUsername;
@@ -1318,6 +1465,8 @@
                 else if (localStorage.getItem('santhoshgopal_pin')) appPin = localStorage.getItem('santhoshgopal_pin');
 
                 if (localStorage.getItem('sfinsys_username')) appUsername = localStorage.getItem('sfinsys_username');
+
+                if (localStorage.getItem('sfinsys_admin_photo')) adminPhotoUrl = localStorage.getItem('sfinsys_admin_photo');
             } catch (err) { console.error(err); }
         }
 
@@ -1327,6 +1476,7 @@
                 localStorage.setItem('sfinsys_transactions', JSON.stringify(transactions));
                 localStorage.setItem('sfinsys_pin', appPin);
                 localStorage.setItem('sfinsys_username', appUsername);
+                localStorage.setItem('sfinsys_admin_photo', adminPhotoUrl);
             } catch (err) { alert("Storage full: Attached files are too large."); }
         }
 
@@ -1503,7 +1653,7 @@
             onPartyFilterChange();
         }
 
-        // Main Window Customer Search & Filter Dropdown Handler (Master Ledger & Customer names explicitly in black font)
+        // Main Window Customer Search & Filter Dropdown Handler
         function filterPartyDropdownOptions() {
             const query = document.getElementById('mainCustomerSearchInput').value.toLowerCase().trim();
             const selectEl = document.getElementById('partyFilterSelect');
@@ -1801,11 +1951,13 @@
             let totalReceived = 0;
             let interestPaidTotal = 0;
             let grossInterest = 0;
+            let creditGivenDates = [];
 
             partyTxns.forEach(t => {
                 if (t.type === 'GIVEN') {
                     totalGiven += t.amount;
                     grossInterest += computeInterestAmount(t.amount, t.date, endDateStr, system, rate);
+                    creditGivenDates.push({ date: t.date, amount: t.amount });
                 } else if (t.type === 'RECEIVED') {
                     totalReceived += t.amount;
                 } else if (t.type === 'INTEREST_PAID') {
@@ -1825,6 +1977,7 @@
                 interestPaidTotal,
                 pendingInterest,
                 totalPayable,
+                creditGivenDates,
                 system,
                 rate
             };
@@ -1999,7 +2152,7 @@
             document.getElementById(id).classList.add('hidden');
         }
 
-        // WHATSAPP STATEMENT SHARE FUNCTIONALITY
+        // WHATSAPP STATEMENT SHARE FUNCTIONALITY WITH CREDIT GIVEN DATES INCLUDED
         function sharePartyWhatsApp(pid) {
             const party = parties.find(p => p.id === pid);
             if (!party) return;
@@ -2010,7 +2163,19 @@
             let msg = `*Sfinsys - Payment Statement*\n`;
             msg += `------------------------------------\n`;
             msg += `*Party:* ${party.name}\n`;
-            msg += `*Date:* ${formatDateDDMMYYYY(new Date())}\n\n`;
+            msg += `*Statement Date:* ${formatDateDDMMYYYY(new Date())}\n\n`;
+
+            // Adding Credit Given Dates
+            if (m.creditGivenDates && m.creditGivenDates.length > 0) {
+                msg += `*Credit Given Details (Dates & Amounts):*\n`;
+                m.creditGivenDates.forEach((cg, i) => {
+                    msg += `  ${i + 1}. Date: ${formatDateDDMMYYYY(cg.date)} - ${formatINR(cg.amount)}\n`;
+                });
+                msg += `\n`;
+            } else {
+                msg += `*Credit Given Date:* N/A\n\n`;
+            }
+
             msg += `*Total Credit Given:* ${formatINR(m.totalGiven)}\n`;
             msg += `*Principal Received:* ${formatINR(m.totalReceived)}\n`;
             msg += `*Net Principal Balance:* ${formatINR(m.netBalance)}\n`;
@@ -2228,7 +2393,7 @@
         }
 
         function downloadBackupJSON() {
-            const data = { app: "SfinsysPWA", username: appUsername, pin: appPin, parties, transactions };
+            const data = { app: "SfinsysPWA", username: appUsername, pin: appPin, adminPhotoUrl, parties, transactions };
             const link = document.createElement("a");
             link.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
             link.download = `Sfinsys_Ledger_Backup.json`;
@@ -2247,12 +2412,14 @@
                         transactions = imported.transactions;
                         if (imported.pin) appPin = imported.pin;
                         if (imported.username) appUsername = imported.username;
+                        if (imported.adminPhotoUrl) adminPhotoUrl = imported.adminPhotoUrl;
                         saveStorage();
                         populatePartyDropdowns();
                         renderPartiesList();
                         renderLedgerTable();
                         updateStats();
                         updateDashboardGreetings();
+                        renderAdminProfilePhoto();
                         closeModal('backupModal');
                         showToast("Ledger Restored Successfully!");
                     }
