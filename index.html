@@ -324,17 +324,26 @@
                     </div>
                 </div>
 
-                <!-- Customer Rating & Review Box Direct to WhatsApp 9481882789 -->
-                <div class="bg-white p-4 rounded-2xl border border-emerald-200 shadow-sm space-y-3">
+                <!-- Quick Action Buttons -->
+                <div class="grid grid-cols-2 gap-3 pt-1">
+                    <button onclick="openModal('transactionModal')" class="py-3.5 bg-blue-600 active:bg-blue-700 text-white font-bold text-xs rounded-2xl shadow transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-circle-plus"></i>
+                        <span>Add Entry</span>
+                    </button>
+                    <button onclick="openModal('partyModal')" class="py-3.5 bg-emerald-600 active:bg-emerald-700 text-white font-bold text-xs rounded-2xl shadow transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>New Party</span>
+                    </button>
+                </div>
+
+                <!-- Customer Rating & Review Box (Moved directly below Quick Action Buttons) -->
+                <div class="bg-white p-4 rounded-2xl border border-amber-200 shadow-sm space-y-3">
                     <div class="flex items-center justify-between">
                         <h3 class="font-black text-xs text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
                             <i class="fa-solid fa-star text-amber-500"></i> Customer Rating & Feedback
                         </h3>
-                        <span class="text-[9px] bg-emerald-100 text-emerald-800 font-extrabold px-2 py-0.5 rounded-full flex items-center gap-1">
-                            <i class="fa-brands fa-whatsapp text-xs"></i> Direct to 9481882789
-                        </span>
                     </div>
-                    <p class="text-[11px] text-slate-500 font-medium">Rate your app experience or leave feedback. Ratings are sent directly to support via WhatsApp.</p>
+                    <p class="text-[11px] text-slate-500 font-medium">Rate your app experience or leave feedback below (150 characters max).</p>
                     
                     <!-- Star Rating Interactive Element -->
                     <div class="flex items-center justify-center space-x-2 py-1" id="starRatingContainer">
@@ -345,23 +354,14 @@
                         <button type="button" onclick="setCustomerRating(5)" class="star-btn text-2xl text-slate-300 hover:text-amber-400 transition" data-star="5"><i class="fa-solid fa-star"></i></button>
                     </div>
 
-                    <textarea id="customerReviewText" rows="2" placeholder="Write your feedback / review message..." class="w-full border border-slate-200 rounded-xl p-2.5 text-xs font-bold focus:ring-2 focus:ring-emerald-500 focus:outline-none" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;"></textarea>
+                    <div class="relative">
+                        <textarea id="customerReviewText" rows="2" maxlength="150" oninput="updateReviewCharCount()" placeholder="Write your feedback / review message..." class="w-full border border-slate-200 rounded-xl p-2.5 text-xs font-bold focus:ring-2 focus:ring-amber-500 focus:outline-none" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;"></textarea>
+                        <div class="text-[9px] text-slate-400 text-right mt-0.5 font-semibold" id="reviewCharCounter">0 / 150</div>
+                    </div>
                     
-                    <button onclick="sendCustomerReviewWhatsApp()" class="w-full py-2.5 bg-emerald-600 active:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow transition flex items-center justify-center gap-2">
-                        <i class="fa-brands fa-whatsapp text-sm"></i>
-                        <span>Send Review to WhatsApp (9481882789)</span>
-                    </button>
-                </div>
-
-                <!-- Quick Action Buttons -->
-                <div class="grid grid-cols-2 gap-3 pt-1">
-                    <button onclick="openModal('transactionModal')" class="py-3.5 bg-blue-600 active:bg-blue-700 text-white font-bold text-xs rounded-2xl shadow transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-circle-plus"></i>
-                        <span>Add Entry</span>
-                    </button>
-                    <button onclick="openModal('partyModal')" class="py-3.5 bg-emerald-600 active:bg-emerald-700 text-white font-bold text-xs rounded-2xl shadow transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-user-plus"></i>
-                        <span>New Party</span>
+                    <button onclick="sendCustomerReviewWhatsApp()" class="w-full py-2.5 bg-slate-900 active:bg-slate-950 text-amber-400 font-extrabold text-xs rounded-xl shadow transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-paper-plane text-xs"></i>
+                        <span>Submit Review</span>
                     </button>
                 </div>
             </section>
@@ -1169,6 +1169,15 @@
             });
         }
 
+        function updateReviewCharCount() {
+            const reviewInput = document.getElementById('customerReviewText');
+            const charCounter = document.getElementById('reviewCharCounter');
+            if (reviewInput && charCounter) {
+                const len = reviewInput.value.length;
+                charCounter.innerText = `${len} / 150`;
+            }
+        }
+
         function sendCustomerReviewWhatsApp() {
             const reviewText = document.getElementById('customerReviewText').value.trim();
             const starsStr = "★".repeat(selectedCustomerRating) + "☆".repeat(5 - selectedCustomerRating);
@@ -1276,6 +1285,7 @@
             updateDashboardGreetings();
             renderAdminProfilePhoto();
             setCustomerRating(5);
+            updateReviewCharCount();
             document.getElementById('printDate').innerText = formatDateDDMMYYYY(new Date());
 
             // Close Autocomplete dropdown on outside click
