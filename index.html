@@ -233,9 +233,9 @@
                         <span class="text-[10px] text-slate-400" id="partySearchCount">0 Parties</span>
                     </div>
 
-                    <!-- Autocomplete Instant Search Input (Triggers at 3 letters) -->
+                    <!-- Autocomplete Instant Search Input (Triggers live) -->
                     <div class="relative">
-                        <input type="text" id="mainCustomerSearchInput" oninput="handleCustomerSearchInput()" placeholder="Type at least 3 letters to search name..." class="w-full pl-9 pr-8 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs font-bold text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;">
+                        <input type="text" id="mainCustomerSearchInput" oninput="handleCustomerSearchInput()" placeholder="Type to search name, phone, or ref..." class="w-full pl-9 pr-8 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs font-bold text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
                         <button onclick="clearMainCustomerSearch()" id="clearCustomerSearchBtn" class="hidden absolute right-2.5 top-2.5 text-slate-400 hover:text-white p-0.5">
                             <i class="fa-solid fa-xmark text-xs"></i>
@@ -336,7 +336,7 @@
                     </button>
                 </div>
 
-                <!-- Customer Rating & Review Box (Moved directly below Quick Action Buttons) -->
+                <!-- Customer Rating & Review Box -->
                 <div class="bg-white p-4 rounded-2xl border border-amber-200 shadow-sm space-y-3">
                     <div class="flex items-center justify-between">
                         <h3 class="font-black text-xs text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
@@ -371,11 +371,14 @@
                 <!-- Search & Filters Bar -->
                 <div class="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-2">
                     <div class="relative flex-grow">
-                        <input type="text" id="searchInput" oninput="renderLedgerTable()" placeholder="Search entries, notes..." class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        <input type="text" id="searchInput" oninput="toggleLedgerSearchClear(); renderLedgerTable();" placeholder="Search party name, note, mode, amount..." class="w-full pl-8 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
                         <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
+                        <button onclick="clearLedgerSearch()" id="clearLedgerSearchBtn" class="hidden absolute right-2.5 top-2 text-slate-400 hover:text-slate-700 p-0.5">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                        </button>
                     </div>
                     <select id="typeFilter" onchange="renderLedgerTable()" class="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 text-xs font-black focus:outline-none" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
-                        <option value="ALL">All</option>
+                        <option value="ALL">All Types</option>
                         <option value="GIVEN">Given</option>
                         <option value="RECEIVED">Received</option>
                         <option value="INTEREST_PAID">Int. Paid</option>
@@ -430,6 +433,17 @@
                         </button>
                         <button onclick="openModal('partyModal')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 shadow">
                             <i class="fa-solid fa-plus"></i> Add Party
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dedicated Search Input for Parties Tab -->
+                <div class="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-2">
+                    <div class="relative flex-grow">
+                        <input type="text" id="partySearchInput" oninput="togglePartySearchClear(); renderPartiesList();" placeholder="Search party name, phone, ref, bank, UPI..." class="w-full pl-8 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
+                        <button onclick="clearPartySearch()" id="clearPartySearchBtn" class="hidden absolute right-2.5 top-2 text-slate-400 hover:text-slate-700 p-0.5">
+                            <i class="fa-solid fa-xmark text-xs"></i>
                         </button>
                     </div>
                 </div>
@@ -891,7 +905,7 @@
         </div>
     </div>
 
-    <!-- Modal: Add / Edit Transaction -->
+    <!-- Modal: Add / Edit Transaction (WITH INSTANT SEARCH BAR) -->
     <div id="transactionModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden no-print">
         <div class="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl sheet-up max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-3 border-b border-slate-100 pb-3">
@@ -900,11 +914,24 @@
             </div>
             <form id="transactionForm" onsubmit="saveTransaction(event)" class="space-y-3 text-xs">
                 <input type="hidden" id="txnEditId">
+                <input type="hidden" id="txnPartyId">
                 <input type="hidden" id="txnDocDataUrl">
 
-                <div>
+                <!-- Instant Search Bar for Party Selection -->
+                <div class="relative">
                     <label class="block font-bold text-slate-700 mb-1">Party Account *</label>
-                    <select id="txnPartyId" required class="w-full border border-slate-200 rounded-xl p-3 font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;"></select>
+                    <div class="relative">
+                        <input type="text" id="txnPartySearchInput" oninput="handleTxnPartySearchInput()" autocomplete="off" placeholder="🔍 Type to search party name or phone..." class="w-full pl-9 pr-8 py-3 bg-slate-50 border border-slate-300 rounded-xl font-bold text-xs focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-slate-400 text-xs"></i>
+                        <button type="button" onclick="clearTxnPartySearch()" id="clearTxnSearchBtn" class="hidden absolute right-2.5 top-3 text-slate-400 hover:text-slate-700 p-0.5">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Instant Search Suggestions Dropdown List -->
+                    <div id="txnAutocompleteSuggestions" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-amber-500/50 rounded-xl shadow-2xl z-50 max-h-48 overflow-y-auto text-black">
+                        <!-- Dynamic Results -->
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-2">
@@ -1055,44 +1082,31 @@
             }
 
             // Seasonal / Festival Greetings Override
-            // New Year (Jan 1)
             if (month === 0 && date === 1) {
                 timeGreeting = "Happy New Year";
                 timeIcon = "🎉";
                 subtext = "Wishing you financial success & happiness in the new year!";
-            }
-            // Pongal / Makar Sankranti (Jan 14-16)
-            else if (month === 0 && date >= 14 && date <= 16) {
+            } else if (month === 0 && date >= 14 && date <= 16) {
                 timeGreeting = "Happy Pongal & Sankranti";
                 timeIcon = "🌾";
                 subtext = "May this festival of harvest bring prosperity to your business!";
-            }
-            // Republic Day (Jan 26)
-            else if (month === 0 && date === 26) {
+            } else if (month === 0 && date === 26) {
                 timeGreeting = "Happy Republic Day";
                 timeIcon = "🇮🇳";
                 subtext = "Wishing you a proud & prosperous Republic Day!";
-            }
-            // Independence Day (Aug 15)
-            else if (month === 7 && date === 15) {
+            } else if (month === 7 && date === 15) {
                 timeGreeting = "Happy Independence Day";
                 timeIcon = "🇮🇳";
                 subtext = "Celebrating freedom and growth!";
-            }
-            // Gandhi Jayanti (Oct 2)
-            else if (month === 9 && date === 2) {
+            } else if (month === 9 && date === 2) {
                 timeGreeting = "Happy Gandhi Jayanti";
                 timeIcon = "🕊️";
                 subtext = "Truth, simplicity & honest accounting.";
-            }
-            // Diwali season check (Oct/Nov approximation)
-            else if (month === 10 && date >= 1 && date <= 15) {
+            } else if (month === 10 && date >= 1 && date <= 15) {
                 timeGreeting = "Happy Diwali";
                 timeIcon = "🪔";
                 subtext = "May the lights of Diwali bring wealth & prosperity!";
-            }
-            // Christmas (Dec 25)
-            else if (month === 11 && date === 25) {
+            } else if (month === 11 && date === 25) {
                 timeGreeting = "Merry Christmas";
                 timeIcon = "🎄";
                 subtext = "Wishing you joy, peace and good health!";
@@ -1245,22 +1259,15 @@
                     const contacts = await navigator.contacts.select(props, { multiple: false });
                     if (contacts && contacts.length > 0) {
                         const contact = contacts[0];
-                        
-                        // Extract mobile phone number
                         if (contact.tel && contact.tel.length > 0) {
-                            let rawNum = contact.tel[0];
-                            // Clean up number formatting (spaces, dashes, parentheses)
-                            let cleanNum = rawNum.replace(/[\s\-\(\)]/g, '');
+                            let cleanNum = contact.tel[0].replace(/[\s\-\(\)]/g, '');
                             document.getElementById('partyPhone').value = cleanNum;
                         }
-
-                        // Pre-fill party name if empty
                         const partyNameInput = document.getElementById('partyName');
                         if (contact.name && contact.name.length > 0 && !partyNameInput.value.trim()) {
                             partyNameInput.value = contact.name[0];
                             updatePartyModalQrPreview();
                         }
-
                         showToast("Contact loaded successfully!", "fa-address-book");
                     }
                 } catch (err) {
@@ -1295,6 +1302,12 @@
                 if (searchBox && autocomplete && !searchBox.contains(e.target) && !autocomplete.contains(e.target)) {
                     autocomplete.classList.add('hidden');
                 }
+
+                const txnSearchBox = document.getElementById('txnPartySearchInput');
+                const txnAutocomplete = document.getElementById('txnAutocompleteSuggestions');
+                if (txnSearchBox && txnAutocomplete && !txnSearchBox.contains(e.target) && !txnAutocomplete.contains(e.target)) {
+                    txnAutocomplete.classList.add('hidden');
+                }
             });
         });
 
@@ -1318,7 +1331,6 @@
             document.getElementById('manifestLink').href = URL.createObjectURL(blob);
         }
 
-        // Service Worker
         function registerServiceWorker() {
             if ('serviceWorker' in navigator) {
                 const swCode = `
@@ -1326,7 +1338,6 @@
                     self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
                     self.addEventListener('fetch', (e) => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
                 `;
-                const blob = new Blob([JSON.stringify(swCode)], { type: 'application/javascript' });
                 navigator.serviceWorker.register(URL.createObjectURL(new Blob([swCode], {type: 'application/javascript'}))).catch(() => {});
             }
         }
@@ -1395,7 +1406,6 @@
             }
         }
 
-        // Authentication PIN Handler
         function checkSessionLogin() {
             if (sessionStorage.getItem('sfinsys_auth') === 'true') {
                 document.getElementById('loginOverlay').classList.add('hidden');
@@ -1416,7 +1426,6 @@
             checkSessionLogin();
         }
 
-        // Passcode and Username Change Handler
         function handlePasscodeChangeSubmit(e) {
             e.preventDefault();
             const newUser = document.getElementById('modalUsername').value.trim();
@@ -1433,19 +1442,16 @@
                 errorBox.classList.remove('hidden');
                 return;
             }
-
             if (curPin !== appPin) {
                 errorText.innerText = "Current Passcode is incorrect!";
                 errorBox.classList.remove('hidden');
                 return;
             }
-
             if (!/^\d{4}$/.test(newPin)) {
                 errorText.innerText = "New Passcode must be exactly 4 digits!";
                 errorBox.classList.remove('hidden');
                 return;
             }
-
             if (newPin !== confPin) {
                 errorText.innerText = "New Passcode and Confirmation do not match!";
                 errorBox.classList.remove('hidden');
@@ -1462,7 +1468,6 @@
             showToast("Security credentials updated successfully!");
         }
 
-        // Local Storage System
         function loadStorage() {
             try {
                 if (localStorage.getItem('sfinsys_parties')) parties = JSON.parse(localStorage.getItem('sfinsys_parties'));
@@ -1475,7 +1480,6 @@
                 else if (localStorage.getItem('santhoshgopal_pin')) appPin = localStorage.getItem('santhoshgopal_pin');
 
                 if (localStorage.getItem('sfinsys_username')) appUsername = localStorage.getItem('sfinsys_username');
-
                 if (localStorage.getItem('sfinsys_admin_photo')) adminPhotoUrl = localStorage.getItem('sfinsys_admin_photo');
             } catch (err) { console.error(err); }
         }
@@ -1499,8 +1503,7 @@
             
             let d = new Date();
             d.setDate(d.getDate() - 30);
-            const pastDate = d.toISOString().split('T')[0];
-            document.getElementById('calcStartDate').value = pastDate;
+            document.getElementById('calcStartDate').value = d.toISOString().split('T')[0];
         }
 
         function resetLedgerDateFilter() {
@@ -1509,7 +1512,32 @@
             renderLedgerTable();
         }
 
-        // Bottom Nav Tab Switching
+        function togglePartySearchClear() {
+            const query = document.getElementById('partySearchInput').value;
+            const btn = document.getElementById('clearPartySearchBtn');
+            if (query.trim().length > 0) btn.classList.remove('hidden');
+            else btn.classList.add('hidden');
+        }
+
+        function clearPartySearch() {
+            document.getElementById('partySearchInput').value = '';
+            togglePartySearchClear();
+            renderPartiesList();
+        }
+
+        function toggleLedgerSearchClear() {
+            const query = document.getElementById('searchInput').value;
+            const btn = document.getElementById('clearLedgerSearchBtn');
+            if (query.trim().length > 0) btn.classList.remove('hidden');
+            else btn.classList.add('hidden');
+        }
+
+        function clearLedgerSearch() {
+            document.getElementById('searchInput').value = '';
+            toggleLedgerSearchClear();
+            renderLedgerTable();
+        }
+
         function switchTab(tabName) {
             ['dashboard', 'entries', 'parties', 'interest', 'settings'].forEach(t => {
                 document.getElementById(`tab-${t}`).classList.add('hidden');
@@ -1521,7 +1549,6 @@
             document.getElementById(`nav-${tabName}`)?.classList.add('text-amber-400');
         }
 
-        // Party Modal Live QR Preview Trigger
         function updatePartyModalQrPreview() {
             const upiId = document.getElementById('partyUpiId').value.trim();
             const partyName = document.getElementById('partyName').value.trim();
@@ -1553,7 +1580,6 @@
             }
         }
 
-        // Open Party Modal (New / Edit)
         function editParty(pid) {
             const party = parties.find(p => p.id === pid);
             if (!party) return;
@@ -1606,19 +1632,16 @@
             showToast("Party Profile Saved!");
         }
 
-        // AUTOCOMPLETE SEARCH (Triggers after typing 3 letters) with Black Font Color
+        // AUTOCOMPLETE SEARCH FOR DASHBOARD
         function handleCustomerSearchInput() {
             const query = document.getElementById('mainCustomerSearchInput').value.trim();
             const autocompleteBox = document.getElementById('autocompleteSuggestions');
             const clearBtn = document.getElementById('clearCustomerSearchBtn');
 
-            if (query.length > 0) {
-                clearBtn.classList.remove('hidden');
-            } else {
-                clearBtn.classList.add('hidden');
-            }
+            if (query.length > 0) clearBtn.classList.remove('hidden');
+            else clearBtn.classList.add('hidden');
 
-            if (query.length < 3) {
+            if (query.length < 1) {
                 autocompleteBox.classList.add('hidden');
                 autocompleteBox.innerHTML = '';
                 filterPartyDropdownOptions();
@@ -1644,52 +1667,36 @@
                 `).join('');
                 autocompleteBox.classList.remove('hidden');
             } else {
-                autocompleteBox.innerHTML = `<div class="px-4 py-3 text-xs text-slate-500 italic">No nearest names matching "${query}"</div>`;
+                autocompleteBox.innerHTML = `<div class="px-4 py-3 text-xs text-slate-500 italic">No matching names for "${query}"</div>`;
                 autocompleteBox.classList.remove('hidden');
             }
-
             filterPartyDropdownOptions();
         }
 
         function selectPartyFromAutocomplete(partyId) {
             const party = parties.find(p => p.id === partyId);
             if (!party) return;
-            
             document.getElementById('mainCustomerSearchInput').value = party.name;
             document.getElementById('autocompleteSuggestions').classList.add('hidden');
-            
-            const selectEl = document.getElementById('partyFilterSelect');
-            selectEl.value = partyId;
+            document.getElementById('partyFilterSelect').value = partyId;
             onPartyFilterChange();
         }
 
-        // Main Window Customer Search & Filter Dropdown Handler
         function filterPartyDropdownOptions() {
             const query = document.getElementById('mainCustomerSearchInput').value.toLowerCase().trim();
             const selectEl = document.getElementById('partyFilterSelect');
-
             const currentVal = selectEl.value;
             selectEl.innerHTML = '<option value="" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-weight: 800;">-- Master Combined Ledger (All Parties) --</option>';
 
-            const sortedParties = [...parties].sort((a,b) => a.name.localeCompare(b.name));
             let matchCount = 0;
-
-            sortedParties.forEach(p => {
-                const matchName = p.name.toLowerCase().includes(query);
-                const matchPhone = p.phone && p.phone.toLowerCase().includes(query);
-                const matchRef = p.ref && p.ref.toLowerCase().includes(query);
-
-                if (!query || matchName || matchPhone || matchRef) {
+            [...parties].sort((a,b) => a.name.localeCompare(b.name)).forEach(p => {
+                if (!query || p.name.toLowerCase().includes(query) || (p.phone && p.phone.toLowerCase().includes(query))) {
                     matchCount++;
                     selectEl.innerHTML += `<option value="${p.id}" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-weight: 800;">${p.name} ${p.phone ? `(${p.phone})` : ''}</option>`;
                 }
             });
-
             document.getElementById('partySearchCount').innerText = `${matchCount} Parties`;
-            
-            if ([...selectEl.options].some(o => o.value === currentVal)) {
-                selectEl.value = currentVal;
-            }
+            if ([...selectEl.options].some(o => o.value === currentVal)) selectEl.value = currentVal;
         }
 
         function clearMainCustomerSearch() {
@@ -1700,25 +1707,71 @@
             onPartyFilterChange();
         }
 
+        // ==================== INSTANT SEARCH BAR FOR ADD TRANSACTION MODAL ====================
+        function handleTxnPartySearchInput() {
+            const query = document.getElementById('txnPartySearchInput').value.trim();
+            const autocompleteBox = document.getElementById('txnAutocompleteSuggestions');
+            const clearBtn = document.getElementById('clearTxnSearchBtn');
+
+            if (query.length > 0) clearBtn.classList.remove('hidden');
+            else clearBtn.classList.add('hidden');
+
+            if (query.length < 1) {
+                autocompleteBox.classList.add('hidden');
+                autocompleteBox.innerHTML = '';
+                document.getElementById('txnPartyId').value = '';
+                return;
+            }
+
+            const lower = query.toLowerCase();
+            const matches = parties.filter(p => 
+                p.name.toLowerCase().includes(lower) || 
+                (p.phone && p.phone.toLowerCase().includes(lower)) ||
+                (p.ref && p.ref.toLowerCase().includes(lower))
+            );
+
+            if (matches.length > 0) {
+                autocompleteBox.innerHTML = matches.map(p => `
+                    <div onclick="selectTxnParty('${p.id}', '${p.name.replace(/'/g, "\\'")}')" class="px-4 py-3 hover:bg-amber-50 cursor-pointer border-b border-slate-200 last:border-0 flex justify-between items-center text-xs">
+                        <div>
+                            <p class="font-extrabold text-black" style="color: #000000 !important;">${p.name}</p>
+                            <p class="text-[10px] text-slate-600 font-semibold">${p.phone ? p.phone : 'No Phone'} ${p.ref ? `| Ref: ${p.ref}` : ''}</p>
+                        </div>
+                        <span class="text-amber-600 font-bold text-[10px] bg-amber-100 px-2 py-0.5 rounded-full">Select</span>
+                    </div>
+                `).join('');
+                autocompleteBox.classList.remove('hidden');
+            } else {
+                autocompleteBox.innerHTML = `<div class="px-4 py-3 text-xs text-slate-500 italic">No matching party found for "${query}"</div>`;
+                autocompleteBox.classList.remove('hidden');
+            }
+        }
+
+        function selectTxnParty(partyId, partyName) {
+            document.getElementById('txnPartyId').value = partyId;
+            document.getElementById('txnPartySearchInput').value = partyName;
+            document.getElementById('txnAutocompleteSuggestions').classList.add('hidden');
+            document.getElementById('clearTxnSearchBtn').classList.remove('hidden');
+        }
+
+        function clearTxnPartySearch() {
+            document.getElementById('txnPartySearchInput').value = '';
+            document.getElementById('txnPartyId').value = '';
+            document.getElementById('txnAutocompleteSuggestions').classList.add('hidden');
+            document.getElementById('clearTxnSearchBtn').classList.add('hidden');
+        }
+
         function populatePartyDropdowns() {
             filterPartyDropdownOptions();
-            
-            const txnSel = document.getElementById('txnPartyId');
             const printSel = document.getElementById('printPartySelect');
-
-            const txnVal = txnSel.value;
             const printVal = printSel ? printSel.value : '';
-
-            txnSel.innerHTML = '<option value="" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-weight: 800;">-- Choose Party --</option>';
-            if (printSel) printSel.innerHTML = '<option value="" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-weight: 800;">-- Select Party --</option>';
-
-            parties.sort((a,b) => a.name.localeCompare(b.name)).forEach(p => {
-                txnSel.innerHTML += `<option value="${p.id}" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-weight: 800;">${p.name}</option>`;
-                if (printSel) printSel.innerHTML += `<option value="${p.id}" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-weight: 800;">${p.name}</option>`;
-            });
-
-            txnSel.value = txnVal;
-            if (printSel) printSel.value = printVal;
+            if (printSel) {
+                printSel.innerHTML = '<option value="" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-weight: 800;">-- Select Party --</option>';
+                parties.sort((a,b) => a.name.localeCompare(b.name)).forEach(p => {
+                    printSel.innerHTML += `<option value="${p.id}" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-weight: 800;">${p.name}</option>`;
+                });
+                printSel.value = printVal;
+            }
         }
 
         function onPartyFilterChange() {
@@ -1726,7 +1779,6 @@
             const party = parties.find(p => p.id === pid);
             document.getElementById('topBarSubtitle').innerText = party ? party.name : 'Master Combined Ledger';
 
-            // Display or Hide Main Window UPI QR Code Card
             const qrCard = document.getElementById('mainViewUpiQrCard');
             if (party && party.upiId) {
                 document.getElementById('qrCardPartyName').innerText = party.name;
@@ -1764,14 +1816,29 @@
 
         function renderPartiesList() {
             const container = document.getElementById('partiesList');
-            if (parties.length === 0) {
-                container.innerHTML = `<div class="text-center text-xs text-slate-400 py-6">No parties added.</div>`;
+            const searchInput = document.getElementById('partySearchInput');
+            const searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+            let filteredParties = parties.filter(p => {
+                if (!searchQuery) return true;
+                return (
+                    p.name.toLowerCase().includes(searchQuery) ||
+                    (p.phone && p.phone.toLowerCase().includes(searchQuery)) ||
+                    (p.ref && p.ref.toLowerCase().includes(searchQuery)) ||
+                    (p.bankAcc && p.bankAcc.toLowerCase().includes(searchQuery)) ||
+                    (p.upiId && p.upiId.toLowerCase().includes(searchQuery)) ||
+                    (p.notes && p.notes.toLowerCase().includes(searchQuery))
+                );
+            });
+
+            if (filteredParties.length === 0) {
+                container.innerHTML = `<div class="text-center text-xs text-slate-400 py-6">No matching party/borrower records found.</div>`;
                 return;
             }
 
             const asOfDateStr = document.getElementById('calcEndDate').value || new Date().toISOString().split('T')[0];
 
-            container.innerHTML = parties.map(p => {
+            container.innerHTML = filteredParties.map(p => {
                 const metrics = calculatePartyMetrics(p.id, asOfDateStr);
                 const hasQr = Boolean(p.upiId);
                 const qrUrl = hasQr ? generateUpiQrUrl(p.upiId, p.name, metrics.totalPayable) : '';
@@ -1802,7 +1869,6 @@
                             </div>
                         </div>
 
-                        <!-- Action Icons with WhatsApp Share included -->
                         <div class="flex justify-between items-center border-t border-slate-100 pt-2.5 text-xs font-bold text-slate-600">
                             <div class="flex gap-3 text-[10px]">
                                 <div>Gross Int: <span class="text-amber-600 font-black">${formatINR(metrics.grossInterest)}</span></div>
@@ -1842,13 +1908,19 @@
             }
         }
 
-        // Open Transaction Modal (New / Edit)
         function editTransaction(id) {
             const txn = transactions.find(t => t.id === id);
             if (!txn) return;
             populatePartyDropdowns();
             document.getElementById('txnEditId').value = txn.id;
             document.getElementById('txnPartyId').value = txn.partyId;
+            
+            const party = parties.find(p => p.id === txn.partyId);
+            if (party) {
+                document.getElementById('txnPartySearchInput').value = party.name;
+                document.getElementById('clearTxnSearchBtn').classList.remove('hidden');
+            }
+
             document.getElementById('txnType').value = txn.type;
             document.getElementById('txnAmount').value = txn.amount;
             document.getElementById('txnDate').value = txn.date;
@@ -1889,7 +1961,13 @@
             const note = document.getElementById('txnNote').value.trim();
             const docDataUrl = document.getElementById('txnDocDataUrl').value;
 
-            if (!partyId || isNaN(amount) || amount <= 0) return;
+            if (!partyId) {
+                alert("Please select a valid Party Account from the search suggestions.");
+                document.getElementById('txnPartySearchInput').focus();
+                return;
+            }
+
+            if (isNaN(amount) || amount <= 0) return;
 
             if (editId) {
                 const txn = transactions.find(t => t.id === editId);
@@ -1901,6 +1979,7 @@
             saveStorage();
             closeModal('transactionModal');
             document.getElementById('transactionForm').reset();
+            clearTxnPartySearch();
             document.getElementById('txnEditId').value = '';
             document.getElementById('txnModalTitle').innerText = "Add Ledger Entry";
             document.getElementById('imagePreviewContainer').classList.add('hidden');
@@ -1921,7 +2000,6 @@
             }
         }
 
-        // ACCURATE INTEREST ENGINE WITH SIMPLE AND COMPOUND OPTIONS
         function computeInterestAmount(principal, startDateStr, endDateStr, system, rateVal) {
             if (system === 'zero_interest' || rateVal === 0 || principal <= 0 || !startDateStr || !endDateStr) return 0;
             const start = new Date(startDateStr);
@@ -1946,7 +2024,6 @@
             return 0;
         }
 
-        // Comprehensive Per-Party Calculation Engine
         function calculatePartyMetrics(partyId, endDateStr) {
             const party = parties.find(p => p.id === partyId);
             const fallbackSys = document.getElementById('calcSystem').value;
@@ -1954,7 +2031,6 @@
 
             const system = party?.calcSystem || fallbackSys;
             const rate = system === 'zero_interest' ? 0 : (party?.calcRate !== undefined ? party.calcRate : fallbackRate);
-
             const partyTxns = transactions.filter(t => t.partyId === partyId);
 
             let totalGiven = 0;
@@ -1979,18 +2055,7 @@
             const pendingInterest = system === 'zero_interest' ? 0 : Math.max(0, grossInterest - interestPaidTotal);
             const totalPayable = netBalance + pendingInterest;
 
-            return {
-                totalGiven,
-                totalReceived,
-                netBalance,
-                grossInterest,
-                interestPaidTotal,
-                pendingInterest,
-                totalPayable,
-                creditGivenDates,
-                system,
-                rate
-            };
+            return { totalGiven, totalReceived, netBalance, grossInterest, interestPaidTotal, pendingInterest, totalPayable, creditGivenDates, system, rate };
         }
 
         function applyMainInterestSettings(e) {
@@ -2030,14 +2095,12 @@
             updateStats();
         }
 
-        // Dynamic Table Rendering with Date Range Filters
         function renderLedgerTable() {
             const container = document.getElementById('mobileLedgerList');
             const emptyState = document.getElementById('emptyState');
             const selectedPartyId = document.getElementById('partyFilterSelect').value;
-            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+            const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
             const typeVal = document.getElementById('typeFilter').value;
-
             const startDate = document.getElementById('ledgerStartDate').value;
             const endDate = document.getElementById('ledgerEndDate').value;
 
@@ -2046,9 +2109,21 @@
             let filtered = sorted.filter(t => {
                 const party = parties.find(p => p.id === t.partyId);
                 const pName = party ? party.name.toLowerCase() : '';
+                const pPhone = party && party.phone ? party.phone.toLowerCase() : '';
+                const pRef = party && party.ref ? party.ref.toLowerCase() : '';
+
                 const matchParty = !selectedPartyId || t.partyId === selectedPartyId;
                 const matchType = typeVal === 'ALL' || t.type === typeVal;
-                const matchSearch = !searchVal || pName.includes(searchVal) || (t.note && t.note.toLowerCase().includes(searchVal));
+
+                let matchSearch = true;
+                if (searchVal) {
+                    matchSearch = pName.includes(searchVal) || 
+                                  (t.note && t.note.toLowerCase().includes(searchVal)) || 
+                                  (t.mode && t.mode.toLowerCase().includes(searchVal)) || 
+                                  t.amount.toString().includes(searchVal) || 
+                                  pPhone.includes(searchVal) || 
+                                  pRef.includes(searchVal);
+                }
 
                 let matchDate = true;
                 if (startDate && t.date < startDate) matchDate = false;
@@ -2084,7 +2159,6 @@
                         </div>
                         <div class="text-right">
                             <div class="text-sm font-black text-slate-900">${formatINR(t.amount)}</div>
-                            
                             <div class="flex items-center justify-end gap-3 mt-1.5">
                                 <button onclick="editTransaction('${t.id}')" class="text-slate-400 hover:text-blue-600 text-xs p-1 bg-slate-50 hover:bg-blue-50 rounded-lg transition" title="Edit Entry">
                                     <i class="fa-solid fa-pen-to-square"></i>
@@ -2099,38 +2173,21 @@
             }).join('');
         }
 
-        // Stats Computation Across Master or Selected Party
         function updateStats() {
             const selectedPartyId = document.getElementById('partyFilterSelect').value;
             const endDateStr = document.getElementById('calcEndDate').value || new Date().toISOString().split('T')[0];
 
-            let totalGiven = 0;
-            let totalReceived = 0;
-            let netBalance = 0;
-            let grossInterest = 0;
-            let interestPaidTotal = 0;
-            let pendingInterest = 0;
-            let totalPayable = 0;
+            let totalGiven = 0, totalReceived = 0, netBalance = 0, grossInterest = 0, interestPaidTotal = 0, pendingInterest = 0, totalPayable = 0;
 
             if (selectedPartyId) {
                 const m = calculatePartyMetrics(selectedPartyId, endDateStr);
-                totalGiven = m.totalGiven;
-                totalReceived = m.totalReceived;
-                netBalance = m.netBalance;
-                grossInterest = m.grossInterest;
-                interestPaidTotal = m.interestPaidTotal;
-                pendingInterest = m.pendingInterest;
-                totalPayable = m.totalPayable;
+                totalGiven = m.totalGiven; totalReceived = m.totalReceived; netBalance = m.netBalance;
+                grossInterest = m.grossInterest; interestPaidTotal = m.interestPaidTotal; pendingInterest = m.pendingInterest; totalPayable = m.totalPayable;
             } else {
                 parties.forEach(p => {
                     const m = calculatePartyMetrics(p.id, endDateStr);
-                    totalGiven += m.totalGiven;
-                    totalReceived += m.totalReceived;
-                    netBalance += m.netBalance;
-                    grossInterest += m.grossInterest;
-                    interestPaidTotal += m.interestPaidTotal;
-                    pendingInterest += m.pendingInterest;
-                    totalPayable += m.totalPayable;
+                    totalGiven += m.totalGiven; totalReceived += m.totalReceived; netBalance += m.netBalance;
+                    grossInterest += m.grossInterest; interestPaidTotal += m.interestPaidTotal; pendingInterest += m.pendingInterest; totalPayable += m.totalPayable;
                 });
             }
 
@@ -2148,9 +2205,13 @@
             document.getElementById('resTotal').innerText = formatINR(totalPayable);
         }
 
-        // Modal Controls
         function openModal(id) {
-            if (id === 'transactionModal') populatePartyDropdowns();
+            if (id === 'transactionModal') {
+                populatePartyDropdowns();
+                if (!document.getElementById('txnEditId').value) {
+                    clearTxnPartySearch();
+                }
+            }
             if (id === 'passcodeModal') {
                 document.getElementById('modalUsername').value = appUsername;
                 document.getElementById('modalPasscodeError').classList.add('hidden');
@@ -2162,7 +2223,6 @@
             document.getElementById(id).classList.add('hidden');
         }
 
-        // WHATSAPP STATEMENT SHARE FUNCTIONALITY WITH CREDIT GIVEN DATES INCLUDED
         function sharePartyWhatsApp(pid) {
             const party = parties.find(p => p.id === pid);
             if (!party) return;
@@ -2175,7 +2235,6 @@
             msg += `*Party:* ${party.name}\n`;
             msg += `*Statement Date:* ${formatDateDDMMYYYY(new Date())}\n\n`;
 
-            // Adding Credit Given Dates
             if (m.creditGivenDates && m.creditGivenDates.length > 0) {
                 msg += `*Credit Given Details (Dates & Amounts):*\n`;
                 m.creditGivenDates.forEach((cg, i) => {
@@ -2194,16 +2253,12 @@
             msg += `*Pending Interest:* ${formatINR(m.pendingInterest)}\n`;
             msg += `------------------------------------\n`;
             msg += `*TOTAL PAYABLE:* ${formatINR(m.totalPayable)}\n`;
-            if (party.upiId) {
-                msg += `\n*UPI Pay ID:* ${party.upiId}\n`;
-            }
+            if (party.upiId) msg += `\n*UPI Pay ID:* ${party.upiId}\n`;
             msg += `------------------------------------\n`;
             msg += `Design and Developed by Santhoshgopal`;
 
             let phoneNum = party.phone ? party.phone.replace(/[^0-9]/g, '') : '';
-            if (phoneNum && !phoneNum.startsWith('91') && phoneNum.length === 10) {
-                phoneNum = '91' + phoneNum;
-            }
+            if (phoneNum && !phoneNum.startsWith('91') && phoneNum.length === 10) phoneNum = '91' + phoneNum;
 
             const encodedMsg = encodeURIComponent(msg);
             const waUrl = phoneNum ? `https://wa.me/${phoneNum}?text=${encodedMsg}` : `https://api.whatsapp.com/send?text=${encodedMsg}`;
@@ -2212,39 +2267,23 @@
 
         function shareStatementWhatsApp() {
             const partyId = document.getElementById('printPartySelect').value || document.getElementById('partyFilterSelect').value;
-            if (!partyId) {
-                alert("Please select a Party to share statement.");
-                return;
-            }
+            if (!partyId) return alert("Please select a Party to share statement.");
             sharePartyWhatsApp(partyId);
         }
 
-        // MASTER STATEMENT FOR ALL CUSTOMERS PRINT/PDF
         function generateMasterPrintView() {
-            if (parties.length === 0) {
-                alert("No customers found to generate master statement.");
-                return;
-            }
+            if (parties.length === 0) return alert("No customers found to generate master statement.");
 
             const todayStr = new Date().toISOString().split('T')[0];
             document.getElementById('masterPrintDate').innerText = formatDateDDMMYYYY(todayStr);
             document.getElementById('masterPartyCount').innerText = parties.length;
 
-            let totalGiven = 0;
-            let totalReceived = 0;
-            let totalNetBalance = 0;
-            let grossTotalPayable = 0;
-
+            let totalGiven = 0, totalReceived = 0, totalNetBalance = 0, grossTotalPayable = 0;
             const tbody = document.getElementById('masterTableBody');
             
-            const sortedParties = [...parties].sort((a,b) => a.name.localeCompare(b.name));
-
-            tbody.innerHTML = sortedParties.map((p, idx) => {
+            tbody.innerHTML = [...parties].sort((a,b) => a.name.localeCompare(b.name)).map((p, idx) => {
                 const m = calculatePartyMetrics(p.id, todayStr);
-                totalGiven += m.totalGiven;
-                totalReceived += m.totalReceived;
-                totalNetBalance += m.netBalance;
-                grossTotalPayable += m.totalPayable;
+                totalGiven += m.totalGiven; totalReceived += m.totalReceived; totalNetBalance += m.netBalance; grossTotalPayable += m.totalPayable;
 
                 return `
                     <tr class="border-b border-slate-200">
@@ -2268,12 +2307,10 @@
 
             document.getElementById('individualPrintContent').classList.add('hidden');
             document.getElementById('masterPrintContent').classList.remove('hidden');
-
             closeModal('printModal');
             window.print();
         }
 
-        // Individual Statement Printing Feature
         function openPartyPrintModal() {
             populatePartyDropdowns();
             const curParty = document.getElementById('partyFilterSelect').value;
@@ -2289,41 +2326,28 @@
 
         function generateIndividualPrintView(targetPartyId) {
             const partyId = targetPartyId || document.getElementById('printPartySelect').value || document.getElementById('partyFilterSelect').value;
-            if (!partyId) {
-                alert("Please select a specific Party Account to generate the statement.");
-                return;
-            }
+            if (!partyId) return alert("Please select a specific Party Account to generate the statement.");
 
             const party = parties.find(p => p.id === partyId);
             if (!party) return;
 
             const modalStart = document.getElementById('printModalStartDate').value;
             const modalEnd = document.getElementById('printModalEndDate').value || new Date().toISOString().split('T')[0];
-            
             const startDateFilter = modalStart || document.getElementById('ledgerStartDate').value;
             const endDateFilter = modalEnd || document.getElementById('ledgerEndDate').value || new Date().toISOString().split('T')[0];
 
             const m = calculatePartyMetrics(partyId, endDateFilter);
 
             document.getElementById('printDate').innerText = formatDateDDMMYYYY(new Date());
-            
-            let rangeText = "All Dates";
-            if (startDateFilter && endDateFilter) {
-                rangeText = `${formatDateDDMMYYYY(startDateFilter)} to ${formatDateDDMMYYYY(endDateFilter)}`;
-            } else if (endDateFilter) {
-                rangeText = `Up to ${formatDateDDMMYYYY(endDateFilter)}`;
-            }
-            document.getElementById('printFilterRange').innerText = rangeText;
+            document.getElementById('printFilterRange').innerText = startDateFilter && endDateFilter ? `${formatDateDDMMYYYY(startDateFilter)} to ${formatDateDDMMYYYY(endDateFilter)}` : `Up to ${formatDateDDMMYYYY(endDateFilter)}`;
 
             document.getElementById('printPartyName').innerText = party.name;
             document.getElementById('printPartyPhone').innerText = `Phone: ${party.phone || 'N/A'}`;
             document.getElementById('printPartyRef').innerText = `ID Ref: ${party.ref || 'N/A'}`;
             document.getElementById('printPartyBank').innerText = `Bank Account: ${party.bankAcc || 'N/A'}`;
             document.getElementById('printPartyUpi').innerText = `UPI ID: ${party.upiId || 'N/A'}`;
-
             document.getElementById('printPartyRate').innerText = `Interest Rate: ${getSystemDisplayLabel(party.calcSystem, party.calcRate)}`;
 
-            // QR Code for print statement
             const printQrImg = document.getElementById('printPartyQrImg');
             const printQrLabel = document.getElementById('printPartyQrLabel');
             if (party.upiId) {
@@ -2343,7 +2367,6 @@
             document.getElementById('printPendingInterest').innerText = formatINR(m.pendingInterest);
             document.getElementById('printTotalPayable').innerText = formatINR(m.totalPayable);
 
-            // Filter transactions by date range for statement
             let pTxns = transactions.filter(t => {
                 if (t.partyId !== partyId) return false;
                 if (startDateFilter && t.date < startDateFilter) return false;
@@ -2352,7 +2375,6 @@
             }).sort((a,b) => new Date(a.date) - new Date(b.date));
 
             const historyTable = document.getElementById('printHistoryTable');
-
             if (pTxns.length === 0) {
                 historyTable.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">No transaction records found for the selected date range.</td></tr>`;
             } else {
@@ -2369,15 +2391,12 @@
 
             document.getElementById('masterPrintContent').classList.add('hidden');
             document.getElementById('individualPrintContent').classList.remove('hidden');
-
             closeModal('printModal');
             window.print();
         }
 
-        // Export Utilities
         function exportToCSV() {
             if (transactions.length === 0) return alert("No entries to export.");
-            
             const selectedPartyId = document.getElementById('partyFilterSelect').value;
             const startDate = document.getElementById('ledgerStartDate').value;
             const endDate = document.getElementById('ledgerEndDate').value;
