@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Sfinsys PWA</title>
+    <title>Sfinsys PWA v6.3</title>
 
     <!-- Android Web App Meta Tags -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -115,7 +115,7 @@
             </div>
 
             <h2 class="text-xl font-black text-white tracking-wide">Sfinsys</h2>
-            <p class="text-[11px] text-slate-400 mt-1 font-medium">Secure Banking Ledger</p>
+            <p class="text-[11px] text-slate-400 mt-1 font-medium">Secure Banking & Cash Ledger</p>
 
             <div class="mt-6 space-y-4">
                 <!-- User Login Credential Input -->
@@ -164,7 +164,7 @@
     <!-- ==================== MAIN APP SHELL ==================== -->
     <div id="appMainContent" class="flex-grow flex flex-col hidden bg-slate-100 text-slate-800 min-h-screen">
 
-        <!-- Top Mobile Bar -->
+        <!-- Top Mobile Bar with Integrated Header Controls -->
         <header class="bg-slate-950 text-white sticky top-0 z-30 pt-safe no-print border-b border-slate-800 shadow-md">
             <div class="px-4 py-3 flex items-center justify-between">
                 <div class="flex items-center space-x-3">
@@ -177,14 +177,15 @@
                     </div>
                 </div>
 
-                <!-- Top Quick Actions -->
-                <div class="flex items-center space-x-2">
+                <!-- Top Quick Actions (Security Options, Install, Backup & Lock) -->
+                <div class="flex items-center space-x-1.5">
                     <button id="installPWABtn" onclick="triggerPWAInstall()" class="hidden bg-amber-500 hover:bg-amber-400 text-indigo-950 px-2.5 py-1.5 rounded-xl text-[11px] font-black transition flex items-center gap-1 shadow">
                         <i class="fa-solid fa-download"></i>
                         <span>Install</span>
                     </button>
-                    <button onclick="openModal('passcodeModal')" class="p-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 rounded-xl border border-amber-500/30 transition flex items-center gap-1" title="Change Security PIN">
-                        <i class="fa-solid fa-key text-xs"></i>
+                    <!-- Dedicated Security & Account Settings Header Button -->
+                    <button onclick="openModal('securitySettingsModal')" class="p-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 rounded-xl border border-amber-500/30 transition flex items-center gap-1" title="Security & App Settings">
+                        <i class="fa-solid fa-shield-halved text-xs"></i>
                     </button>
                     <button onclick="openModal('backupModal')" class="p-2 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-xl border border-slate-700 transition" title="Backup & Sync">
                         <i class="fa-solid fa-database text-xs"></i>
@@ -226,17 +227,70 @@
                     </div>
                 </div>
 
+                <!-- DAILY / LIVE GOLD RATE DISPLAY WIDGET CARD WITH INTERNET AUTO-SYNC -->
+                <div class="bg-gradient-to-br from-amber-950 via-slate-900 to-slate-950 text-white p-4 rounded-2xl border border-amber-500/40 shadow-md space-y-3">
+                    <div class="flex items-center justify-between border-b border-amber-500/20 pb-2">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 bg-amber-500 text-indigo-950 font-black text-sm rounded-xl flex items-center justify-center shadow">
+                                <i class="fa-solid fa-coins"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h3 class="font-extrabold text-xs uppercase tracking-wider text-amber-400">Daily Gold Rate Tracker</h3>
+                                    <span id="goldRateLiveBadge" class="bg-emerald-900/80 text-emerald-300 border border-emerald-500/40 text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1">
+                                        <i class="fa-solid fa-wifi text-[8px]"></i> Auto Live
+                                    </span>
+                                </div>
+                                <p class="text-[10px] text-slate-300" id="goldRateDateLabel">Today's Market Rate / Gram</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="fetchLiveGoldRateFromInternet(true)" id="dashboardSyncBtn" class="bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 p-1.5 rounded-xl text-xs font-black transition shadow flex items-center justify-center" title="Sync live rate now">
+                                <i class="fa-solid fa-arrows-rotate"></i>
+                            </button>
+                            <button onclick="openGoldRateModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-2.5 py-1.5 rounded-xl text-[10px] font-black transition shadow flex items-center gap-1">
+                                <i class="fa-solid fa-pen-to-square"></i> Update Rate
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 24K and 22K Gold Rate Cards -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-slate-900/90 p-3 rounded-xl border border-amber-400/30 text-center relative overflow-hidden">
+                            <div class="flex items-center justify-center gap-1 mb-1">
+                                <span class="bg-amber-400/20 text-amber-300 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">24K Pure Gold</span>
+                            </div>
+                            <p id="goldRate24kDisplay" class="text-base font-black text-amber-300">₹14,350 / g</p>
+                            <p id="goldRate24k10gDisplay" class="text-[9px] text-slate-400 font-semibold mt-0.5">₹1,43,500 per 10g</p>
+                        </div>
+                        <div class="bg-slate-900/90 p-3 rounded-xl border border-amber-400/30 text-center relative overflow-hidden">
+                            <div class="flex items-center justify-center gap-1 mb-1">
+                                <span class="bg-amber-400/20 text-amber-300 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">22K Standard Gold</span>
+                            </div>
+                            <p id="goldRate22kDisplay" class="text-base font-black text-amber-400">₹13,150 / g</p>
+                            <p id="goldRate22k10gDisplay" class="text-[9px] text-slate-400 font-semibold mt-0.5">₹1,31,500 per 10g</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between text-[9px] text-slate-400 font-medium pt-0.5">
+                        <span id="goldRateLastUpdatedLabel"><i class="fa-solid fa-clock text-amber-400/70 mr-1"></i>Last Updated: Initializing...</span>
+                        <span id="goldRateSourceLabel" class="text-emerald-400/80 font-bold">Source: Live Internet API</span>
+                    </div>
+                </div>
+
                 <!-- Selected Party Banner & Autocomplete Customer Search -->
                 <div class="bg-slate-900 text-white p-4 rounded-2xl border border-slate-800 shadow-sm space-y-3">
                     <div class="flex items-center justify-between">
-                        <label class="block text-[10px] font-bold text-amber-400 uppercase tracking-wider">Active Account & Quick Search</label>
+                        <label class="block text-[10px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-magnifying-glass text-amber-400"></i> Active Account & Quick Search
+                        </label>
                         <span class="text-[10px] text-slate-400" id="partySearchCount">0 Parties</span>
                     </div>
 
-                    <!-- Autocomplete Instant Search Input (Triggers live) -->
+                    <!-- Autocomplete Instant Search Input -->
                     <div class="relative">
-                        <input type="text" id="mainCustomerSearchInput" oninput="handleCustomerSearchInput()" placeholder="Type to search name, phone, or ref..." class="w-full pl-9 pr-8 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs font-bold text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
+                        <input type="text" id="mainCustomerSearchInput" oninput="handleCustomerSearchInput()" placeholder="Search name, mobile, reference, or bank..." class="w-full pl-9 pr-8 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs font-bold text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-amber-400 text-xs"></i>
                         <button onclick="clearMainCustomerSearch()" id="clearCustomerSearchBtn" class="hidden absolute right-2.5 top-2.5 text-slate-400 hover:text-white p-0.5">
                             <i class="fa-solid fa-xmark text-xs"></i>
                         </button>
@@ -247,7 +301,7 @@
                         </div>
                     </div>
 
-                    <!-- Customer / Party Select Dropdown (Strictly Black Font) -->
+                    <!-- Customer / Party Select Dropdown -->
                     <div>
                         <select id="partyFilterSelect" onchange="onPartyFilterChange()" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs font-black focus:ring-2 focus:ring-amber-400 focus:outline-none" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
                             <option value="" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-weight: 800;">-- Master Combined Ledger (All Parties) --</option>
@@ -336,31 +390,16 @@
                     </button>
                 </div>
 
-                <!-- Customer Rating & Review Box -->
-                <div class="bg-white p-4 rounded-2xl border border-amber-200 shadow-sm space-y-3">
-                    <div class="flex items-center justify-between">
+                <!-- Customer Rating & Review Card -->
+                <div class="bg-white p-4 rounded-2xl border border-amber-200 shadow-sm flex items-center justify-between">
+                    <div>
                         <h3 class="font-black text-xs text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
                             <i class="fa-solid fa-star text-amber-500"></i> Customer Rating & Feedback
                         </h3>
+                        <p class="text-[11px] text-slate-500 font-medium mt-0.5">Share your rating and feedback for Sfinsys</p>
                     </div>
-                    <p class="text-[11px] text-slate-500 font-medium">Rate your app experience or leave feedback below (150 characters max).</p>
-                    
-                    <!-- Star Rating Interactive Element -->
-                    <div class="flex items-center justify-center space-x-2 py-1" id="starRatingContainer">
-                        <button type="button" onclick="setCustomerRating(1)" class="star-btn text-2xl text-slate-300 hover:text-amber-400 transition" data-star="1"><i class="fa-solid fa-star"></i></button>
-                        <button type="button" onclick="setCustomerRating(2)" class="star-btn text-2xl text-slate-300 hover:text-amber-400 transition" data-star="2"><i class="fa-solid fa-star"></i></button>
-                        <button type="button" onclick="setCustomerRating(3)" class="star-btn text-2xl text-slate-300 hover:text-amber-400 transition" data-star="3"><i class="fa-solid fa-star"></i></button>
-                        <button type="button" onclick="setCustomerRating(4)" class="star-btn text-2xl text-slate-300 hover:text-amber-400 transition" data-star="4"><i class="fa-solid fa-star"></i></button>
-                        <button type="button" onclick="setCustomerRating(5)" class="star-btn text-2xl text-slate-300 hover:text-amber-400 transition" data-star="5"><i class="fa-solid fa-star"></i></button>
-                    </div>
-
-                    <div class="relative">
-                        <textarea id="customerReviewText" rows="2" maxlength="150" oninput="updateReviewCharCount()" placeholder="Write your feedback / review message..." class="w-full border border-slate-200 rounded-xl p-2.5 text-xs font-bold focus:ring-2 focus:ring-amber-500 focus:outline-none" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;"></textarea>
-                        <div class="text-[9px] text-slate-400 text-right mt-0.5 font-semibold" id="reviewCharCounter">0 / 150</div>
-                    </div>
-                    
-                    <button onclick="sendCustomerReviewWhatsApp()" class="w-full py-2.5 bg-slate-900 active:bg-slate-950 text-amber-400 font-extrabold text-xs rounded-xl shadow transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-paper-plane text-xs"></i>
+                    <button onclick="openModal('ratingModal')" class="py-2.5 px-4 bg-slate-900 active:bg-slate-950 text-amber-400 font-extrabold text-xs rounded-xl shadow transition flex items-center justify-center gap-2 shrink-0">
+                        <i class="fa-solid fa-star text-xs"></i>
                         <span>Submit Review</span>
                     </button>
                 </div>
@@ -371,8 +410,8 @@
                 <!-- Search & Filters Bar -->
                 <div class="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-2">
                     <div class="relative flex-grow">
-                        <input type="text" id="searchInput" oninput="toggleLedgerSearchClear(); renderLedgerTable();" placeholder="Search party name, note, mode, amount..." class="w-full pl-8 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
-                        <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
+                        <input type="text" id="searchInput" oninput="toggleLedgerSearchClear(); renderLedgerTable();" placeholder="Search party, note, mode, amount..." class="w-full pl-8 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-amber-500 text-xs"></i>
                         <button onclick="clearLedgerSearch()" id="clearLedgerSearchBtn" class="hidden absolute right-2.5 top-2 text-slate-400 hover:text-slate-700 p-0.5">
                             <i class="fa-solid fa-xmark text-xs"></i>
                         </button>
@@ -440,8 +479,8 @@
                 <!-- Dedicated Search Input for Parties Tab -->
                 <div class="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-2">
                     <div class="relative flex-grow">
-                        <input type="text" id="partySearchInput" oninput="togglePartySearchClear(); renderPartiesList();" placeholder="Search party name, phone, ref, bank, UPI..." class="w-full pl-8 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
-                        <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
+                        <input type="text" id="partySearchInput" oninput="togglePartySearchClear(); renderPartiesList();" placeholder="Search name, phone, ref, bank, UPI..." class="w-full pl-8 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-amber-500 text-xs"></i>
                         <button onclick="clearPartySearch()" id="clearPartySearchBtn" class="hidden absolute right-2.5 top-2 text-slate-400 hover:text-slate-700 p-0.5">
                             <i class="fa-solid fa-xmark text-xs"></i>
                         </button>
@@ -453,111 +492,125 @@
                 </div>
             </section>
 
-            <!-- TAB 4: FIXED & COMPOUND INTEREST CALCULATOR -->
-            <section id="tab-interest" class="space-y-4 hidden">
-                <div class="bg-slate-950 text-white p-4 rounded-2xl border border-slate-800 shadow-md">
-                    <div class="flex items-center space-x-2 mb-2">
-                        <div class="w-5 h-5 bg-amber-500 text-indigo-950 font-black text-xs rounded flex items-center justify-center">S</div>
-                        <h2 class="font-extrabold text-xs uppercase tracking-wider text-amber-400">Flexible Interest Engine</h2>
-                    </div>
-                    <p class="text-xs text-slate-300 mb-4">Supports Simple, Local Monthly, and Annual/Monthly Compound Interest calculation.</p>
-
-                    <form id="interestCalcForm" onsubmit="applyMainInterestSettings(event)" class="space-y-3 text-xs">
-                        <div>
-                            <label class="block font-bold text-slate-300 mb-1">Calculation System</label>
-                            <select id="calcSystem" onchange="onInterestSystemChange()" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2.5 text-xs font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
-                                <option value="zero_interest">Zero Interest / Interest Free (0%)</option>
-                                <option value="rupee_monthly" selected>Local Rate (₹ / ₹100 / month)</option>
-                                <option value="simple_pa">Simple Interest (% per annum)</option>
-                                <option value="compound_pa">Compound Interest (% p.a.)</option>
-                                <option value="compound_pm">Compound Interest (% p.m.)</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label id="rateLabel" class="block font-bold text-slate-300 mb-1">Rate (₹ / ₹100 / mo)</label>
-                            <input type="number" id="calcRate" step="0.01" value="2" required onchange="applyMainInterestSettings(event)" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2.5 text-xs font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block font-bold text-slate-300 mb-1">Calculation Start Date</label>
-                                <input type="date" id="calcStartDate" onchange="applyMainInterestSettings(event)" required class="w-full bg-white border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+            <!-- TAB 4: CASH ON HAND / TILL MANAGEMENT -->
+            <section id="tab-cash" class="space-y-4 hidden">
+                <!-- Cash Summary Overview -->
+                <div class="bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-950 text-white p-4 rounded-2xl border border-emerald-800/60 shadow-md">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 bg-emerald-500 text-indigo-950 font-black text-sm rounded-xl flex items-center justify-center">
+                                <i class="fa-solid fa-vault"></i>
                             </div>
                             <div>
-                                <label class="block font-bold text-slate-300 mb-1">As Of Date</label>
-                                <input type="date" id="calcEndDate" onchange="applyMainInterestSettings(event)" required class="w-full bg-white border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                                <h3 class="font-extrabold text-xs uppercase tracking-wider text-emerald-400">Cash Vault / Cash on Hand</h3>
+                                <p class="text-[10px] text-slate-300">Daily Cash Drawer & Physical Till Balance</p>
                             </div>
                         </div>
-                    </form>
-
-                    <!-- Breakdown Result Box -->
-                    <div id="calcResultBox" class="mt-4 p-3.5 bg-slate-900 border border-slate-800 rounded-xl space-y-1.5 text-xs">
-                        <div class="flex justify-between"><span class="text-slate-400">Principal Balance:</span> <span id="resPrincipal" class="font-bold text-white">₹0.00</span></div>
-                        <div class="flex justify-between text-amber-400"><span>Gross Fixed/Compound Interest:</span> <span id="resInterest" class="font-bold">₹0.00</span></div>
-                        <div class="flex justify-between text-purple-400"><span>Interest Repaid:</span> <span id="resInterestPaid" class="font-bold">₹0.00</span></div>
-                        <div class="flex justify-between text-amber-200"><span>Pending Unpaid Interest:</span> <span id="resNetInterest" class="font-bold">₹0.00</span></div>
-                        <div class="border-t border-slate-800 pt-1.5 flex justify-between font-black text-white">
-                            <span>TOTAL PAYABLE AMOUNT:</span> <span id="resTotal" class="text-emerald-400 text-sm">₹0.00</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- TAB 5: SECURITY & PASSCODE SETTINGS -->
-            <section id="tab-settings" class="space-y-4 hidden">
-                <!-- Dedicated Passcode Box -->
-                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-                        <h3 class="font-extrabold text-xs text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                            <i class="fa-solid fa-key text-amber-500"></i> Change User Credentials & Passcode
-                        </h3>
-                        <span class="text-[10px] bg-amber-100 text-amber-800 font-extrabold px-2 py-0.5 rounded-full">Security</span>
-                    </div>
-
-                    <p class="text-xs text-slate-500">Update your login username and 4-digit PIN required to unlock this ledger on launch.</p>
-
-                    <button onclick="openModal('passcodeModal')" class="w-full py-3 bg-slate-950 active:bg-slate-800 text-amber-400 font-black rounded-xl shadow transition flex items-center justify-center gap-2 text-xs">
-                        <i class="fa-solid fa-shield-halved"></i> Change Username & Security PIN
-                    </button>
-                </div>
-
-                <!-- Profile Photo Settings Card -->
-                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
-                    <h3 class="font-extrabold text-xs text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                        <i class="fa-solid fa-image text-emerald-600"></i> Profile Photo Management
-                    </h3>
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center border text-slate-400 overflow-hidden shrink-0">
-                            <img id="settingsProfileImgPreview" src="" class="w-full h-full object-cover hidden">
-                            <i id="settingsProfileIcon" class="fa-solid fa-user text-xl"></i>
-                        </div>
-                        <div class="space-y-1">
-                            <button onclick="triggerProfilePhotoUpload()" class="bg-slate-900 text-amber-400 font-bold px-3 py-1.5 rounded-xl text-xs shadow">
-                                <i class="fa-solid fa-upload mr-1"></i> Upload Photo
-                            </button>
-                            <button onclick="removeAdminPhoto()" class="bg-rose-50 text-rose-600 font-bold px-3 py-1.5 rounded-xl text-xs border border-rose-200">
-                                Remove
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Backup & Sync Box -->
-                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
-                    <h3 class="font-extrabold text-xs text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                        <i class="fa-solid fa-database text-indigo-600"></i> Backup & Restore Data
-                    </h3>
-                    <div class="space-y-2">
-                        <button onclick="downloadBackupJSON()" class="w-full bg-emerald-600 active:bg-emerald-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow transition">
-                            <i class="fa-solid fa-download mr-1"></i> Export Backup (.JSON)
+                        <button onclick="openModal('cashEntryModal')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-3 py-1.5 rounded-xl text-xs font-extrabold transition shadow flex items-center gap-1">
+                            <i class="fa-solid fa-plus-circle"></i> Add Cash Txn
                         </button>
-                        <div class="pt-2">
-                            <input type="file" id="restoreFile" accept=".json" class="w-full text-xs font-bold mb-2" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
-                            <button onclick="restoreBackupJSON()" class="w-full bg-blue-600 active:bg-blue-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow transition">
-                                <i class="fa-solid fa-upload mr-1"></i> Import JSON Backup
-                            </button>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 text-center pt-1 border-t border-emerald-900/80">
+                        <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                            <p class="text-[9px] font-bold text-emerald-400 uppercase">Cash In Flow</p>
+                            <p id="cashInTotal" class="text-xs font-black text-emerald-300">₹0.00</p>
                         </div>
+                        <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                            <p class="text-[9px] font-bold text-rose-400 uppercase">Cash Out Flow</p>
+                            <p id="cashOutTotal" class="text-xs font-black text-rose-300">₹0.00</p>
+                        </div>
+                        <div class="bg-slate-950 p-2.5 rounded-xl border border-amber-500/40">
+                            <p class="text-[9px] font-bold text-amber-400 uppercase">NET IN VAULT</p>
+                            <p id="cashOnHandsNet" class="text-sm font-black text-amber-300">₹0.00</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DATE-WISE CASH VAULT PDF STATEMENT BAR -->
+                <div class="bg-white p-3 rounded-2xl border border-emerald-200 shadow-sm space-y-2">
+                    <div class="flex items-center justify-between text-xs font-extrabold text-slate-800">
+                        <span><i class="fa-solid fa-file-pdf text-emerald-600 mr-1"></i> Date-Wise Cash PDF Statement</span>
+                        <button onclick="resetCashDateFilter()" class="text-[10px] text-rose-600 font-bold hover:underline">Reset Dates</button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                            <label class="block text-[10px] text-slate-500 font-bold mb-0.5">From Date</label>
+                            <input type="date" id="cashStartDate" onchange="renderCashList()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-black text-xs" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-500 font-bold mb-0.5">To Date</label>
+                            <input type="date" id="cashEndDate" onchange="renderCashList()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-black text-xs" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        </div>
+                    </div>
+                    <div class="pt-1 border-t border-slate-100 flex justify-end">
+                        <button onclick="generateCashVaultPrintView()" class="w-full py-2 bg-slate-950 text-emerald-400 font-extrabold rounded-xl text-xs shadow flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-print"></i> Cash Vault PDF Statement
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cash Search & Filter Controls -->
+                <div class="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-2">
+                    <div class="relative flex-grow">
+                        <input type="text" id="cashSearchInput" oninput="toggleCashSearchClear(); renderCashList();" placeholder="Search cash note, source, or amount..." class="w-full pl-8 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-amber-500 text-xs"></i>
+                        <button onclick="clearCashSearch()" id="clearCashSearchBtn" class="hidden absolute right-2.5 top-2 text-slate-400 hover:text-slate-700 p-0.5">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                        </button>
+                    </div>
+                    <select id="cashTypeFilter" onchange="renderCashList()" class="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 text-xs font-black focus:outline-none" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        <option value="ALL">All Cash</option>
+                        <option value="IN">Cash In</option>
+                        <option value="OUT">Cash Out</option>
+                    </select>
+                </div>
+
+                <!-- Currency Denomination Counter Utility -->
+                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                        <h4 class="font-extrabold text-xs text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-money-bill-wave text-emerald-600"></i> Cash Denomination Calculator
+                        </h4>
+                        <button onclick="resetDenominations()" class="text-[10px] text-rose-600 font-bold hover:underline">Reset Notes</button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+                        <div class="flex items-center gap-2">
+                            <span class="w-12 text-slate-600">₹500 x</span>
+                            <input type="number" id="denom500" min="0" oninput="calcDenominations()" placeholder="0" class="w-full border border-slate-200 rounded-lg p-1.5 text-center font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-12 text-slate-600">₹200 x</span>
+                            <input type="number" id="denom200" min="0" oninput="calcDenominations()" placeholder="0" class="w-full border border-slate-200 rounded-lg p-1.5 text-center font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-12 text-slate-600">₹100 x</span>
+                            <input type="number" id="denom100" min="0" oninput="calcDenominations()" placeholder="0" class="w-full border border-slate-200 rounded-lg p-1.5 text-center font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-12 text-slate-600">₹50 x</span>
+                            <input type="number" id="denom50" min="0" oninput="calcDenominations()" placeholder="0" class="w-full border border-slate-200 rounded-lg p-1.5 text-center font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-12 text-slate-600">₹20 x</span>
+                            <input type="number" id="denom20" min="0" oninput="calcDenominations()" placeholder="0" class="w-full border border-slate-200 rounded-lg p-1.5 text-center font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-12 text-slate-600">₹10 x</span>
+                            <input type="number" id="denom10" min="0" oninput="calcDenominations()" placeholder="0" class="w-full border border-slate-200 rounded-lg p-1.5 text-center font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex justify-between items-center text-xs">
+                        <span class="font-bold text-slate-600">Calculated Cash Tally:</span>
+                        <span id="denomTotalDisplay" class="font-black text-emerald-700 text-sm">₹0.00</span>
+                    </div>
+                </div>
+
+                <!-- Cash Movement History List -->
+                <div class="space-y-2">
+                    <h4 class="font-extrabold text-xs text-slate-600 uppercase tracking-wider px-1">Cash Movement History</h4>
+                    <div id="cashTransactionsList" class="space-y-2">
+                        <!-- Dynamic Cash Transactions -->
                     </div>
                 </div>
             </section>
@@ -571,7 +624,7 @@
 
         <!-- ==================== PRINT STATEMENT CONTAINER ==================== -->
         <div id="printContainer" class="print-only p-6 bg-white text-slate-900 max-w-4xl mx-auto">
-            <!-- Individual Statement Dynamic Markup -->
+            <!-- Individual Borrower Statement Dynamic Markup -->
             <div id="individualPrintContent">
                 <div class="flex justify-between items-start border-b-2 border-slate-900 pb-4 mb-4">
                     <div class="flex items-center space-x-3">
@@ -654,7 +707,7 @@
                 </table>
             </div>
 
-            <!-- Master Statement Dynamic Container -->
+            <!-- Master Customer Statement Dynamic Container -->
             <div id="masterPrintContent" class="hidden">
                 <div class="flex justify-between items-start border-b-2 border-slate-900 pb-4 mb-4">
                     <div class="flex items-center space-x-3">
@@ -713,6 +766,58 @@
                 </table>
             </div>
 
+            <!-- CASH VAULT PRINT STATEMENT CONTAINER -->
+            <div id="cashVaultPrintContent" class="hidden">
+                <div class="flex justify-between items-start border-b-2 border-slate-900 pb-4 mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-emerald-600 text-white font-black text-2xl rounded-xl flex items-center justify-center border border-emerald-700">
+                            <i class="fa-solid fa-vault"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-black text-slate-900 uppercase tracking-tight">Sfinsys</h1>
+                            <p class="text-xs font-bold text-emerald-800 uppercase tracking-wider">CASH VAULT & TILL MOVEMENT STATEMENT</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-slate-500">Statement Date: <span id="cashPrintDate" class="font-bold text-slate-900"></span></p>
+                        <p class="text-xs text-slate-500">Filter Period: <span id="cashPrintFilterRange" class="font-bold text-slate-900">All Dates</span></p>
+                    </div>
+                </div>
+
+                <!-- Cash Vault Metrics Summary -->
+                <div class="grid grid-cols-3 gap-3 mb-6 text-center">
+                    <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
+                        <p class="text-[9px] font-bold text-emerald-700 uppercase">Total Cash In</p>
+                        <p id="cashPrintTotalIn" class="text-sm font-black text-emerald-900">₹0.00</p>
+                    </div>
+                    <div class="p-3 bg-rose-50 border border-rose-200 rounded-xl">
+                        <p class="text-[9px] font-bold text-rose-700 uppercase">Total Cash Out</p>
+                        <p id="cashPrintTotalOut" class="text-sm font-black text-rose-900">₹0.00</p>
+                    </div>
+                    <div class="p-3 bg-slate-900 text-white rounded-xl">
+                        <p class="text-[9px] font-bold text-amber-400 uppercase">NET IN CASH VAULT</p>
+                        <p id="cashPrintNetVault" class="text-sm font-black text-amber-300">₹0.00</p>
+                    </div>
+                </div>
+
+                <!-- Cash Statement Table -->
+                <h3 class="font-extrabold text-xs uppercase tracking-wider text-slate-800 mb-2">Itemized Cash Movement Log</h3>
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100 border-b border-slate-300 text-[10px] uppercase font-bold text-slate-700">
+                            <th class="p-2">Date</th>
+                            <th class="p-2">Type</th>
+                            <th class="p-2">Particulars / Description</th>
+                            <th class="p-2 text-right">Cash In (₹)</th>
+                            <th class="p-2 text-right">Cash Out (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cashPrintHistoryTable">
+                        <!-- Dynamic Cash Rows -->
+                    </tbody>
+                </table>
+            </div>
+
             <!-- STATEMENT BOTTOM FOOTER CREDITS -->
             <div class="mt-8 pt-4 border-t border-slate-300 flex justify-between items-end text-[10px] text-slate-500">
                 <div>
@@ -748,30 +853,115 @@
                     <span>Parties</span>
                 </button>
 
-                <button onclick="switchTab('settings')" id="nav-settings" class="flex-1 flex flex-col items-center justify-center py-1 hover:text-white transition">
-                    <i class="fa-solid fa-shield-halved text-base mb-0.5"></i>
-                    <span>Security</span>
+                <!-- CASH ON HAND / TILL DRAWER TAB -->
+                <button onclick="switchTab('cash')" id="nav-cash" class="flex-1 flex flex-col items-center justify-center py-1 hover:text-white transition">
+                    <i class="fa-solid fa-vault text-base mb-0.5"></i>
+                    <span>Cash Vault</span>
                 </button>
             </div>
         </nav>
     </div>
 
-    <!-- ==================== MOBILE BOTTOM SHEET MODALS ==================== -->
+    <!-- ==================== MOBILE MODALS & SHEETS ==================== -->
 
-    <!-- Dedicated Modal: Change Passcode & Username Sheet -->
-    <div id="passcodeModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden no-print">
-        <div class="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl sheet-up max-h-[90vh] overflow-y-auto text-slate-800">
-            <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
+    <!-- Modal: Customer Rating & Review -->
+    <div id="ratingModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden no-print">
+        <div class="bg-white w-full max-w-sm rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl sheet-up text-slate-800 space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
                 <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-amber-500 text-indigo-950 rounded-xl font-black text-sm flex items-center justify-center">
-                        <i class="fa-solid fa-key"></i>
+                    <div class="w-8 h-8 bg-amber-500 text-indigo-950 rounded-xl font-black text-sm flex items-center justify-center shadow">
+                        <i class="fa-solid fa-star"></i>
                     </div>
-                    <h3 class="font-black text-slate-900 text-sm">Change Credentials & PIN</h3>
+                    <h3 class="font-extrabold text-slate-900 text-sm">Rating & Review</h3>
                 </div>
-                <button onclick="closeModal('passcodeModal')" class="text-slate-400 hover:text-slate-600 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <button onclick="closeModal('ratingModal')" class="text-slate-400 hover:text-slate-600 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
 
-            <form id="passcodeForm" onsubmit="handlePasscodeChangeSubmit(event)" class="space-y-4 text-xs">
+            <p class="text-[11px] text-slate-500 font-medium">Please rate your experience and write a short review (150 characters max).</p>
+            
+            <!-- Star Rating Interactive Element -->
+            <div class="flex items-center justify-center space-x-2 py-1" id="starRatingContainer">
+                <button type="button" onclick="setCustomerRating(1)" class="star-btn text-2xl text-slate-300 hover:text-amber-400 transition" data-star="1"><i class="fa-solid fa-star"></i></button>
+                <button type="button" onclick="setCustomerRating(2)" class="star-btn text-2xl text-slate-300 hover:text-amber-400 transition" data-star="2"><i class="fa-solid fa-star"></i></button>
+                <button type="button" onclick="setCustomerRating(3)" class="star-btn text-2xl text-slate-300 hover:text-amber-400 transition" data-star="3"><i class="fa-solid fa-star"></i></button>
+                <button type="button" onclick="setCustomerRating(4)" class="star-btn text-2xl text-slate-300 hover:text-amber-400 transition" data-star="4"><i class="fa-solid fa-star"></i></button>
+                <button type="button" onclick="setCustomerRating(5)" class="star-btn text-2xl text-slate-300 hover:text-amber-400 transition" data-star="5"><i class="fa-solid fa-star"></i></button>
+            </div>
+
+            <div class="relative">
+                <textarea id="customerReviewText" rows="3" maxlength="150" oninput="validateReviewForm()" placeholder="Write your review here..." class="w-full border border-slate-200 rounded-xl p-2.5 text-xs font-bold focus:ring-2 focus:ring-amber-500 focus:outline-none" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;"></textarea>
+                <div class="text-[9px] text-slate-400 text-right mt-0.5 font-semibold" id="reviewCharCounter">0 / 150</div>
+            </div>
+            
+            <button id="modalSubmitReviewBtn" onclick="sendCustomerReviewWhatsApp()" disabled class="w-full py-3 bg-slate-300 text-slate-500 font-extrabold text-xs rounded-xl shadow transition flex items-center justify-center gap-2 cursor-not-allowed">
+                <i class="fa-solid fa-paper-plane text-xs"></i>
+                <span>Submit Review</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal: Update Daily Gold Rate with Live Internet Fetch Integration -->
+    <div id="goldRateModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden no-print">
+        <div class="bg-white w-full max-w-sm rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl sheet-up text-slate-800 space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-amber-500 text-indigo-950 rounded-xl font-black text-sm flex items-center justify-center shadow">
+                        <i class="fa-solid fa-coins"></i>
+                    </div>
+                    <h3 class="font-extrabold text-slate-900 text-sm">Update Daily Gold Rates</h3>
+                </div>
+                <button onclick="closeModal('goldRateModal')" class="text-slate-400 hover:text-slate-600 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <!-- Auto-Fetch Live Rate Trigger Banner -->
+            <div class="bg-slate-900 text-white p-3 rounded-2xl border border-amber-400/40 space-y-2">
+                <div class="flex items-center justify-between text-[11px]">
+                    <span class="font-extrabold text-amber-400 flex items-center gap-1">
+                        <i class="fa-solid fa-cloud-arrow-down"></i> Auto Live Internet Sync
+                    </span>
+                    <span class="text-[9px] text-slate-300" id="modalGoldSyncStatus">Ready to sync</span>
+                </div>
+                <button type="button" onclick="fetchLiveGoldRateFromInternet(true)" id="btnModalAutoFetchGold" class="w-full py-2 bg-gradient-to-r from-amber-500 to-amber-600 active:from-amber-600 active:to-amber-700 text-indigo-950 font-black text-xs rounded-xl shadow transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-wifi"></i> Auto-Fetch Live Rates Now
+                </button>
+            </div>
+
+            <form onsubmit="saveGoldRates(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">24K Gold Rate (₹ / Gram) *</label>
+                    <input type="number" id="inputGoldRate24k" step="0.01" required placeholder="14350" class="w-full border border-slate-200 rounded-xl p-3 font-black text-sm" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">22K Gold Rate (₹ / Gram) *</label>
+                    <input type="number" id="inputGoldRate22k" step="0.01" required placeholder="13150" class="w-full border border-slate-200 rounded-xl p-3 font-black text-sm" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('goldRateModal')" class="px-4 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-bold">Cancel</button>
+                    <button type="submit" class="px-5 py-2.5 bg-amber-500 text-indigo-950 font-extrabold rounded-xl shadow">Save Rates</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dedicated Security & Passcode Settings Modal -->
+    <div id="securitySettingsModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden no-print">
+        <div class="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl sheet-up max-h-[90vh] overflow-y-auto text-slate-800 space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-amber-500 text-indigo-950 rounded-xl font-black text-sm flex items-center justify-center">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <h3 class="font-black text-slate-900 text-sm">Security & App Configuration</h3>
+                </div>
+                <button onclick="closeModal('securitySettingsModal')" class="text-slate-400 hover:text-slate-600 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <!-- Credentials & PIN change form -->
+            <form id="passcodeForm" onsubmit="handlePasscodeChangeSubmit(event)" class="space-y-3 text-xs">
+                <h4 class="font-extrabold text-slate-900 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                    <i class="fa-solid fa-key text-amber-500"></i> Change Login Passcode
+                </h4>
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">Username / User ID *</label>
                     <input type="text" id="modalUsername" required placeholder="admin" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 font-bold focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
@@ -779,17 +969,17 @@
 
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">Current Passcode *</label>
-                    <input type="password" id="modalCurrentPin" maxlength="10" required placeholder="••••" inputmode="numeric" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-center text-lg font-black tracking-widest focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                    <input type="password" id="modalCurrentPin" maxlength="10" required placeholder="••••" inputmode="numeric" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-center text-base font-black tracking-widest focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">New 4-Digit PIN *</label>
-                        <input type="password" id="modalNewPin" maxlength="4" required placeholder="••••" inputmode="numeric" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-center text-lg font-black tracking-widest focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        <input type="password" id="modalNewPin" maxlength="4" required placeholder="••••" inputmode="numeric" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-center text-base font-black tracking-widest focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
                     </div>
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">Confirm New PIN *</label>
-                        <input type="password" id="modalConfirmPin" maxlength="4" required placeholder="••••" inputmode="numeric" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-center text-lg font-black tracking-widest focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        <input type="password" id="modalConfirmPin" maxlength="4" required placeholder="••••" inputmode="numeric" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-center text-base font-black tracking-widest focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
                     </div>
                 </div>
 
@@ -797,11 +987,69 @@
                     <i class="fa-solid fa-circle-exclamation"></i> <span id="modalErrorText">Errors</span>
                 </p>
 
+                <button type="submit" class="w-full py-2.5 bg-slate-950 text-amber-400 font-extrabold rounded-xl shadow flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-lock"></i> Update Passcode
+                </button>
+            </form>
+
+            <!-- Profile Photo Section -->
+            <div class="pt-3 border-t border-slate-100 space-y-2 text-xs">
+                <h4 class="font-extrabold text-slate-900 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                    <i class="fa-solid fa-image text-emerald-600"></i> Admin Profile Photo
+                </h4>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center border text-slate-400 overflow-hidden shrink-0">
+                        <img id="settingsProfileImgPreview" src="" class="w-full h-full object-cover hidden">
+                        <i id="settingsProfileIcon" class="fa-solid fa-user text-base"></i>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="triggerProfilePhotoUpload()" class="bg-slate-900 text-amber-400 font-bold px-3 py-1.5 rounded-xl text-xs shadow">
+                            <i class="fa-solid fa-upload mr-1"></i> Upload Photo
+                        </button>
+                        <button onclick="removeAdminPhoto()" class="bg-rose-50 text-rose-600 font-bold px-3 py-1.5 rounded-xl text-xs border border-rose-200">
+                            Remove
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Add Cash-on-Hand Transaction -->
+    <div id="cashEntryModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden no-print">
+        <div class="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl sheet-up max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-3 border-b border-slate-100 pb-3">
+                <h3 class="font-extrabold text-slate-900 text-sm">Record Physical Cash Transaction</h3>
+                <button onclick="closeModal('cashEntryModal')" class="text-slate-400 hover:text-slate-600 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="cashTxnForm" onsubmit="saveCashTransaction(event)" class="space-y-3 text-xs">
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Cash Movement *</label>
+                        <select id="cashTxnType" required class="w-full border border-slate-200 rounded-xl p-3 font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                            <option value="IN">Cash In (Deposit to Vault)</option>
+                            <option value="OUT">Cash Out (Expense / Withdrawal)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Amount (₹) *</label>
+                        <input type="number" id="cashTxnAmount" step="0.01" required placeholder="0.00" inputmode="decimal" class="w-full border border-slate-200 rounded-xl p-3 font-black text-sm" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Date *</label>
+                    <input type="date" id="cashTxnDate" required class="w-full border border-slate-200 rounded-xl p-2.5 font-black" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Particulars / Source / Reason *</label>
+                    <input type="text" id="cashTxnNote" required placeholder="e.g. Daily cash opening balance, petty expense..." class="w-full border border-slate-200 rounded-xl p-3 font-bold" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                </div>
+
                 <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeModal('passcodeModal')" class="px-4 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold">Cancel</button>
-                    <button type="submit" class="px-5 py-3 bg-slate-950 text-amber-400 font-extrabold rounded-xl shadow flex items-center gap-1.5">
-                        <i class="fa-solid fa-lock"></i> Save Security Changes
-                    </button>
+                    <button type="button" onclick="closeModal('cashEntryModal')" class="px-4 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold">Cancel</button>
+                    <button type="submit" class="px-5 py-3 bg-emerald-600 text-white font-extrabold rounded-xl shadow">Save Cash Entry</button>
                 </div>
             </form>
         </div>
@@ -824,7 +1072,6 @@
                     <div>
                         <div class="flex justify-between items-center mb-1">
                             <label class="block font-bold text-slate-700">Mobile / Phone Number</label>
-                            <!-- Directly Pick Phone Contacts Button -->
                             <button type="button" onclick="pickContactForParty()" class="text-[10px] text-amber-700 font-extrabold hover:underline flex items-center gap-1 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
                                 <i class="fa-solid fa-address-book"></i> Contacts
                             </button>
@@ -873,7 +1120,7 @@
                     </div>
                 </div>
 
-                <!-- Enhanced Interest Terms (Simple & Compound Interest Options) -->
+                <!-- Interest Terms -->
                 <div class="p-3 bg-amber-50/50 border border-amber-200 rounded-xl space-y-2">
                     <label class="block font-bold text-amber-950">Interest Terms</label>
                     <div class="grid grid-cols-2 gap-2">
@@ -883,7 +1130,7 @@
                                 <option value="zero_interest">Zero Interest / Free (0%)</option>
                                 <option value="rupee_monthly" selected>₹ / ₹100 / Month</option>
                                 <option value="simple_pa">Simple % p.a.</option>
-                                <option value="compound_pa">Compound % p.a.</option>
+                                <option value="compound_pa">Compound % p.a me</option>
                                 <option value="compound_pm">Compound % p.m.</option>
                             </select>
                         </div>
@@ -905,7 +1152,7 @@
         </div>
     </div>
 
-    <!-- Modal: Add / Edit Transaction (WITH INSTANT SEARCH BAR) -->
+    <!-- Modal: Add / Edit Transaction -->
     <div id="transactionModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden no-print">
         <div class="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl sheet-up max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-3 border-b border-slate-100 pb-3">
@@ -922,7 +1169,7 @@
                     <label class="block font-bold text-slate-700 mb-1">Party Account *</label>
                     <div class="relative">
                         <input type="text" id="txnPartySearchInput" oninput="handleTxnPartySearchInput()" autocomplete="off" placeholder="🔍 Type to search party name or phone..." class="w-full pl-9 pr-8 py-3 bg-slate-50 border border-slate-300 rounded-xl font-bold text-xs focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-slate-400 text-xs"></i>
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-amber-500 text-xs"></i>
                         <button type="button" onclick="clearTxnPartySearch()" id="clearTxnSearchBtn" class="hidden absolute right-2.5 top-3 text-slate-400 hover:text-slate-700 p-0.5">
                             <i class="fa-solid fa-xmark text-xs"></i>
                         </button>
@@ -993,8 +1240,14 @@
                 <h3 class="font-extrabold text-slate-900 text-sm">Backup & Data Transfer</h3>
                 <button onclick="closeModal('backupModal')" class="text-slate-400 p-1"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <p class="text-xs text-slate-500">Export your ledger data as JSON to sync across phones.</p>
+            <p class="text-xs text-slate-500">Export your ledger and cash data as JSON to sync across phones.</p>
             <button onclick="downloadBackupJSON()" class="w-full bg-emerald-600 text-white py-3 rounded-xl text-xs font-extrabold shadow">Download JSON Backup</button>
+            <div class="pt-2 border-t border-slate-100">
+                <input type="file" id="restoreFile" accept=".json" class="w-full text-xs font-bold mb-2" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                <button onclick="restoreBackupJSON()" class="w-full bg-blue-600 active:bg-blue-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow transition">
+                    <i class="fa-solid fa-upload mr-1"></i> Import JSON Backup
+                </button>
+            </div>
         </div>
     </div>
 
@@ -1048,6 +1301,7 @@
         // State Variables
         let parties = [];
         let transactions = [];
+        let cashTransactions = [];
         let deferredPrompt = null;
         let appUsername = "admin";
         let appPin = "1234";
@@ -1055,18 +1309,23 @@
         let selectedCustomerRating = 5;
         let enteredKeypadPin = "";
 
+        // Gold Rate Defaults & Internet Auto-Sync Engine Variables (Per Gram)
+        let goldRate24k = 14350;
+        let goldRate22k = 13150;
+        let lastGoldRateUpdateTimestamp = "";
+        let goldRateSourceType = "Internet Auto-Sync";
+
         // Dynamic Seasonal & Time Greetings Engine
         function updateDashboardGreetings() {
             const now = new Date();
             const hours = now.getHours();
-            const month = now.getMonth(); // 0 - 11
+            const month = now.getMonth();
             const date = now.getDate();
 
             let timeGreeting = "Good Day";
             let timeIcon = "☀️";
             let subtext = "Have a productive day managing your ledger.";
 
-            // Time-based Greetings
             if (hours >= 5 && hours < 12) {
                 timeGreeting = "Good Morning";
                 timeIcon = "🌅";
@@ -1081,35 +1340,16 @@
                 timeIcon = "🌙";
             }
 
-            // Seasonal / Festival Greetings Override
             if (month === 0 && date === 1) {
-                timeGreeting = "Happy New Year";
-                timeIcon = "🎉";
-                subtext = "Wishing you financial success & happiness in the new year!";
+                timeGreeting = "Happy New Year"; timeIcon = "🎉"; subtext = "Wishing you financial success & happiness!";
             } else if (month === 0 && date >= 14 && date <= 16) {
-                timeGreeting = "Happy Pongal & Sankranti";
-                timeIcon = "🌾";
-                subtext = "May this festival of harvest bring prosperity to your business!";
+                timeGreeting = "Happy Pongal"; timeIcon = "🌾"; subtext = "May this harvest festival bring prosperity!";
             } else if (month === 0 && date === 26) {
-                timeGreeting = "Happy Republic Day";
-                timeIcon = "🇮🇳";
-                subtext = "Wishing you a proud & prosperous Republic Day!";
+                timeGreeting = "Happy Republic Day"; timeIcon = "🇮🇳"; subtext = "Wishing you a proud Republic Day!";
             } else if (month === 7 && date === 15) {
-                timeGreeting = "Happy Independence Day";
-                timeIcon = "🇮🇳";
-                subtext = "Celebrating freedom and growth!";
-            } else if (month === 9 && date === 2) {
-                timeGreeting = "Happy Gandhi Jayanti";
-                timeIcon = "🕊️";
-                subtext = "Truth, simplicity & honest accounting.";
+                timeGreeting = "Happy Independence Day"; timeIcon = "🇮🇳"; subtext = "Celebrating growth & independence!";
             } else if (month === 10 && date >= 1 && date <= 15) {
-                timeGreeting = "Happy Diwali";
-                timeIcon = "🪔";
-                subtext = "May the lights of Diwali bring wealth & prosperity!";
-            } else if (month === 11 && date === 25) {
-                timeGreeting = "Merry Christmas";
-                timeIcon = "🎄";
-                subtext = "Wishing you joy, peace and good health!";
+                timeGreeting = "Happy Diwali"; timeIcon = "🪔"; subtext = "May the festival of lights bring wealth & prosperity!";
             }
 
             const greetingTextEl = document.getElementById('seasonalGreetingText');
@@ -1121,6 +1361,133 @@
             if (greetingIconEl) greetingIconEl.innerText = timeIcon;
             if (greetingSubtextEl) greetingSubtextEl.innerText = subtext;
             if (adminNameEl) adminNameEl.innerText = `Welcome, ${appUsername}`;
+        }
+
+        // ==================== INTERNET AUTO GOLD RATE SYNC ENGINE ====================
+        function renderGoldRates() {
+            const g24El = document.getElementById('goldRate24kDisplay');
+            const g22El = document.getElementById('goldRate22kDisplay');
+            const g24_10g = document.getElementById('goldRate24k10gDisplay');
+            const g22_10g = document.getElementById('goldRate22k10gDisplay');
+            const dateLbl = document.getElementById('goldRateDateLabel');
+            const lastUpdatedLbl = document.getElementById('goldRateLastUpdatedLabel');
+            const sourceLbl = document.getElementById('goldRateSourceLabel');
+            
+            if (g24El) g24El.innerText = `${formatINR(goldRate24k)} / g`;
+            if (g22El) g22El.innerText = `${formatINR(goldRate22k)} / g`;
+            if (g24_10g) g24_10g.innerText = `${formatINR(goldRate24k * 10)} per 10g`;
+            if (g22_10g) g22_10g.innerText = `${formatINR(goldRate22k * 10)} per 10g`;
+            
+            if (dateLbl) dateLbl.innerText = `Today (${formatDateDDMMYYYY(new Date())}) Market Rate / Gram`;
+            
+            if (lastUpdatedLbl) {
+                lastUpdatedLbl.innerHTML = `<i class="fa-solid fa-clock text-amber-400/70 mr-1"></i>Updated: ${lastGoldRateUpdateTimestamp || formatDateDDMMYYYY(new Date())}`;
+            }
+            if (sourceLbl) {
+                sourceLbl.innerText = `Source: ${goldRateSourceType || 'Internet Auto-Sync'}`;
+            }
+        }
+
+        async function fetchLiveGoldRateFromInternet(isUserTriggered = false) {
+            const syncBtn = document.getElementById('dashboardSyncBtn');
+            const modalFetchBtn = document.getElementById('btnModalAutoFetchGold');
+            const modalStatusText = document.getElementById('modalGoldSyncStatus');
+
+            if (syncBtn) syncBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
+            if (modalFetchBtn) modalFetchBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Fetching Live Rates...`;
+            if (modalStatusText) modalStatusText.innerText = "Connecting to market API...";
+
+            let success = false;
+
+            try {
+                // Primary Public Financial Gold API Endpoint for INR
+                const response = await fetch('https://data-asg.goldprice.org/dbXRates/INR', { cache: 'no-cache' });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.items && data.items.length > 0 && data.items[0].xauPrice) {
+                        const xauPriceINR = data.items[0].xauPrice; // Price for 1 Troy Ounce of Gold in INR
+                        const gram24kINR = Math.round(xauPriceINR / 31.1034768); // 1 Troy Ounce = 31.1034768 grams
+                        const gram22kINR = Math.round(gram24kINR * 0.916); // 22K (91.6% Purity) Standard Calculation
+
+                        if (gram24kINR > 1000) {
+                            goldRate24k = gram24kINR;
+                            goldRate22k = gram22kINR;
+                            goldRateSourceType = "Live Financial API";
+                            lastGoldRateUpdateTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ', ' + formatDateDDMMYYYY(new Date());
+                            success = true;
+                        }
+                    }
+                }
+            } catch (err) {
+                console.warn("Primary live gold rate fetch failed, trying secondary endpoint...", err);
+            }
+
+            // Fallback API if primary is blocked by local network CORS
+            if (!success) {
+                try {
+                    const fallbackRes = await fetch('https://api.metalpriceapi.com/v1/latest?api_key=public&base=INR&currencies=XAU', { cache: 'no-cache' });
+                    if (fallbackRes.ok) {
+                        const fbData = await fallbackRes.json();
+                        if (fbData && fbData.rates && fbData.rates.XAU) {
+                            const inrPerOunce = 1 / fbData.rates.XAU;
+                            const gram24kINR = Math.round(inrPerOunce / 31.1034768);
+                            const gram22kINR = Math.round(gram24kINR * 0.916);
+                            if (gram24kINR > 1000) {
+                                goldRate24k = gram24kINR;
+                                goldRate22k = gram22kINR;
+                                goldRateSourceType = "Market Bullion API";
+                                lastGoldRateUpdateTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ', ' + formatDateDDMMYYYY(new Date());
+                                success = true;
+                            }
+                        }
+                    }
+                } catch (fallbackErr) {
+                    console.warn("Secondary gold fetch also unavailable:", fallbackErr);
+                }
+            }
+
+            if (success) {
+                saveStorage();
+                renderGoldRates();
+                document.getElementById('inputGoldRate24k').value = goldRate24k;
+                document.getElementById('inputGoldRate22k').value = goldRate22k;
+                if (modalStatusText) modalStatusText.innerText = "Synced Live!";
+                if (isUserTriggered) showToast("Daily Gold Rates Updated Live from Internet!", "fa-wifi");
+            } else {
+                if (modalStatusText) modalStatusText.innerText = "Offline / Kept Saved Rates";
+                if (isUserTriggered) showToast("Network busy. Saved gold rates retained.", "fa-triangle-exclamation");
+            }
+
+            if (syncBtn) syncBtn.innerHTML = `<i class="fa-solid fa-arrows-rotate"></i>`;
+            if (modalFetchBtn) modalFetchBtn.innerHTML = `<i class="fa-solid fa-wifi"></i> Auto-Fetch Live Rates Now`;
+        }
+
+        function openGoldRateModal() {
+            document.getElementById('inputGoldRate24k').value = goldRate24k;
+            document.getElementById('inputGoldRate22k').value = goldRate22k;
+            document.getElementById('modalGoldSyncStatus').innerText = "Click to auto-sync";
+            openModal('goldRateModal');
+        }
+
+        function saveGoldRates(e) {
+            e.preventDefault();
+            const val24 = parseFloat(document.getElementById('inputGoldRate24k').value);
+            const val22 = parseFloat(document.getElementById('inputGoldRate22k').value);
+
+            if (isNaN(val24) || isNaN(val22) || val24 <= 0 || val22 <= 0) {
+                alert("Please enter valid gold rate figures.");
+                return;
+            }
+
+            goldRate24k = val24;
+            goldRate22k = val22;
+            goldRateSourceType = "Manual Entry Override";
+            lastGoldRateUpdateTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ', ' + formatDateDDMMYYYY(new Date());
+            
+            saveStorage();
+            renderGoldRates();
+            closeModal('goldRateModal');
+            showToast("Gold rates updated manually!", "fa-coins");
         }
 
         // Profile Photo Handlers
@@ -1168,7 +1535,7 @@
             }
         }
 
-        // Customer Review Star Rating Engine
+        // Customer Review & Rating Engine with Modal Validation
         function setCustomerRating(stars) {
             selectedCustomerRating = stars;
             const buttons = document.querySelectorAll('#starRatingContainer .star-btn');
@@ -1181,14 +1548,30 @@
                     btn.classList.add('text-slate-300');
                 }
             });
+            validateReviewForm();
         }
 
-        function updateReviewCharCount() {
+        function validateReviewForm() {
             const reviewInput = document.getElementById('customerReviewText');
             const charCounter = document.getElementById('reviewCharCounter');
+            const submitBtn = document.getElementById('modalSubmitReviewBtn');
+
+            const textVal = reviewInput ? reviewInput.value.trim() : '';
             if (reviewInput && charCounter) {
-                const len = reviewInput.value.length;
-                charCounter.innerText = `${len} / 150`;
+                charCounter.innerText = `${reviewInput.value.length} / 150`;
+            }
+
+            const isRatingSelected = selectedCustomerRating > 0;
+            const isTextFilled = textVal.length > 0;
+
+            if (submitBtn) {
+                if (isRatingSelected && isTextFilled) {
+                    submitBtn.disabled = false;
+                    submitBtn.className = "w-full py-3 bg-slate-900 active:bg-slate-950 text-amber-400 font-extrabold text-xs rounded-xl shadow transition flex items-center justify-center gap-2 cursor-pointer";
+                } else {
+                    submitBtn.disabled = true;
+                    submitBtn.className = "w-full py-3 bg-slate-300 text-slate-500 font-extrabold text-xs rounded-xl shadow transition flex items-center justify-center gap-2 cursor-not-allowed";
+                }
             }
         }
 
@@ -1209,7 +1592,7 @@
 
             const waNum = "919481882789";
             const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
-            window.open(waUrl, '_blank');
+            window.open(waUrl, '_blank'); closeModal('ratingModal');
         }
 
         // Toast Notification Trigger
@@ -1274,7 +1657,7 @@
                     console.log('Contact picker error or cancelled:', err);
                 }
             } else {
-                alert("Direct Contact fetching is supported on Chrome/Edge on mobile phones. Please type the number manually.");
+                alert("Direct Contact fetching is supported on Mobile Browsers (Chrome/Edge). Please type the number manually.");
             }
         }
 
@@ -1286,14 +1669,18 @@
             populatePartyDropdowns();
             renderLedgerTable();
             renderPartiesList();
+            renderCashList();
             updateStats();
+            renderGoldRates();
             setupPWAManifest();
             registerServiceWorker();
             updateDashboardGreetings();
             renderAdminProfilePhoto();
-            setCustomerRating(5);
-            updateReviewCharCount();
+            selectedCustomerRating = 0;
             document.getElementById('printDate').innerText = formatDateDDMMYYYY(new Date());
+
+            // Auto-fetch live internet gold rate silently on app start
+            fetchLiveGoldRateFromInternet(false);
 
             // Close Autocomplete dropdown on outside click
             document.addEventListener('click', (e) => {
@@ -1314,7 +1701,7 @@
         // PWA Manifest Generation
         function setupPWAManifest() {
             const manifestObj = {
-                name: "Sfinsys Banking & Credit Ledger",
+                name: "Sfinsys Banking & Cash Ledger",
                 short_name: "Sfinsys",
                 start_url: ".",
                 display: "standalone",
@@ -1412,6 +1799,7 @@
                 document.getElementById('appMainContent').classList.remove('hidden');
                 updateDashboardGreetings();
                 renderAdminProfilePhoto();
+                renderGoldRates();
             } else {
                 clearPinKey();
                 document.getElementById('loginUsernameInput').value = appUsername;
@@ -1461,7 +1849,7 @@
             appUsername = newUser;
             appPin = newPin;
             saveStorage();
-            closeModal('passcodeModal');
+            closeModal('securitySettingsModal');
             document.getElementById('passcodeForm').reset();
             document.getElementById('displayUsernameLabel').innerText = appUsername;
             updateDashboardGreetings();
@@ -1471,16 +1859,15 @@
         function loadStorage() {
             try {
                 if (localStorage.getItem('sfinsys_parties')) parties = JSON.parse(localStorage.getItem('sfinsys_parties'));
-                else if (localStorage.getItem('santhoshgopal_parties')) parties = JSON.parse(localStorage.getItem('santhoshgopal_parties'));
-
                 if (localStorage.getItem('sfinsys_transactions')) transactions = JSON.parse(localStorage.getItem('sfinsys_transactions'));
-                else if (localStorage.getItem('santhoshgopal_transactions')) transactions = JSON.parse(localStorage.getItem('santhoshgopal_transactions'));
-
+                if (localStorage.getItem('sfinsys_cash_transactions')) cashTransactions = JSON.parse(localStorage.getItem('sfinsys_cash_transactions'));
                 if (localStorage.getItem('sfinsys_pin')) appPin = localStorage.getItem('sfinsys_pin');
-                else if (localStorage.getItem('santhoshgopal_pin')) appPin = localStorage.getItem('santhoshgopal_pin');
-
                 if (localStorage.getItem('sfinsys_username')) appUsername = localStorage.getItem('sfinsys_username');
                 if (localStorage.getItem('sfinsys_admin_photo')) adminPhotoUrl = localStorage.getItem('sfinsys_admin_photo');
+                if (localStorage.getItem('sfinsys_gold_24k')) goldRate24k = parseFloat(localStorage.getItem('sfinsys_gold_24k'));
+                if (localStorage.getItem('sfinsys_gold_22k')) goldRate22k = parseFloat(localStorage.getItem('sfinsys_gold_22k'));
+                if (localStorage.getItem('sfinsys_gold_last_update')) lastGoldRateUpdateTimestamp = localStorage.getItem('sfinsys_gold_last_update');
+                if (localStorage.getItem('sfinsys_gold_source')) goldRateSourceType = localStorage.getItem('sfinsys_gold_source');
             } catch (err) { console.error(err); }
         }
 
@@ -1488,28 +1875,36 @@
             try {
                 localStorage.setItem('sfinsys_parties', JSON.stringify(parties));
                 localStorage.setItem('sfinsys_transactions', JSON.stringify(transactions));
+                localStorage.setItem('sfinsys_cash_transactions', JSON.stringify(cashTransactions));
                 localStorage.setItem('sfinsys_pin', appPin);
                 localStorage.setItem('sfinsys_username', appUsername);
                 localStorage.setItem('sfinsys_admin_photo', adminPhotoUrl);
+                localStorage.setItem('sfinsys_gold_24k', goldRate24k.toString());
+                localStorage.setItem('sfinsys_gold_22k', goldRate22k.toString());
+                localStorage.setItem('sfinsys_gold_last_update', lastGoldRateUpdateTimestamp);
+                localStorage.setItem('sfinsys_gold_source', goldRateSourceType);
             } catch (err) { alert("Storage full: Attached files are too large."); }
         }
 
         function setDefaultDates() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('txnDate').value = today;
-            document.getElementById('calcEndDate').value = today;
+            document.getElementById('cashTxnDate').value = today;
+            document.getElementById('cashEndDate').value = today;
             document.getElementById('printModalEndDate').value = today;
             document.getElementById('ledgerEndDate').value = today;
-            
-            let d = new Date();
-            d.setDate(d.getDate() - 30);
-            document.getElementById('calcStartDate').value = d.toISOString().split('T')[0];
         }
 
         function resetLedgerDateFilter() {
             document.getElementById('ledgerStartDate').value = '';
             document.getElementById('ledgerEndDate').value = new Date().toISOString().split('T')[0];
             renderLedgerTable();
+        }
+
+        function resetCashDateFilter() {
+            document.getElementById('cashStartDate').value = '';
+            document.getElementById('cashEndDate').value = new Date().toISOString().split('T')[0];
+            renderCashList();
         }
 
         function togglePartySearchClear() {
@@ -1538,14 +1933,27 @@
             renderLedgerTable();
         }
 
+        function toggleCashSearchClear() {
+            const query = document.getElementById('cashSearchInput').value;
+            const btn = document.getElementById('clearCashSearchBtn');
+            if (query.trim().length > 0) btn.classList.remove('hidden');
+            else btn.classList.add('hidden');
+        }
+
+        function clearCashSearch() {
+            document.getElementById('cashSearchInput').value = '';
+            toggleCashSearchClear();
+            renderCashList();
+        }
+
         function switchTab(tabName) {
-            ['dashboard', 'entries', 'parties', 'interest', 'settings'].forEach(t => {
-                document.getElementById(`tab-${t}`).classList.add('hidden');
+            ['dashboard', 'entries', 'parties', 'cash'].forEach(t => {
+                document.getElementById(`tab-${t}`)?.classList.add('hidden');
                 document.getElementById(`nav-${t}`)?.classList.remove('text-amber-400');
                 document.getElementById(`nav-${t}`)?.classList.add('hover:text-white');
             });
 
-            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            document.getElementById(`tab-${tabName}`)?.classList.remove('hidden');
             document.getElementById(`nav-${tabName}`)?.classList.add('text-amber-400');
         }
 
@@ -1652,7 +2060,8 @@
             const matches = parties.filter(p => 
                 p.name.toLowerCase().includes(lower) || 
                 (p.phone && p.phone.toLowerCase().includes(lower)) ||
-                (p.ref && p.ref.toLowerCase().includes(lower))
+                (p.ref && p.ref.toLowerCase().includes(lower)) ||
+                (p.bankAcc && p.bankAcc.toLowerCase().includes(lower))
             );
 
             if (matches.length > 0) {
@@ -1662,12 +2071,12 @@
                             <p class="font-extrabold text-black" style="color: #000000 !important;">${p.name}</p>
                             <p class="text-[10px] text-slate-600 font-semibold">${p.phone ? p.phone : 'No Phone'}</p>
                         </div>
-                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-amber-500"></i>
                     </div>
                 `).join('');
                 autocompleteBox.classList.remove('hidden');
             } else {
-                autocompleteBox.innerHTML = `<div class="px-4 py-3 text-xs text-slate-500 italic">No matching names for "${query}"</div>`;
+                autocompleteBox.innerHTML = `<div class="px-4 py-3 text-xs text-slate-500 italic">No matching records for "${query}"</div>`;
                 autocompleteBox.classList.remove('hidden');
             }
             filterPartyDropdownOptions();
@@ -1707,7 +2116,7 @@
             onPartyFilterChange();
         }
 
-        // ==================== INSTANT SEARCH BAR FOR ADD TRANSACTION MODAL ====================
+        // INSTANT SEARCH BAR FOR ADD TRANSACTION MODAL
         function handleTxnPartySearchInput() {
             const query = document.getElementById('txnPartySearchInput').value.trim();
             const autocompleteBox = document.getElementById('txnAutocompleteSuggestions');
@@ -1786,19 +2195,11 @@
                 document.getElementById('qrCardPayee').innerText = `Payee: ${party.name}`;
                 document.getElementById('qrCardBank').innerText = party.bankAcc ? `Account: ${party.bankAcc}` : 'Bank: Not specified';
                 
-                const metrics = calculatePartyMetrics(party.id, document.getElementById('calcEndDate').value || new Date().toISOString().split('T')[0]);
+                const metrics = calculatePartyMetrics(party.id, new Date().toISOString().split('T')[0]);
                 document.getElementById('mainPartyQrCodeImg').src = generateUpiQrUrl(party.upiId, party.name, metrics.totalPayable);
                 qrCard.classList.remove('hidden');
             } else {
                 qrCard.classList.add('hidden');
-            }
-
-            if (party) {
-                if (party.calcSystem) {
-                    document.getElementById('calcSystem').value = party.calcSystem;
-                    onInterestSystemChange();
-                }
-                if (party.calcRate !== undefined) document.getElementById('calcRate').value = party.calcRate;
             }
 
             renderLedgerTable();
@@ -1836,7 +2237,7 @@
                 return;
             }
 
-            const asOfDateStr = document.getElementById('calcEndDate').value || new Date().toISOString().split('T')[0];
+            const asOfDateStr = new Date().toISOString().split('T')[0];
 
             container.innerHTML = filteredParties.map(p => {
                 const metrics = calculatePartyMetrics(p.id, asOfDateStr);
@@ -1893,6 +2294,199 @@
                     </div>
                 `;
             }).join('');
+        }
+
+        // ==================== CASH ON HAND LOGIC & CALCULATIONS ====================
+        function saveCashTransaction(e) {
+            e.preventDefault();
+            const type = document.getElementById('cashTxnType').value;
+            const amount = parseFloat(document.getElementById('cashTxnAmount').value);
+            const date = document.getElementById('cashTxnDate').value;
+            const note = document.getElementById('cashTxnNote').value.trim();
+
+            if (isNaN(amount) || amount <= 0 || !note) return;
+
+            cashTransactions.push({ id: 'c_' + Date.now(), type, amount, date, note });
+            saveStorage();
+            closeModal('cashEntryModal');
+            document.getElementById('cashTxnForm').reset();
+            setDefaultDates();
+            renderCashList();
+            showToast("Cash Movement Recorded!");
+        }
+
+        function deleteCashTransaction(id) {
+            if (confirm("Delete this cash record?")) {
+                cashTransactions = cashTransactions.filter(c => c.id !== id);
+                saveStorage();
+                renderCashList();
+                showToast("Cash Entry Deleted", "fa-trash-can");
+            }
+        }
+
+        function getFilteredCashList() {
+            const searchVal = document.getElementById('cashSearchInput').value.toLowerCase().trim();
+            const filterType = document.getElementById('cashTypeFilter').value;
+            const startDate = document.getElementById('cashStartDate').value;
+            const endDate = document.getElementById('cashEndDate').value;
+
+            // Combine manual cash txns and ledger cash entries
+            let combined = [];
+
+            cashTransactions.forEach(c => {
+                combined.push({
+                    id: c.id,
+                    date: c.date,
+                    type: c.type,
+                    amount: c.amount,
+                    note: c.note,
+                    isManual: true
+                });
+            });
+
+            transactions.filter(t => t.mode === 'Cash').forEach(t => {
+                const party = parties.find(p => p.id === t.partyId);
+                const partyName = party ? party.name : 'Ledger';
+                let type = 'IN';
+                let label = `Party Rec. (${partyName})`;
+                if (t.type === 'GIVEN') {
+                    type = 'OUT';
+                    label = `Party Given (${partyName})`;
+                } else if (t.type === 'INTEREST_PAID') {
+                    type = 'IN';
+                    label = `Int. Paid (${partyName})`;
+                }
+
+                combined.push({
+                    id: t.id,
+                    date: t.date,
+                    type: type,
+                    amount: t.amount,
+                    note: `${label} - ${t.note || ''}`,
+                    isManual: false
+                });
+            });
+
+            return combined.filter(c => {
+                const matchType = filterType === 'ALL' || c.type === filterType;
+                const matchSearch = !searchVal || c.note.toLowerCase().includes(searchVal) || c.amount.toString().includes(searchVal);
+                let matchDate = true;
+                if (startDate && c.date < startDate) matchDate = false;
+                if (endDate && c.date > endDate) matchDate = false;
+                return matchType && matchSearch && matchDate;
+            });
+        }
+
+        function renderCashList() {
+            const container = document.getElementById('cashTransactionsList');
+            const searchVal = document.getElementById('cashSearchInput').value.toLowerCase().trim();
+            const filterType = document.getElementById('cashTypeFilter').value;
+            const startDate = document.getElementById('cashStartDate').value;
+            const endDate = document.getElementById('cashEndDate').value;
+
+            let cashIn = 0;
+            let cashOut = 0;
+
+            let filtered = getFilteredCashList().sort((a,b) => new Date(b.date) - new Date(a.date));
+
+            filtered.forEach(c => {
+                if (c.type === 'IN') cashIn += c.amount;
+                else cashOut += c.amount;
+            });
+
+            const netVault = cashIn - cashOut;
+
+            document.getElementById('cashInTotal').innerText = formatINR(cashIn);
+            document.getElementById('cashOutTotal').innerText = formatINR(cashOut);
+            document.getElementById('cashOnHandsNet').innerText = formatINR(netVault);
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="p-6 text-center text-xs text-slate-400 bg-white rounded-2xl border border-slate-200">No cash entries found for the selected filter.</div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(c => `
+                <div class="bg-white p-3 rounded-xl border border-slate-200/80 shadow-sm flex justify-between items-center text-xs">
+                    <div>
+                        <div class="flex items-center gap-1.5 mb-0.5">
+                            <span class="px-2 py-0.5 rounded text-[8px] font-black ${c.type === 'IN' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                                ${c.type === 'IN' ? 'CASH IN' : 'CASH OUT'}
+                            </span>
+                            <span class="text-[10px] text-slate-400 font-bold">${formatDateDDMMYYYY(c.date)}</span>
+                        </div>
+                        <p class="font-extrabold text-slate-900">${c.note}</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="font-black text-sm ${c.type === 'IN' ? 'text-emerald-600' : 'text-rose-600'}">${c.type === 'IN' ? '+' : '-'}${formatINR(c.amount)}</span>
+                        ${c.isManual ? `
+                            <button onclick="deleteCashTransaction('${c.id}')" class="block ml-auto text-slate-400 hover:text-rose-600 text-[10px] mt-1" title="Delete">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function generateCashVaultPrintView() {
+            const startDate = document.getElementById('cashStartDate').value;
+            const endDate = document.getElementById('cashEndDate').value || new Date().toISOString().split('T')[0];
+
+            const filteredCash = getFilteredCashList().sort((a,b) => new Date(a.date) - new Date(b.date));
+
+            let cashIn = 0;
+            let cashOut = 0;
+
+            filteredCash.forEach(c => {
+                if (c.type === 'IN') cashIn += c.amount;
+                else cashOut += c.amount;
+            });
+
+            document.getElementById('cashPrintDate').innerText = formatDateDDMMYYYY(new Date());
+            document.getElementById('cashPrintFilterRange').innerText = startDate && endDate ? `${formatDateDDMMYYYY(startDate)} to ${formatDateDDMMYYYY(endDate)}` : `Up to ${formatDateDDMMYYYY(endDate)}`;
+
+            document.getElementById('cashPrintTotalIn').innerText = formatINR(cashIn);
+            document.getElementById('cashPrintTotalOut').innerText = formatINR(cashOut);
+            document.getElementById('cashPrintNetVault').innerText = formatINR(cashIn - cashOut);
+
+            const tbody = document.getElementById('cashPrintHistoryTable');
+            if (filteredCash.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">No cash records found for the selected date range.</td></tr>`;
+            } else {
+                tbody.innerHTML = filteredCash.map(c => `
+                    <tr class="border-b border-slate-200">
+                        <td class="p-2 font-bold">${formatDateDDMMYYYY(c.date)}</td>
+                        <td class="p-2 font-extrabold ${c.type === 'IN' ? 'text-emerald-700' : 'text-rose-700'}">${c.type === 'IN' ? 'CASH IN' : 'CASH OUT'}</td>
+                        <td class="p-2 text-slate-700">${c.note}</td>
+                        <td class="p-2 text-right font-black text-emerald-700">${c.type === 'IN' ? formatINR(c.amount) : '-'}</td>
+                        <td class="p-2 text-right font-black text-rose-700">${c.type === 'OUT' ? formatINR(c.amount) : '-'}</td>
+                    </tr>
+                `).join('');
+            }
+
+            document.getElementById('individualPrintContent').classList.add('hidden');
+            document.getElementById('masterPrintContent').classList.add('hidden');
+            document.getElementById('cashVaultPrintContent').classList.remove('hidden');
+            window.print();
+        }
+
+        function calcDenominations() {
+            const d500 = (parseInt(document.getElementById('denom500').value) || 0) * 500;
+            const d200 = (parseInt(document.getElementById('denom200').value) || 0) * 200;
+            const d100 = (parseInt(document.getElementById('denom100').value) || 0) * 100;
+            const d50 = (parseInt(document.getElementById('denom50').value) || 0) * 50;
+            const d20 = (parseInt(document.getElementById('denom20').value) || 0) * 20;
+            const d10 = (parseInt(document.getElementById('denom10').value) || 0) * 10;
+
+            const total = d500 + d200 + d100 + d50 + d20 + d10;
+            document.getElementById('denomTotalDisplay').innerText = formatINR(total);
+        }
+
+        function resetDenominations() {
+            ['denom500','denom200','denom100','denom50','denom20','denom10'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            calcDenominations();
         }
 
         function deleteParty(pid) {
@@ -1985,6 +2579,7 @@
             document.getElementById('imagePreviewContainer').classList.add('hidden');
             renderLedgerTable();
             renderPartiesList();
+            renderCashList();
             updateStats();
             showToast("Ledger Entry Saved!");
         }
@@ -1995,6 +2590,7 @@
                 saveStorage();
                 renderLedgerTable();
                 renderPartiesList();
+                renderCashList();
                 updateStats();
                 showToast("Entry deleted", "fa-trash-can");
             }
@@ -2026,11 +2622,8 @@
 
         function calculatePartyMetrics(partyId, endDateStr) {
             const party = parties.find(p => p.id === partyId);
-            const fallbackSys = document.getElementById('calcSystem').value;
-            const fallbackRate = parseFloat(document.getElementById('calcRate').value) || 0;
-
-            const system = party?.calcSystem || fallbackSys;
-            const rate = system === 'zero_interest' ? 0 : (party?.calcRate !== undefined ? party.calcRate : fallbackRate);
+            const system = party?.calcSystem || 'rupee_monthly';
+            const rate = system === 'zero_interest' ? 0 : (party?.calcRate !== undefined ? party.calcRate : 2);
             const partyTxns = transactions.filter(t => t.partyId === partyId);
 
             let totalGiven = 0;
@@ -2056,43 +2649,6 @@
             const totalPayable = netBalance + pendingInterest;
 
             return { totalGiven, totalReceived, netBalance, grossInterest, interestPaidTotal, pendingInterest, totalPayable, creditGivenDates, system, rate };
-        }
-
-        function applyMainInterestSettings(e) {
-            if (e && e.preventDefault) e.preventDefault();
-            renderLedgerTable();
-            renderPartiesList();
-            updateStats();
-        }
-
-        function onInterestSystemChange() {
-            const system = document.getElementById('calcSystem').value;
-            const rateInput = document.getElementById('calcRate');
-
-            if (system === 'zero_interest') {
-                document.getElementById('rateLabel').innerText = 'Rate (Zero Interest)';
-                rateInput.value = 0;
-                rateInput.disabled = true;
-            } else if (system === 'rupee_monthly') {
-                document.getElementById('rateLabel').innerText = 'Rate (₹ / ₹100 / mo)';
-                rateInput.disabled = false;
-                if (parseFloat(rateInput.value) === 0) rateInput.value = 2;
-            } else if (system === 'compound_pm') {
-                document.getElementById('rateLabel').innerText = 'Rate (% Compound p.m.)';
-                rateInput.disabled = false;
-                if (parseFloat(rateInput.value) === 0) rateInput.value = 2;
-            } else if (system === 'compound_pa') {
-                document.getElementById('rateLabel').innerText = 'Rate (% Compound p.a.)';
-                rateInput.disabled = false;
-                if (parseFloat(rateInput.value) === 0) rateInput.value = 12;
-            } else {
-                document.getElementById('rateLabel').innerText = 'Rate (% Simple p.a.)';
-                rateInput.disabled = false;
-                if (parseFloat(rateInput.value) === 0) rateInput.value = 12;
-            }
-            renderLedgerTable();
-            renderPartiesList();
-            updateStats();
         }
 
         function renderLedgerTable() {
@@ -2175,7 +2731,7 @@
 
         function updateStats() {
             const selectedPartyId = document.getElementById('partyFilterSelect').value;
-            const endDateStr = document.getElementById('calcEndDate').value || new Date().toISOString().split('T')[0];
+            const endDateStr = new Date().toISOString().split('T')[0];
 
             let totalGiven = 0, totalReceived = 0, netBalance = 0, grossInterest = 0, interestPaidTotal = 0, pendingInterest = 0, totalPayable = 0;
 
@@ -2197,12 +2753,6 @@
             document.getElementById('statTotalInterest').innerText = formatINR(grossInterest);
             document.getElementById('statInterestPaid').innerText = formatINR(interestPaidTotal);
             document.getElementById('statTotalPayable').innerText = formatINR(totalPayable);
-
-            document.getElementById('resPrincipal').innerText = formatINR(netBalance);
-            document.getElementById('resInterest').innerText = formatINR(grossInterest);
-            document.getElementById('resInterestPaid').innerText = formatINR(interestPaidTotal);
-            document.getElementById('resNetInterest').innerText = formatINR(pendingInterest);
-            document.getElementById('resTotal').innerText = formatINR(totalPayable);
         }
 
         function openModal(id) {
@@ -2212,7 +2762,7 @@
                     clearTxnPartySearch();
                 }
             }
-            if (id === 'passcodeModal') {
+            if (id === 'securitySettingsModal') {
                 document.getElementById('modalUsername').value = appUsername;
                 document.getElementById('modalPasscodeError').classList.add('hidden');
             }
@@ -2227,7 +2777,7 @@
             const party = parties.find(p => p.id === pid);
             if (!party) return;
 
-            const endDate = document.getElementById('calcEndDate').value || new Date().toISOString().split('T')[0];
+            const endDate = new Date().toISOString().split('T')[0];
             const m = calculatePartyMetrics(pid, endDate);
 
             let msg = `*Sfinsys - Payment Statement*\n`;
@@ -2241,8 +2791,6 @@
                     msg += `  ${i + 1}. Date: ${formatDateDDMMYYYY(cg.date)} - ${formatINR(cg.amount)}\n`;
                 });
                 msg += `\n`;
-            } else {
-                msg += `*Credit Given Date:* N/A\n\n`;
             }
 
             msg += `*Total Credit Given:* ${formatINR(m.totalGiven)}\n`;
@@ -2262,7 +2810,7 @@
 
             const encodedMsg = encodeURIComponent(msg);
             const waUrl = phoneNum ? `https://wa.me/${phoneNum}?text=${encodedMsg}` : `https://api.whatsapp.com/send?text=${encodedMsg}`;
-            window.open(waUrl, '_blank');
+            window.open(waUrl, '_blank'); closeModal('ratingModal');
         }
 
         function shareStatementWhatsApp() {
@@ -2306,6 +2854,7 @@
             document.getElementById('masterTotalPayable').innerText = formatINR(grossTotalPayable);
 
             document.getElementById('individualPrintContent').classList.add('hidden');
+            document.getElementById('cashVaultPrintContent').classList.add('hidden');
             document.getElementById('masterPrintContent').classList.remove('hidden');
             closeModal('printModal');
             window.print();
@@ -2390,6 +2939,7 @@
             }
 
             document.getElementById('masterPrintContent').classList.add('hidden');
+            document.getElementById('cashVaultPrintContent').classList.add('hidden');
             document.getElementById('individualPrintContent').classList.remove('hidden');
             closeModal('printModal');
             window.print();
@@ -2422,7 +2972,7 @@
         }
 
         function downloadBackupJSON() {
-            const data = { app: "SfinsysPWA", username: appUsername, pin: appPin, adminPhotoUrl, parties, transactions };
+            const data = { app: "SfinsysPWA", username: appUsername, pin: appPin, adminPhotoUrl, goldRate24k, goldRate22k, lastGoldRateUpdateTimestamp, goldRateSourceType, parties, transactions, cashTransactions };
             const link = document.createElement("a");
             link.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
             link.download = `Sfinsys_Ledger_Backup.json`;
@@ -2439,14 +2989,21 @@
                     if (imported.parties && imported.transactions) {
                         parties = imported.parties;
                         transactions = imported.transactions;
+                        if (imported.cashTransactions) cashTransactions = imported.cashTransactions;
                         if (imported.pin) appPin = imported.pin;
                         if (imported.username) appUsername = imported.username;
                         if (imported.adminPhotoUrl) adminPhotoUrl = imported.adminPhotoUrl;
+                        if (imported.goldRate24k) goldRate24k = imported.goldRate24k;
+                        if (imported.goldRate22k) goldRate22k = imported.goldRate22k;
+                        if (imported.lastGoldRateUpdateTimestamp) lastGoldRateUpdateTimestamp = imported.lastGoldRateUpdateTimestamp;
+                        if (imported.goldRateSourceType) goldRateSourceType = imported.goldRateSourceType;
                         saveStorage();
                         populatePartyDropdowns();
                         renderPartiesList();
                         renderLedgerTable();
+                        renderCashList();
                         updateStats();
+                        renderGoldRates();
                         updateDashboardGreetings();
                         renderAdminProfilePhoto();
                         closeModal('backupModal');
