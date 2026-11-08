@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Sfinsys PWA v6.3</title>
+    <title>Sfinsys PWA v6.5</title>
 
     <!-- Android Web App Meta Tags -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -115,7 +115,7 @@
             </div>
 
             <h2 class="text-xl font-black text-white tracking-wide">Sfinsys</h2>
-            <p class="text-[11px] text-slate-400 mt-1 font-medium">Secure Banking & Cash Ledger</p>
+            <p class="text-[11px] text-slate-400 mt-1 font-medium">Secure Banking, Cash Ledger & Jewellery Estimator</p>
 
             <div class="mt-6 space-y-4">
                 <!-- User Login Credential Input -->
@@ -227,55 +227,28 @@
                     </div>
                 </div>
 
-                <!-- DAILY / LIVE GOLD RATE DISPLAY WIDGET CARD WITH INTERNET AUTO-SYNC -->
+                <!-- MAIN PAGE DAILY GOLD RATE TRACKER & ESTIMATOR DIRECT REDIRECT BUTTON -->
                 <div class="bg-gradient-to-br from-amber-950 via-slate-900 to-slate-950 text-white p-4 rounded-2xl border border-amber-500/40 shadow-md space-y-3">
-                    <div class="flex items-center justify-between border-b border-amber-500/20 pb-2">
-                        <div class="flex items-center space-x-2">
-                            <div class="w-8 h-8 bg-amber-500 text-indigo-950 font-black text-sm rounded-xl flex items-center justify-center shadow">
-                                <i class="fa-solid fa-coins"></i>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2.5">
+                            <div class="w-10 h-10 bg-amber-500 text-indigo-950 font-black text-base rounded-2xl flex items-center justify-center shadow">
+                                <i class="fa-solid fa-calculator"></i>
                             </div>
                             <div>
-                                <div class="flex items-center gap-2">
-                                    <h3 class="font-extrabold text-xs uppercase tracking-wider text-amber-400">Daily Gold Rate Tracker</h3>
-                                    <span id="goldRateLiveBadge" class="bg-emerald-900/80 text-emerald-300 border border-emerald-500/40 text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1">
-                                        <i class="fa-solid fa-wifi text-[8px]"></i> Auto Live
-                                    </span>
-                                </div>
-                                <p class="text-[10px] text-slate-300" id="goldRateDateLabel">Today's Market Rate / Gram</p>
+                                <h3 class="font-black text-sm uppercase tracking-wider text-amber-400">Gold Rate & Jewellery Estimator</h3>
+                                <p class="text-[10px] text-slate-300">Live 24K, 22K, 18K Table & Instant Cost Calculator</p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-1.5">
-                            <button onclick="fetchLiveGoldRateFromInternet(true)" id="dashboardSyncBtn" class="bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 p-1.5 rounded-xl text-xs font-black transition shadow flex items-center justify-center" title="Sync live rate now">
-                                <i class="fa-solid fa-arrows-rotate"></i>
-                            </button>
-                            <button onclick="openGoldRateModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-2.5 py-1.5 rounded-xl text-[10px] font-black transition shadow flex items-center gap-1">
-                                <i class="fa-solid fa-pen-to-square"></i> Update Rate
-                            </button>
-                        </div>
+                        <span class="bg-emerald-900/80 text-emerald-300 border border-emerald-500/40 text-[9px] font-black px-2 py-1 rounded-md uppercase tracking-wider flex items-center gap-1">
+                            <i class="fa-solid fa-wifi text-[8px]"></i> Live Rates
+                        </span>
                     </div>
 
-                    <!-- 24K and 22K Gold Rate Cards -->
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="bg-slate-900/90 p-3 rounded-xl border border-amber-400/30 text-center relative overflow-hidden">
-                            <div class="flex items-center justify-center gap-1 mb-1">
-                                <span class="bg-amber-400/20 text-amber-300 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">24K Pure Gold</span>
-                            </div>
-                            <p id="goldRate24kDisplay" class="text-base font-black text-amber-300">₹14,350 / g</p>
-                            <p id="goldRate24k10gDisplay" class="text-[9px] text-slate-400 font-semibold mt-0.5">₹1,43,500 per 10g</p>
-                        </div>
-                        <div class="bg-slate-900/90 p-3 rounded-xl border border-amber-400/30 text-center relative overflow-hidden">
-                            <div class="flex items-center justify-center gap-1 mb-1">
-                                <span class="bg-amber-400/20 text-amber-300 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">22K Standard Gold</span>
-                            </div>
-                            <p id="goldRate22kDisplay" class="text-base font-black text-amber-400">₹13,150 / g</p>
-                            <p id="goldRate22k10gDisplay" class="text-[9px] text-slate-400 font-semibold mt-0.5">₹1,31,500 per 10g</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between text-[9px] text-slate-400 font-medium pt-0.5">
-                        <span id="goldRateLastUpdatedLabel"><i class="fa-solid fa-clock text-amber-400/70 mr-1"></i>Last Updated: Initializing...</span>
-                        <span id="goldRateSourceLabel" class="text-emerald-400/80 font-bold">Source: Live Internet API</span>
-                    </div>
+                    <!-- Main Page Click Button to Redirect to Dedicated Gold Tracker Page/Modal -->
+                    <button onclick="openGoldRateModal()" class="w-full py-3.5 bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-indigo-950 font-black text-xs rounded-xl shadow-lg transition transform active:scale-98 flex items-center justify-center gap-2 border border-amber-300">
+                        <i class="fa-solid fa-calculator text-sm"></i>
+                        <span>Open Rate Table & Gold Jewellery Estimator</span>
+                    </button>
                 </div>
 
                 <!-- Selected Party Banner & Autocomplete Customer Search -->
@@ -900,104 +873,248 @@
         </div>
     </div>
 
-    <!-- Modal: Update Daily Gold Rate with Live Internet Fetch Integration -->
-    <div id="goldRateModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden no-print">
-        <div class="bg-white w-full max-w-sm rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl sheet-up text-slate-800 space-y-4">
+    <!-- Modal: Dedicated Gold Rate Tracker Page & Gold Jewellery Estimator -->
+    <div id="goldRateModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden no-print">
+        <div class="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-4 sm:p-5 shadow-2xl sheet-up max-h-[92vh] overflow-y-auto text-slate-800 space-y-4">
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
                 <div class="flex items-center space-x-2">
                     <div class="w-8 h-8 bg-amber-500 text-indigo-950 rounded-xl font-black text-sm flex items-center justify-center shadow">
                         <i class="fa-solid fa-coins"></i>
                     </div>
-                    <h3 class="font-extrabold text-slate-900 text-sm">Update Daily Gold Rates</h3>
+                    <h3 class="font-extrabold text-slate-900 text-sm">Gold Rates & Jewellery Estimator</h3>
                 </div>
                 <button onclick="closeModal('goldRateModal')" class="text-slate-400 hover:text-slate-600 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
 
-            <!-- Auto-Fetch Live Rate Trigger Banner -->
-            <div class="bg-slate-900 text-white p-3 rounded-2xl border border-amber-400/40 space-y-2">
-                <div class="flex items-center justify-between text-[11px]">
-                    <span class="font-extrabold text-amber-400 flex items-center gap-1">
-                        <i class="fa-solid fa-cloud-arrow-down"></i> Auto Live Internet Sync
-                    </span>
-                    <span class="text-[9px] text-slate-300" id="modalGoldSyncStatus">Ready to sync</span>
+            <!-- Live Bullion Market Header Cards Display -->
+            <div class="bg-gradient-to-br from-amber-950 via-slate-900 to-slate-950 text-white p-3.5 rounded-2xl border border-amber-500/40 shadow-md space-y-3">
+                <div class="flex items-center justify-between border-b border-amber-500/20 pb-2">
+                    <div>
+                        <h4 class="font-extrabold text-xs uppercase tracking-wider text-amber-400">Live Bullion Market Rates</h4>
+                        <p class="text-[10px] text-slate-300" id="modalGoldRateDateLabel">Today's Market Rate / Gram</p>
+                    </div>
+                    <button onclick="fetchLiveGoldRateFromInternet(true)" id="modalSyncButton" class="bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 p-2 rounded-xl text-xs font-black transition shadow flex items-center gap-1.5" title="Sync live rate now">
+                        <i class="fa-solid fa-arrows-rotate"></i> <span>Sync</span>
+                    </button>
                 </div>
-                <button type="button" onclick="fetchLiveGoldRateFromInternet(true)" id="btnModalAutoFetchGold" class="w-full py-2 bg-gradient-to-r from-amber-500 to-amber-600 active:from-amber-600 active:to-amber-700 text-indigo-950 font-black text-xs rounded-xl shadow transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-wifi"></i> Auto-Fetch Live Rates Now
-                </button>
+
+                <div class="grid grid-cols-3 gap-2">
+                    <div class="bg-slate-900/90 p-2 rounded-xl border border-amber-400/30 text-center">
+                        <span class="bg-amber-400/20 text-amber-300 text-[8px] font-black px-1 py-0.5 rounded uppercase block mb-1">24K (999)</span>
+                        <p id="modalGoldRate24kDisplay" class="text-xs font-black text-amber-300">₹14,357 / g</p>
+                    </div>
+                    <div class="bg-slate-900/90 p-2 rounded-xl border border-amber-400/30 text-center">
+                        <span class="bg-amber-400/20 text-amber-300 text-[8px] font-black px-1 py-0.5 rounded uppercase block mb-1">22K (916)</span>
+                        <p id="modalGoldRate22kDisplay" class="text-xs font-black text-amber-400">₹13,161 / g</p>
+                    </div>
+                    <div class="bg-slate-900/90 p-2 rounded-xl border border-amber-400/30 text-center">
+                        <span class="bg-amber-400/20 text-amber-300 text-[8px] font-black px-1 py-0.5 rounded uppercase block mb-1">18K (750)</span>
+                        <p id="modalGoldRate18kDisplay" class="text-xs font-black text-amber-200">₹10,768 / g</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between text-[9px] text-slate-400 font-medium pt-0.5">
+                    <span id="modalGoldRateLastUpdatedLabel"><i class="fa-solid fa-clock text-amber-400/70 mr-1"></i>Updated: Just now</span>
+                    <span id="modalGoldRateSourceLabel" class="text-emerald-400/80 font-bold">Source: Live Internet API</span>
+                </div>
             </div>
 
-            <form onsubmit="saveGoldRates(event)" class="space-y-3 text-xs">
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">24K Gold Rate (₹ / Gram) *</label>
-                    <input type="number" id="inputGoldRate24k" step="0.01" required placeholder="14350" class="w-full border border-slate-200 rounded-xl p-3 font-black text-sm" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+            <!-- ==================== 1. STANDARD WEIGHT RATE TABLE ==================== -->
+            <div class="bg-slate-950 text-white rounded-2xl border border-amber-500/30 overflow-hidden shadow-md">
+                <div class="bg-slate-900 p-2.5 px-3 border-b border-slate-800 flex items-center justify-between">
+                    <h4 class="font-black text-xs text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-scale-balanced"></i> Standard Weight Rate Table
+                    </h4>
+                    <span class="text-[9px] bg-amber-500/20 text-amber-300 font-bold px-2 py-0.5 rounded">Live Tally</span>
                 </div>
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">22K Gold Rate (₹ / Gram) *</label>
-                    <input type="number" id="inputGoldRate22k" step="0.01" required placeholder="13150" class="w-full border border-slate-200 rounded-xl p-3 font-black text-sm" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-slate-900/90 text-slate-300 border-b border-slate-800 text-[9px] font-bold uppercase tracking-wider">
+                                <th class="p-2.5 pl-3">Weight</th>
+                                <th class="p-2.5 text-right text-emerald-400">24K (999)</th>
+                                <th class="p-2.5 text-right text-amber-400">22K (916)</th>
+                                <th class="p-2.5 text-right pr-3 text-sky-400">18K (750)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/60 font-black text-[11px]">
+                            <tr>
+                                <td class="p-2.5 pl-3 text-slate-300 font-bold">1 Gram</td>
+                                <td id="tbl24k1g" class="p-2.5 text-right text-emerald-400">₹14,357</td>
+                                <td id="tbl22k1g" class="p-2.5 text-right text-amber-400">₹13,161</td>
+                                <td id="tbl18k1g" class="p-2.5 text-right pr-3 text-sky-300">₹10,768</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2.5 pl-3 text-slate-300 font-bold">8 Grams <span class="text-[9px] text-slate-400 font-medium block sm:inline">(1 Sovereign/Pavan)</span></td>
+                                <td id="tbl24k8g" class="p-2.5 text-right text-emerald-400">₹1,14,856</td>
+                                <td id="tbl22k8g" class="p-2.5 text-right text-amber-400">₹1,05,288</td>
+                                <td id="tbl18k8g" class="p-2.5 text-right pr-3 text-sky-300">₹86,144</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2.5 pl-3 text-slate-300 font-bold">10 Grams <span class="text-[9px] text-slate-400 font-medium block sm:inline">(1 Tola)</span></td>
+                                <td id="tbl24k10g" class="p-2.5 text-right text-emerald-400">₹1,43,570</td>
+                                <td id="tbl22k10g" class="p-2.5 text-right text-amber-400">₹1,31,610</td>
+                                <td id="tbl18k10g" class="p-2.5 text-right pr-3 text-sky-300">₹1,07,680</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2.5 pl-3 text-slate-300 font-bold">100 Grams <span class="text-[9px] text-slate-400 font-medium block sm:inline">(Bar)</span></td>
+                                <td id="tbl24k100g" class="p-2.5 text-right text-emerald-400">₹14,35,700</td>
+                                <td id="tbl22k100g" class="p-2.5 text-right text-amber-400">₹13,16,100</td>
+                                <td id="tbl18k100g" class="p-2.5 text-right pr-3 text-sky-300">₹10,76,800</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeModal('goldRateModal')" class="px-4 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-bold">Cancel</button>
-                    <button type="submit" class="px-5 py-2.5 bg-amber-500 text-indigo-950 font-extrabold rounded-xl shadow">Save Rates</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Dedicated Security & Passcode Settings Modal -->
-    <div id="securitySettingsModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden no-print">
-        <div class="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl sheet-up max-h-[90vh] overflow-y-auto text-slate-800 space-y-4">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-amber-500 text-indigo-950 rounded-xl font-black text-sm flex items-center justify-center">
-                        <i class="fa-solid fa-shield-halved"></i>
-                    </div>
-                    <h3 class="font-black text-slate-900 text-sm">Security & App Configuration</h3>
-                </div>
-                <button onclick="closeModal('securitySettingsModal')" class="text-slate-400 hover:text-slate-600 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
 
-            <!-- Credentials & PIN change form -->
-            <form id="passcodeForm" onsubmit="handlePasscodeChangeSubmit(event)" class="space-y-3 text-xs">
-                <h4 class="font-extrabold text-slate-900 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-                    <i class="fa-solid fa-key text-amber-500"></i> Change Login Passcode
-                </h4>
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">Username / User ID *</label>
-                    <input type="text" id="modalUsername" required placeholder="admin" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 font-bold focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+            <!-- ==================== 2. GOLD JEWELLERY ESTIMATOR (CALCULATOR) ==================== -->
+            <div class="bg-amber-500/5 border border-amber-400/40 rounded-2xl p-3.5 space-y-3">
+                <div class="flex items-center justify-between border-b border-amber-200/50 pb-2">
+                    <h4 class="font-extrabold text-xs text-amber-950 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-calculator text-amber-600"></i> Gold Jewellery Estimator
+                    </h4>
+                    <span class="text-[9px] bg-amber-500 text-indigo-950 font-black px-2 py-0.5 rounded-full uppercase">Instant Cost</span>
                 </div>
 
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">Current Passcode *</label>
-                    <input type="password" id="modalCurrentPin" maxlength="10" required placeholder="••••" inputmode="numeric" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-center text-base font-black tracking-widest focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-2 text-xs">
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">New 4-Digit PIN *</label>
-                        <input type="password" id="modalNewPin" maxlength="4" required placeholder="••••" inputmode="numeric" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-center text-base font-black tracking-widest focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        <label class="block font-bold text-slate-700 mb-1">Purity Grade</label>
+                        <select id="estPuritySelect" onchange="calculateJewelleryEstimate()" class="w-full border border-slate-300 rounded-xl p-2.5 font-black bg-white" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                            <option value="22K">22K (916 Hallmark)</option>
+                            <option value="24K">24K (999 Pure)</option>
+                            <option value="18K">18K (750 Hallmark)</option>
+                        </select>
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">Confirm New PIN *</label>
-                        <input type="password" id="modalConfirmPin" maxlength="4" required placeholder="••••" inputmode="numeric" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-center text-base font-black tracking-widest focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        <label class="block font-bold text-slate-700 mb-1">Weight (Grams)</label>
+                        <input type="number" id="estWeightGrams" value="8" step="0.001" min="0.001" oninput="calculateJewelleryEstimate()" placeholder="e.g. 8" class="w-full border border-slate-300 rounded-xl p-2.5 font-black bg-white text-center" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
                     </div>
                 </div>
 
-                <p id="modalPasscodeError" class="text-xs text-rose-500 font-bold hidden flex items-center gap-1">
-                    <i class="fa-solid fa-circle-exclamation"></i> <span id="modalErrorText">Errors</span>
-                </p>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Making Charges (%)</label>
+                        <input type="number" id="estMakingPct" value="12" step="0.1" min="0" oninput="calculateJewelleryEstimate()" placeholder="12" class="w-full border border-slate-300 rounded-xl p-2.5 font-black bg-white text-center" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">GST Tax (%)</label>
+                        <input type="number" id="estGstPct" value="3" step="0.1" min="0" oninput="calculateJewelleryEstimate()" placeholder="3" class="w-full border border-slate-300 rounded-xl p-2.5 font-black bg-white text-center" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                    </div>
+                </div>
 
-                <button type="submit" class="w-full py-2.5 bg-slate-950 text-amber-400 font-extrabold rounded-xl shadow flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-lock"></i> Update Passcode
-                </button>
-            </form>
+                <!-- Estimation Breakdown Card Display -->
+                <div class="bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white p-3.5 rounded-xl border border-slate-800 shadow-md space-y-2">
+                    <div class="flex justify-between items-center text-xs border-b border-slate-800/80 pb-1.5">
+                        <span class="text-slate-400 font-bold">Raw Gold Cost:</span>
+                        <span id="estRawGoldCostDisplay" class="font-black text-slate-100">₹1,05,288.00</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs border-b border-slate-800/80 pb-1.5">
+                        <span class="text-amber-400 font-bold">Making Charges:</span>
+                        <span id="estMakingCostDisplay" class="font-black text-amber-400">₹12,634.56</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs border-b border-slate-800/80 pb-1.5">
+                        <span class="text-sky-400 font-bold">GST Tax:</span>
+                        <span id="estGstCostDisplay" class="font-black text-sky-400">₹3,537.68</span>
+                    </div>
+                    <div class="flex justify-between items-center pt-1 text-sm">
+                        <span class="font-black uppercase tracking-wider text-emerald-400 text-xs">ESTIMATED TOTAL:</span>
+                        <span id="estTotalDisplay" class="font-black text-emerald-400 text-base">₹1,21,460.24</span>
+                    </div>
+                </div>
 
-            <!-- Profile Photo Section -->
-            <div class="pt-3 border-t border-slate-100 space-y-2 text-xs">
-                <h4 class="font-extrabold text-slate-900 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-                    <i class="fa-solid fa-image text-emerald-600"></i> Admin Profile Photo
-                </h4>
-                <div class="flex items-center gap-3">
+                <!-- Gold Jewellery Estimate Action Buttons (WhatsApp Share & Print PDF) -->
+                <div class="grid grid-cols-2 gap-2 pt-1">
+                    <button type="button" onclick="shareGoldEstimateWhatsApp()" class="py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5">
+                        <i class="fa-brands fa-whatsapp text-sm"></i> Share via WhatsApp
+                    </button>
+                    <button type="button" onclick="printGoldEstimatePDF()" class="py-2.5 bg-indigo-900 hover:bg-indigo-950 text-amber-400 font-extrabold text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-file-pdf"></i> Print / PDF Slip
+                    </button>
+                </div>
+            </div>
+
+            <!-- Auto-Fetch Internet Trigger Button -->
+            <button type="button" onclick="fetchLiveGoldRateFromInternet(true)" id="btnModalAutoFetchGold" class="w-full py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-indigo-950 font-black text-xs rounded-xl shadow transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-wifi"></i> Auto-Fetch Live Rates From Internet
+            </button>
+
+            <!-- Manual Override Form -->
+            <!-- CASH VAULT PRINT STATEMENT CONTAINER -->
+            <div id="cashVaultPrintContent" class="hidden">
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">24K Gold Rate (₹/g) *</label>
+                        <input type="number" id="inputGoldRate24k" step="0.01" required placeholder="14357" class="w-full border border-slate-200 rounded-xl p-2.5 font-black text-xs" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">22K Gold Rate (₹/g) *</label>
+                        <input type="number" id="inputGoldRate22k" step="0.01" required placeholder="13161" class="w-full border border-slate-200 rounded-xl p-2.5 font-black text-xs" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                    </div>
+                </div>
+
+            <!-- GOLD JEWELLERY ESTIMATE PRINT SLIP CONTAINER -->
+            <div id="goldEstimatePrintContent" class="hidden">
+                <div class="flex justify-between items-start border-b-2 border-slate-900 pb-4 mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-amber-500 text-indigo-950 font-black text-2xl rounded-xl flex items-center justify-center border border-amber-600">
+                            S
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-black text-slate-900 uppercase tracking-tight">Sfinsys</h1>
+                            <p class="text-xs font-bold text-amber-700 uppercase tracking-wider">GOLD JEWELLERY ESTIMATE & QUOTATION</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-slate-500">Estimate Date: <span id="goldPrintDate" class="font-bold text-slate-900"></span></p>
+                        <p class="text-xs text-slate-500">Quotation Ref: <span id="goldPrintRef" class="font-bold text-slate-900"></span></p>
+                    </div>
+                </div>
+
+                <!-- Gold Estimate Details Box -->
+                <div class="bg-amber-50/50 border border-amber-200 p-4 rounded-xl mb-6 space-y-3">
+                    <h3 class="font-extrabold text-xs uppercase tracking-wider text-slate-800 border-b border-amber-200 pb-2">Item Breakdown</h3>
+                    <div class="grid grid-cols-2 gap-3 text-xs">
+                        <div>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase">Purity Grade</p>
+                            <p id="goldPrintPurity" class="font-black text-slate-900 text-sm">-</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase">Net Weight</p>
+                            <p id="goldPrintWeight" class="font-black text-slate-900 text-sm">-</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase">Gold Rate per Gram</p>
+                            <p id="goldPrintRate" class="font-bold text-slate-900">-</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase">Base Gold Cost</p>
+                            <p id="goldPrintRawCost" class="font-bold text-slate-900">-</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 text-xs border-t border-amber-200 pt-3">
+                        <div>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase">Making Charges</p>
+                            <p id="goldPrintMaking" class="font-bold text-slate-900">-</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase">GST Tax Amount</p>
+                            <p id="goldPrintGst" class="font-bold text-slate-900">-</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 text-white p-3.5 rounded-xl flex justify-between items-center text-sm mt-2">
+                        <span class="font-black uppercase tracking-wider text-amber-400">ESTIMATED TOTAL COST</span>
+                        <span id="goldPrintTotal" class="font-black text-emerald-400 text-base">₹0.00</span>
+                    </div>
+                </div>
+
+                <p class="text-[10px] text-slate-500 italic text-center">Note: Rates are subject to market fluctuations. Final invoice price may vary slightly based on exact weight at billing.</p>
+            </div>
+
+            <!-- STATEMENT BOTTOM FOOTER CREDITS -->
+            <div class="mt-8 pt-4 border-t border-slate-300 flex justify-between items-end text-[10px] text-slate-500">
                     <div class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center border text-slate-400 overflow-hidden shrink-0">
                         <img id="settingsProfileImgPreview" src="" class="w-full h-full object-cover hidden">
                         <i id="settingsProfileIcon" class="fa-solid fa-user text-base"></i>
@@ -1310,8 +1427,9 @@
         let enteredKeypadPin = "";
 
         // Gold Rate Defaults & Internet Auto-Sync Engine Variables (Per Gram)
-        let goldRate24k = 14350;
-        let goldRate22k = 13150;
+        let goldRate24k = 14357;
+        let goldRate22k = 13161;
+        let goldRate18k = 10768; // Derived or fetched (approx 75% of 24k or 18k market)
         let lastGoldRateUpdateTimestamp = "";
         let goldRateSourceType = "Internet Auto-Sync";
 
@@ -1363,39 +1481,145 @@
             if (adminNameEl) adminNameEl.innerText = `Welcome, ${appUsername}`;
         }
 
-        // ==================== INTERNET AUTO GOLD RATE SYNC ENGINE ====================
+        // ==================== INTERNET AUTO GOLD RATE SYNC & ESTIMATOR ENGINE ====================
         function renderGoldRates() {
-            const g24El = document.getElementById('goldRate24kDisplay');
-            const g22El = document.getElementById('goldRate22kDisplay');
-            const g24_10g = document.getElementById('goldRate24k10gDisplay');
-            const g22_10g = document.getElementById('goldRate22k10gDisplay');
-            const dateLbl = document.getElementById('goldRateDateLabel');
-            const lastUpdatedLbl = document.getElementById('goldRateLastUpdatedLabel');
-            const sourceLbl = document.getElementById('goldRateSourceLabel');
-            
-            if (g24El) g24El.innerText = `${formatINR(goldRate24k)} / g`;
-            if (g22El) g22El.innerText = `${formatINR(goldRate22k)} / g`;
-            if (g24_10g) g24_10g.innerText = `${formatINR(goldRate24k * 10)} per 10g`;
-            if (g22_10g) g22_10g.innerText = `${formatINR(goldRate22k * 10)} per 10g`;
-            
-            if (dateLbl) dateLbl.innerText = `Today (${formatDateDDMMYYYY(new Date())}) Market Rate / Gram`;
-            
-            if (lastUpdatedLbl) {
-                lastUpdatedLbl.innerHTML = `<i class="fa-solid fa-clock text-amber-400/70 mr-1"></i>Updated: ${lastGoldRateUpdateTimestamp || formatDateDDMMYYYY(new Date())}`;
+            // Update 18k automatically based on 24k ratio if not explicit
+            if (!goldRate18k || goldRate18k === 0) {
+                goldRate18k = Math.round(goldRate24k * 0.75);
             }
-            if (sourceLbl) {
-                sourceLbl.innerText = `Source: ${goldRateSourceType || 'Internet Auto-Sync'}`;
+
+            const modal24k = document.getElementById('modalGoldRate24kDisplay');
+            const modal22k = document.getElementById('modalGoldRate22kDisplay');
+            const modal18k = document.getElementById('modalGoldRate18kDisplay');
+            
+            const modalDateLbl = document.getElementById('modalGoldRateDateLabel');
+            const modalLastUpdatedLbl = document.getElementById('modalGoldRateLastUpdatedLabel');
+            const modalSourceLbl = document.getElementById('modalGoldRateSourceLabel');
+            
+            if (modal24k) modal24k.innerText = `${formatINR(goldRate24k)} / g`;
+            if (modal22k) modal22k.innerText = `${formatINR(goldRate22k)} / g`;
+            if (modal18k) modal18k.innerText = `${formatINR(goldRate18k)} / g`;
+            
+            if (modalDateLbl) modalDateLbl.innerText = `Today (${formatDateDDMMYYYY(new Date())}) Market Rate / Gram`;
+            
+            if (modalLastUpdatedLbl) {
+                modalLastUpdatedLbl.innerHTML = `<i class="fa-solid fa-clock text-amber-400/70 mr-1"></i>Updated: ${lastGoldRateUpdateTimestamp || formatDateDDMMYYYY(new Date())}`;
             }
+            if (modalSourceLbl) {
+                modalSourceLbl.innerText = `Source: ${goldRateSourceType || 'Internet Auto-Sync'}`;
+            }
+
+            // Update Standard Weight Table Rates
+            renderStandardWeightRateTable();
+            // Re-calculate Jewellery Estimator Cost
+            calculateJewelleryEstimate();
+        }
+
+        // Render Standard Weight Rate Table dynamically
+        function renderStandardWeightRateTable() {
+            // 24K Table
+            document.getElementById('tbl24k1g').innerText = formatINR(goldRate24k);
+            document.getElementById('tbl24k8g').innerText = formatINR(goldRate24k * 8);
+            document.getElementById('tbl24k10g').innerText = formatINR(goldRate24k * 10);
+            document.getElementById('tbl24k100g').innerText = formatINR(goldRate24k * 100);
+
+            // 22K Table
+            document.getElementById('tbl22k1g').innerText = formatINR(goldRate22k);
+            document.getElementById('tbl22k8g').innerText = formatINR(goldRate22k * 8);
+            document.getElementById('tbl22k10g').innerText = formatINR(goldRate22k * 10);
+            document.getElementById('tbl22k100g').innerText = formatINR(goldRate22k * 100);
+
+            // 18K Table
+            document.getElementById('tbl18k1g').innerText = formatINR(goldRate18k);
+            document.getElementById('tbl18k8g').innerText = formatINR(goldRate18k * 8);
+            document.getElementById('tbl18k10g').innerText = formatINR(goldRate18k * 10);
+            document.getElementById('tbl18k100g').innerText = formatINR(goldRate18k * 100);
+        }
+
+        // Gold Jewellery Estimator Calculation Engine
+        function calculateJewelleryEstimate() {
+            const purity = document.getElementById('estPuritySelect').value;
+            const weightGrams = parseFloat(document.getElementById('estWeightGrams').value) || 0;
+            const makingPct = parseFloat(document.getElementById('estMakingPct').value) || 0;
+            const gstPct = parseFloat(document.getElementById('estGstPct').value) || 0;
+
+            let ratePerGram = goldRate22k;
+            if (purity === '24K') ratePerGram = goldRate24k;
+            else if (purity === '18K') ratePerGram = goldRate18k;
+
+            // Raw Gold Cost
+            const rawGoldCost = weightGrams * ratePerGram;
+            // Making Charges
+            const makingCost = rawGoldCost * (makingPct / 100);
+            // Subtotal before tax
+            const subtotal = rawGoldCost + makingCost;
+            // GST Tax
+            const gstCost = subtotal * (gstPct / 100);
+            // Estimated Total
+            const estimatedTotal = subtotal + gstCost;
+
+            document.getElementById('estRawGoldCostDisplay').innerText = formatINR(rawGoldCost);
+            document.getElementById('estMakingCostDisplay').innerText = formatINR(makingCost);
+            document.getElementById('estGstCostDisplay').innerText = formatINR(gstCost);
+            document.getElementById('estTotalDisplay').innerText = formatINR(estimatedTotal);
+
+            return { purity, weightGrams, ratePerGram, rawGoldCost, makingPct, makingCost, gstPct, gstCost, estimatedTotal };
+        }
+
+        // SHARE GOLD JEWELLERY ESTIMATE ON WHATSAPP
+        function shareGoldEstimateWhatsApp() {
+            const est = calculateJewelleryEstimate();
+
+            let msg = `*Sfinsys - Gold Jewellery Cost Estimate*\n`;
+            msg += `------------------------------------\n`;
+            msg += `*Date:* ${formatDateDDMMYYYY(new Date())}\n`;
+            msg += `*Gold Purity Grade:* ${est.purity}\n`;
+            msg += `*Live Rate / Gram:* ${formatINR(est.ratePerGram)}\n`;
+            msg += `*Net Weight:* ${est.weightGrams} Grams\n`;
+            msg += `------------------------------------\n`;
+            msg += `*Raw Gold Cost:* ${formatINR(est.rawGoldCost)}\n`;
+            msg += `*Making Charges (${est.makingPct}%):* ${formatINR(est.makingCost)}\n`;
+            msg += `*GST Tax (${est.gstPct}%):* ${formatINR(est.gstCost)}\n`;
+            msg += `------------------------------------\n`;
+            msg += `*ESTIMATED TOTAL COST:* ${formatINR(est.estimatedTotal)}\n`;
+            msg += `------------------------------------\n`;
+            msg += `Sent via Sfinsys Jewellery Estimator`;
+
+            const encodedMsg = encodeURIComponent(msg);
+            const waUrl = `https://api.whatsapp.com/send?text=${encodedMsg}`;
+            window.open(waUrl, '_blank');
+        }
+
+        // PRINT / SAVE GOLD JEWELLERY ESTIMATE SLIP
+        function printGoldEstimatePDF() {
+            const est = calculateJewelleryEstimate();
+            const todayStr = formatDateDDMMYYYY(new Date());
+            const randomRef = 'EST-' + Math.floor(100000 + Math.random() * 900000);
+
+            document.getElementById('goldPrintDate').innerText = todayStr;
+            document.getElementById('goldPrintRef').innerText = randomRef;
+            document.getElementById('goldPrintPurity').innerText = est.purity;
+            document.getElementById('goldPrintWeight').innerText = `${est.weightGrams} g`;
+            document.getElementById('goldPrintRate').innerText = `${formatINR(est.ratePerGram)} / g`;
+            document.getElementById('goldPrintRawCost').innerText = formatINR(est.rawGoldCost);
+            document.getElementById('goldPrintMaking').innerText = `${formatINR(est.makingCost)} (${est.makingPct}%)`;
+            document.getElementById('goldPrintGst').innerText = `${formatINR(est.gstCost)} (${est.gstPct}%)`;
+            document.getElementById('goldPrintTotal').innerText = formatINR(est.estimatedTotal);
+
+            document.getElementById('individualPrintContent').classList.add('hidden');
+            document.getElementById('masterPrintContent').classList.add('hidden');
+            document.getElementById('cashVaultPrintContent').classList.add('hidden');
+            document.getElementById('goldEstimatePrintContent').classList.remove('hidden');
+
+            window.print();
         }
 
         async function fetchLiveGoldRateFromInternet(isUserTriggered = false) {
-            const syncBtn = document.getElementById('dashboardSyncBtn');
+            const syncBtn = document.getElementById('modalSyncButton');
             const modalFetchBtn = document.getElementById('btnModalAutoFetchGold');
-            const modalStatusText = document.getElementById('modalGoldSyncStatus');
 
             if (syncBtn) syncBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
             if (modalFetchBtn) modalFetchBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Fetching Live Rates...`;
-            if (modalStatusText) modalStatusText.innerText = "Connecting to market API...";
 
             let success = false;
 
@@ -1408,10 +1632,12 @@
                         const xauPriceINR = data.items[0].xauPrice; // Price for 1 Troy Ounce of Gold in INR
                         const gram24kINR = Math.round(xauPriceINR / 31.1034768); // 1 Troy Ounce = 31.1034768 grams
                         const gram22kINR = Math.round(gram24kINR * 0.916); // 22K (91.6% Purity) Standard Calculation
+                        const gram18kINR = Math.round(gram24kINR * 0.75);  // 18K (75% Purity) Standard Calculation
 
                         if (gram24kINR > 1000) {
                             goldRate24k = gram24kINR;
                             goldRate22k = gram22kINR;
+                            goldRate18k = gram18kINR;
                             goldRateSourceType = "Live Financial API";
                             lastGoldRateUpdateTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ', ' + formatDateDDMMYYYY(new Date());
                             success = true;
@@ -1432,9 +1658,11 @@
                             const inrPerOunce = 1 / fbData.rates.XAU;
                             const gram24kINR = Math.round(inrPerOunce / 31.1034768);
                             const gram22kINR = Math.round(gram24kINR * 0.916);
+                            const gram18kINR = Math.round(gram24kINR * 0.75);
                             if (gram24kINR > 1000) {
                                 goldRate24k = gram24kINR;
                                 goldRate22k = gram22kINR;
+                                goldRate18k = gram18kINR;
                                 goldRateSourceType = "Market Bullion API";
                                 lastGoldRateUpdateTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ', ' + formatDateDDMMYYYY(new Date());
                                 success = true;
@@ -1451,21 +1679,19 @@
                 renderGoldRates();
                 document.getElementById('inputGoldRate24k').value = goldRate24k;
                 document.getElementById('inputGoldRate22k').value = goldRate22k;
-                if (modalStatusText) modalStatusText.innerText = "Synced Live!";
-                if (isUserTriggered) showToast("Daily Gold Rates Updated Live from Internet!", "fa-wifi");
+                if (isUserTriggered) showToast("Daily Gold Rates & Table Updated Live!", "fa-wifi");
             } else {
-                if (modalStatusText) modalStatusText.innerText = "Offline / Kept Saved Rates";
                 if (isUserTriggered) showToast("Network busy. Saved gold rates retained.", "fa-triangle-exclamation");
             }
 
-            if (syncBtn) syncBtn.innerHTML = `<i class="fa-solid fa-arrows-rotate"></i>`;
-            if (modalFetchBtn) modalFetchBtn.innerHTML = `<i class="fa-solid fa-wifi"></i> Auto-Fetch Live Rates Now`;
+            if (syncBtn) syncBtn.innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> <span>Sync</span>`;
+            if (modalFetchBtn) modalFetchBtn.innerHTML = `<i class="fa-solid fa-wifi"></i> Auto-Fetch Live Rates From Internet`;
         }
 
         function openGoldRateModal() {
             document.getElementById('inputGoldRate24k').value = goldRate24k;
             document.getElementById('inputGoldRate22k').value = goldRate22k;
-            document.getElementById('modalGoldSyncStatus').innerText = "Click to auto-sync";
+            renderGoldRates();
             openModal('goldRateModal');
         }
 
@@ -1481,13 +1707,14 @@
 
             goldRate24k = val24;
             goldRate22k = val22;
+            goldRate18k = Math.round(val24 * 0.75);
             goldRateSourceType = "Manual Entry Override";
             lastGoldRateUpdateTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ', ' + formatDateDDMMYYYY(new Date());
             
             saveStorage();
             renderGoldRates();
             closeModal('goldRateModal');
-            showToast("Gold rates updated manually!", "fa-coins");
+            showToast("Gold rates & estimator updated manually!", "fa-coins");
         }
 
         // Profile Photo Handlers
@@ -1866,6 +2093,7 @@
                 if (localStorage.getItem('sfinsys_admin_photo')) adminPhotoUrl = localStorage.getItem('sfinsys_admin_photo');
                 if (localStorage.getItem('sfinsys_gold_24k')) goldRate24k = parseFloat(localStorage.getItem('sfinsys_gold_24k'));
                 if (localStorage.getItem('sfinsys_gold_22k')) goldRate22k = parseFloat(localStorage.getItem('sfinsys_gold_22k'));
+                if (localStorage.getItem('sfinsys_gold_18k')) goldRate18k = parseFloat(localStorage.getItem('sfinsys_gold_18k'));
                 if (localStorage.getItem('sfinsys_gold_last_update')) lastGoldRateUpdateTimestamp = localStorage.getItem('sfinsys_gold_last_update');
                 if (localStorage.getItem('sfinsys_gold_source')) goldRateSourceType = localStorage.getItem('sfinsys_gold_source');
             } catch (err) { console.error(err); }
@@ -1881,6 +2109,7 @@
                 localStorage.setItem('sfinsys_admin_photo', adminPhotoUrl);
                 localStorage.setItem('sfinsys_gold_24k', goldRate24k.toString());
                 localStorage.setItem('sfinsys_gold_22k', goldRate22k.toString());
+                localStorage.setItem('sfinsys_gold_18k', goldRate18k.toString());
                 localStorage.setItem('sfinsys_gold_last_update', lastGoldRateUpdateTimestamp);
                 localStorage.setItem('sfinsys_gold_source', goldRateSourceType);
             } catch (err) { alert("Storage full: Attached files are too large."); }
@@ -2379,10 +2608,6 @@
 
         function renderCashList() {
             const container = document.getElementById('cashTransactionsList');
-            const searchVal = document.getElementById('cashSearchInput').value.toLowerCase().trim();
-            const filterType = document.getElementById('cashTypeFilter').value;
-            const startDate = document.getElementById('cashStartDate').value;
-            const endDate = document.getElementById('cashEndDate').value;
 
             let cashIn = 0;
             let cashOut = 0;
@@ -2972,7 +3197,7 @@
         }
 
         function downloadBackupJSON() {
-            const data = { app: "SfinsysPWA", username: appUsername, pin: appPin, adminPhotoUrl, goldRate24k, goldRate22k, lastGoldRateUpdateTimestamp, goldRateSourceType, parties, transactions, cashTransactions };
+            const data = { app: "SfinsysPWA", username: appUsername, pin: appPin, adminPhotoUrl, goldRate24k, goldRate22k, goldRate18k, lastGoldRateUpdateTimestamp, goldRateSourceType, parties, transactions, cashTransactions };
             const link = document.createElement("a");
             link.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
             link.download = `Sfinsys_Ledger_Backup.json`;
@@ -2995,6 +3220,7 @@
                         if (imported.adminPhotoUrl) adminPhotoUrl = imported.adminPhotoUrl;
                         if (imported.goldRate24k) goldRate24k = imported.goldRate24k;
                         if (imported.goldRate22k) goldRate22k = imported.goldRate22k;
+                        if (imported.goldRate18k) goldRate18k = imported.goldRate18k;
                         if (imported.lastGoldRateUpdateTimestamp) lastGoldRateUpdateTimestamp = imported.lastGoldRateUpdateTimestamp;
                         if (imported.goldRateSourceType) goldRateSourceType = imported.goldRateSourceType;
                         saveStorage();
