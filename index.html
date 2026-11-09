@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Sfinsys PWA v6.5</title>
+    <title>Sfinsys PWA v6.7</title>
 
     <!-- Android Web App Meta Tags -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -114,7 +114,7 @@
                 S
             </div>
 
-            <h2 class="text-xl font-black text-white tracking-wide">Sfinsys</h2>
+            <h2 class="text-xl font-black text-white tracking-wide">Sfinsys v6.7</h2>
             <p class="text-[11px] text-slate-400 mt-1 font-medium">Secure Banking, Cash Ledger & Jewellery Estimator</p>
 
             <div class="mt-6 space-y-4">
@@ -157,7 +157,7 @@
         </div>
 
         <div class="text-center text-[11px] text-slate-500 pb-2 flex flex-col items-center justify-center gap-1">
-            <span>User: <strong class="text-white font-mono" id="displayUsernameLabel">admin</strong> | PIN: <strong class="text-white font-mono">1234</strong></span>
+            <span>User Account: <strong class="text-white font-mono" id="displayUsernameLabel">admin</strong></span>
         </div>
     </div>
 
@@ -285,12 +285,12 @@
                 <!-- UPI Payment QR Code Section -->
                 <div id="mainViewUpiQrCard" class="hidden bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-950 text-white p-4 rounded-2xl border border-emerald-800/60 shadow-md">
                     <div class="flex items-center justify-between gap-4">
-                        <div class="space-y-1">
+                        <div class="space-y-1 min-w-0">
                             <span class="text-[9px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-950/80 border border-emerald-700/50 px-2 py-0.5 rounded-md">Direct UPI Payment QR</span>
-                            <h4 id="qrCardPartyName" class="font-extrabold text-sm text-white mt-1">-</h4>
-                            <p class="text-[11px] text-slate-300 font-bold" id="qrCardUpiId">UPI ID: -</p>
-                            <p class="text-[10px] text-slate-400 font-medium" id="qrCardPayee">Payee: -</p>
-                            <p class="text-[10px] text-emerald-300 font-medium" id="qrCardBank">Account: -</p>
+                            <h4 id="qrCardPartyName" class="font-extrabold text-sm text-white mt-1 truncate">-</h4>
+                            <p class="text-[11px] text-slate-300 font-bold truncate" id="qrCardUpiId">UPI ID: -</p>
+                            <p class="text-[10px] text-slate-400 font-medium truncate" id="qrCardPayee">Payee: -</p>
+                            <p class="text-[10px] text-emerald-300 font-medium truncate" id="qrCardBank">Account: -</p>
                         </div>
                         <div class="bg-white p-2 rounded-xl shadow-lg border border-slate-200 text-center shrink-0">
                             <img id="mainPartyQrCodeImg" src="" alt="UPI Payment QR Code" class="w-24 h-24 object-contain mx-auto">
@@ -304,48 +304,48 @@
                     <!-- Net Outstanding Principal -->
                     <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm col-span-2">
                         <div class="flex justify-between items-center">
-                            <div>
+                            <div class="min-w-0">
                                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Net Principal Balance</p>
-                                <h3 id="statNetOutstanding" class="text-2xl font-black text-slate-900 mt-0.5">₹0.00</h3>
+                                <h3 id="statNetOutstanding" class="text-2xl font-black text-slate-900 mt-0.5 truncate">₹0.00</h3>
                             </div>
-                            <div class="w-10 h-10 bg-indigo-50 text-indigo-900 rounded-xl flex items-center justify-center text-lg font-bold">
+                            <div class="w-10 h-10 bg-indigo-50 text-indigo-900 rounded-xl flex items-center justify-center text-lg font-bold shrink-0">
                                 <i class="fa-solid fa-scale-balanced"></i>
                             </div>
                         </div>
                     </div>
 
                     <!-- Credit Given -->
-                    <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
-                        <p class="text-[10px] font-bold text-rose-500 uppercase tracking-wider">Total Given</p>
-                        <h3 id="statTotalGiven" class="text-base font-black text-rose-600 mt-1">₹0.00</h3>
+                    <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm min-w-0">
+                        <p class="text-[10px] font-bold text-rose-500 uppercase tracking-wider truncate">Total Given</p>
+                        <h3 id="statTotalGiven" class="text-base font-black text-rose-600 mt-1 truncate">₹0.00</h3>
                     </div>
 
                     <!-- Principal Received -->
-                    <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
-                        <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Principal Rec.</p>
-                        <h3 id="statTotalReceived" class="text-base font-black text-emerald-600 mt-1">₹0.00</h3>
+                    <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm min-w-0">
+                        <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider truncate">Principal Rec.</p>
+                        <h3 id="statTotalReceived" class="text-base font-black text-emerald-600 mt-1 truncate">₹0.00</h3>
                     </div>
 
                     <!-- Gross Accrued Interest -->
-                    <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
-                        <p class="text-[10px] font-bold text-amber-500 uppercase tracking-wider">Gross Interest</p>
-                        <h3 id="statTotalInterest" class="text-base font-black text-amber-600 mt-1">₹0.00</h3>
+                    <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm min-w-0">
+                        <p class="text-[10px] font-bold text-amber-500 uppercase tracking-wider truncate">Gross Interest</p>
+                        <h3 id="statTotalInterest" class="text-base font-black text-amber-600 mt-1 truncate">₹0.00</h3>
                     </div>
 
                     <!-- Interest Paid -->
-                    <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
-                        <p class="text-[10px] font-bold text-purple-500 uppercase tracking-wider">Interest Paid</p>
-                        <h3 id="statInterestPaid" class="text-base font-black text-purple-600 mt-1">₹0.00</h3>
+                    <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm min-w-0">
+                        <p class="text-[10px] font-bold text-purple-500 uppercase tracking-wider truncate">Interest Paid</p>
+                        <h3 id="statInterestPaid" class="text-base font-black text-purple-600 mt-1 truncate">₹0.00</h3>
                     </div>
 
                     <!-- Total Payable Highlight Card -->
-                    <div class="bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 text-white p-4 rounded-2xl border border-indigo-800/80 shadow-md col-span-2 flex items-center justify-between">
-                        <div>
-                            <p class="text-[10px] font-bold text-amber-400 uppercase tracking-wider">TOTAL PAYABLE AMOUNT</p>
-                            <h3 id="statTotalPayable" class="text-2xl font-black text-emerald-400 mt-0.5">₹0.00</h3>
-                            <p class="text-[9px] text-indigo-200 mt-0.5">Formula: Principal Balance + Pending Unpaid Interest</p>
+                    <div class="bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 text-white p-4 rounded-2xl border border-indigo-800/80 shadow-md col-span-2 flex items-center justify-between gap-2">
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-bold text-amber-400 uppercase tracking-wider truncate">TOTAL PAYABLE AMOUNT</p>
+                            <h3 id="statTotalPayable" class="text-2xl font-black text-emerald-400 mt-0.5 truncate">₹0.00</h3>
+                            <p class="text-[9px] text-indigo-200 mt-0.5 truncate">Formula: Principal Balance + Pending Unpaid Interest</p>
                         </div>
-                        <div class="w-11 h-11 bg-amber-500 text-indigo-950 font-black rounded-2xl flex items-center justify-center text-xl shadow">
+                        <div class="w-11 h-11 bg-amber-500 text-indigo-950 font-black rounded-2xl flex items-center justify-center text-xl shadow shrink-0">
                             S
                         </div>
                     </div>
@@ -471,7 +471,7 @@
                 <div class="bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-950 text-white p-4 rounded-2xl border border-emerald-800/60 shadow-md">
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center space-x-2">
-                            <div class="w-8 h-8 bg-emerald-500 text-indigo-950 font-black text-sm rounded-xl flex items-center justify-center">
+                            <div class="w-8 h-8 bg-emerald-500 text-indigo-950 font-black text-sm rounded-xl flex items-center justify-center shrink-0">
                                 <i class="fa-solid fa-vault"></i>
                             </div>
                             <div>
@@ -479,23 +479,24 @@
                                 <p class="text-[10px] text-slate-300">Daily Cash Drawer & Physical Till Balance</p>
                             </div>
                         </div>
-                        <button onclick="openModal('cashEntryModal')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-3 py-1.5 rounded-xl text-xs font-extrabold transition shadow flex items-center gap-1">
+                        <button onclick="openModal('cashEntryModal')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-3 py-1.5 rounded-xl text-xs font-extrabold transition shadow flex items-center gap-1 shrink-0">
                             <i class="fa-solid fa-plus-circle"></i> Add Cash Txn
                         </button>
                     </div>
 
+                    <!-- FIXED RESPONSIVE NET IN VAULT GRID BOXES -->
                     <div class="grid grid-cols-3 gap-2 text-center pt-1 border-t border-emerald-900/80">
-                        <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
-                            <p class="text-[9px] font-bold text-emerald-400 uppercase">Cash In Flow</p>
-                            <p id="cashInTotal" class="text-xs font-black text-emerald-300">₹0.00</p>
+                        <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800 min-w-0 flex flex-col justify-center">
+                            <p class="text-[9px] font-bold text-emerald-400 uppercase truncate">Cash In Flow</p>
+                            <p id="cashInTotal" class="text-xs sm:text-sm font-black text-emerald-300 truncate mt-0.5">₹0.00</p>
                         </div>
-                        <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
-                            <p class="text-[9px] font-bold text-rose-400 uppercase">Cash Out Flow</p>
-                            <p id="cashOutTotal" class="text-xs font-black text-rose-300">₹0.00</p>
+                        <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800 min-w-0 flex flex-col justify-center">
+                            <p class="text-[9px] font-bold text-rose-400 uppercase truncate">Cash Out Flow</p>
+                            <p id="cashOutTotal" class="text-xs sm:text-sm font-black text-rose-300 truncate mt-0.5">₹0.00</p>
                         </div>
-                        <div class="bg-slate-950 p-2.5 rounded-xl border border-amber-500/40">
-                            <p class="text-[9px] font-bold text-amber-400 uppercase">NET IN VAULT</p>
-                            <p id="cashOnHandsNet" class="text-sm font-black text-amber-300">₹0.00</p>
+                        <div class="bg-slate-950 p-2.5 rounded-xl border border-amber-500/50 min-w-0 flex flex-col justify-center shadow-inner">
+                            <p class="text-[9px] font-extrabold text-amber-400 uppercase truncate tracking-tight">NET IN VAULT</p>
+                            <p id="cashOnHandsNet" class="text-xs sm:text-sm font-black text-amber-300 truncate mt-0.5" title="Net Cash in Vault">₹0.00</p>
                         </div>
                     </div>
                 </div>
@@ -759,17 +760,17 @@
 
                 <!-- Cash Vault Metrics Summary -->
                 <div class="grid grid-cols-3 gap-3 mb-6 text-center">
-                    <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
-                        <p class="text-[9px] font-bold text-emerald-700 uppercase">Total Cash In</p>
-                        <p id="cashPrintTotalIn" class="text-sm font-black text-emerald-900">₹0.00</p>
+                    <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl min-w-0">
+                        <p class="text-[9px] font-bold text-emerald-700 uppercase truncate">Total Cash In</p>
+                        <p id="cashPrintTotalIn" class="text-sm font-black text-emerald-900 truncate">₹0.00</p>
                     </div>
-                    <div class="p-3 bg-rose-50 border border-rose-200 rounded-xl">
-                        <p class="text-[9px] font-bold text-rose-700 uppercase">Total Cash Out</p>
-                        <p id="cashPrintTotalOut" class="text-sm font-black text-rose-900">₹0.00</p>
+                    <div class="p-3 bg-rose-50 border border-rose-200 rounded-xl min-w-0">
+                        <p class="text-[9px] font-bold text-rose-700 uppercase truncate">Total Cash Out</p>
+                        <p id="cashPrintTotalOut" class="text-sm font-black text-rose-900 truncate">₹0.00</p>
                     </div>
-                    <div class="p-3 bg-slate-900 text-white rounded-xl">
-                        <p class="text-[9px] font-bold text-amber-400 uppercase">NET IN CASH VAULT</p>
-                        <p id="cashPrintNetVault" class="text-sm font-black text-amber-300">₹0.00</p>
+                    <div class="p-3 bg-slate-900 text-white rounded-xl min-w-0">
+                        <p class="text-[9px] font-bold text-amber-400 uppercase truncate">NET IN CASH VAULT</p>
+                        <p id="cashPrintNetVault" class="text-sm font-black text-amber-300 truncate">₹0.00</p>
                     </div>
                 </div>
 
@@ -789,6 +790,66 @@
                         <!-- Dynamic Cash Rows -->
                     </tbody>
                 </table>
+            </div>
+
+            <!-- GOLD JEWELLERY ESTIMATE PRINT SLIP CONTAINER -->
+            <div id="goldEstimatePrintContent" class="hidden">
+                <div class="flex justify-between items-start border-b-2 border-slate-900 pb-4 mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-amber-500 text-indigo-950 font-black text-2xl rounded-xl flex items-center justify-center border border-amber-600">
+                            S
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-black text-slate-900 uppercase tracking-tight">Sfinsys</h1>
+                            <p class="text-xs font-bold text-amber-700 uppercase tracking-wider">GOLD JEWELLERY ESTIMATE & QUOTATION</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-slate-500">Estimate Date: <span id="goldPrintDate" class="font-bold text-slate-900"></span></p>
+                        <p class="text-xs text-slate-500">Quotation Ref: <span id="goldPrintRef" class="font-bold text-slate-900"></span></p>
+                    </div>
+                </div>
+
+                <!-- Gold Estimate Details Box -->
+                <div class="bg-amber-50/50 border border-amber-200 p-4 rounded-xl mb-6 space-y-3">
+                    <h3 class="font-extrabold text-xs uppercase tracking-wider text-slate-800 border-b border-amber-200 pb-2">Item Breakdown</h3>
+                    <div class="grid grid-cols-2 gap-3 text-xs">
+                        <div>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase">Purity Grade</p>
+                            <p id="goldPrintPurity" class="font-black text-slate-900 text-sm">-</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase">Net Weight</p>
+                            <p id="goldPrintWeight" class="font-black text-slate-900 text-sm">-</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase">Gold Rate per Gram</p>
+                            <p id="goldPrintRate" class="font-bold text-slate-900">-</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase">Base Gold Cost</p>
+                            <p id="goldPrintRawCost" class="font-bold text-slate-900">-</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 text-xs border-t border-amber-200 pt-3">
+                        <div>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase">Making Charges</p>
+                            <p id="goldPrintMaking" class="font-bold text-slate-900">-</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase">GST Tax Amount</p>
+                            <p id="goldPrintGst" class="font-bold text-slate-900">-</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 text-white p-3.5 rounded-xl flex justify-between items-center text-sm mt-2">
+                        <span class="font-black uppercase tracking-wider text-amber-400">ESTIMATED TOTAL COST</span>
+                        <span id="goldPrintTotal" class="font-black text-emerald-400 text-base">₹0.00</span>
+                    </div>
+                </div>
+
+                <p class="text-[10px] text-slate-500 italic text-center">Note: Rates are subject to market fluctuations. Final invoice price may vary slightly based on exact weight at billing.</p>
             </div>
 
             <!-- STATEMENT BOTTOM FOOTER CREDITS -->
@@ -836,6 +897,73 @@
     </div>
 
     <!-- ==================== MOBILE MODALS & SHEETS ==================== -->
+
+    <!-- Modal: Security & Passcode Settings -->
+    <div id="securitySettingsModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4 text-slate-800">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-1.5">
+                    <i class="fa-solid fa-shield-halved text-amber-500"></i> Security & Passcode Settings
+                </h3>
+                <button onclick="closeModal('securitySettingsModal')" class="text-slate-400 p-1"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- Profile Photo Settings Bar -->
+            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 overflow-hidden shrink-0 border border-slate-300">
+                        <img id="settingsProfileImgPreview" src="" class="w-full h-full object-cover hidden">
+                        <i id="settingsProfileIcon" class="fa-solid fa-user text-base"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-900">Admin Photo</p>
+                        <p class="text-[10px] text-slate-500">Custom profile picture</p>
+                    </div>
+                </div>
+                <div class="flex gap-1.5">
+                    <button onclick="triggerProfilePhotoUpload()" class="bg-slate-900 text-amber-400 font-bold px-2.5 py-1.5 rounded-xl text-[11px] shadow">
+                        Upload
+                    </button>
+                    <button onclick="removeAdminPhoto()" class="bg-rose-50 text-rose-600 font-bold px-2 py-1.5 rounded-xl text-[11px] border border-rose-200">
+                        Remove
+                    </button>
+                </div>
+            </div>
+
+            <!-- Passcode Update Form -->
+            <form id="passcodeForm" onsubmit="handlePasscodeChangeSubmit(event)" class="space-y-3 text-xs">
+                <div id="modalPasscodeError" class="hidden bg-rose-50 border border-rose-200 text-rose-700 p-2.5 rounded-xl text-[11px] font-bold">
+                    <i class="fa-solid fa-circle-exclamation mr-1"></i> <span id="modalErrorText">Error!</span>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Username / User ID *</label>
+                    <input type="text" id="modalUsername" required class="w-full border border-slate-300 rounded-xl p-2.5 font-bold" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Current 4-Digit PIN *</label>
+                    <input type="password" id="modalCurrentPin" maxlength="4" required placeholder="****" class="w-full border border-slate-300 rounded-xl p-2.5 font-bold text-center tracking-widest text-sm" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">New 4-Digit PIN *</label>
+                        <input type="password" id="modalNewPin" maxlength="4" required placeholder="****" class="w-full border border-slate-300 rounded-xl p-2.5 font-bold text-center tracking-widest text-sm" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Confirm New PIN *</label>
+                        <input type="password" id="modalConfirmPin" maxlength="4" required placeholder="****" class="w-full border border-slate-300 rounded-xl p-2.5 font-bold text-center tracking-widest text-sm" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('securitySettingsModal')" class="px-3.5 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-bold">Cancel</button>
+                    <button type="submit" class="px-4 py-2.5 bg-slate-950 text-amber-400 font-extrabold rounded-xl shadow">Update Security</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Modal: Customer Rating & Review -->
     <div id="ratingModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden no-print">
@@ -1040,95 +1168,23 @@
             </button>
 
             <!-- Manual Override Form -->
-            <!-- CASH VAULT PRINT STATEMENT CONTAINER -->
-            <div id="cashVaultPrintContent" class="hidden">
+            <form onsubmit="saveGoldRates(event)" class="space-y-3 border-t border-slate-100 pt-3">
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">24K Gold Rate (₹/g) *</label>
+                        <label class="block font-bold text-slate-700 mb-1">24K Rate (₹/g) *</label>
                         <input type="number" id="inputGoldRate24k" step="0.01" required placeholder="14357" class="w-full border border-slate-200 rounded-xl p-2.5 font-black text-xs" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">22K Gold Rate (₹/g) *</label>
+                        <label class="block font-bold text-slate-700 mb-1">22K Rate (₹/g) *</label>
                         <input type="number" id="inputGoldRate22k" step="0.01" required placeholder="13161" class="w-full border border-slate-200 rounded-xl p-2.5 font-black text-xs" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
                     </div>
                 </div>
 
-            <!-- GOLD JEWELLERY ESTIMATE PRINT SLIP CONTAINER -->
-            <div id="goldEstimatePrintContent" class="hidden">
-                <div class="flex justify-between items-start border-b-2 border-slate-900 pb-4 mb-4">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-12 h-12 bg-amber-500 text-indigo-950 font-black text-2xl rounded-xl flex items-center justify-center border border-amber-600">
-                            S
-                        </div>
-                        <div>
-                            <h1 class="text-2xl font-black text-slate-900 uppercase tracking-tight">Sfinsys</h1>
-                            <p class="text-xs font-bold text-amber-700 uppercase tracking-wider">GOLD JEWELLERY ESTIMATE & QUOTATION</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-xs text-slate-500">Estimate Date: <span id="goldPrintDate" class="font-bold text-slate-900"></span></p>
-                        <p class="text-xs text-slate-500">Quotation Ref: <span id="goldPrintRef" class="font-bold text-slate-900"></span></p>
-                    </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="closeModal('goldRateModal')" class="px-4 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-bold text-xs">Close</button>
+                    <button type="submit" class="px-5 py-2.5 bg-slate-950 text-amber-400 font-extrabold rounded-xl shadow text-xs">Save Rates</button>
                 </div>
-
-                <!-- Gold Estimate Details Box -->
-                <div class="bg-amber-50/50 border border-amber-200 p-4 rounded-xl mb-6 space-y-3">
-                    <h3 class="font-extrabold text-xs uppercase tracking-wider text-slate-800 border-b border-amber-200 pb-2">Item Breakdown</h3>
-                    <div class="grid grid-cols-2 gap-3 text-xs">
-                        <div>
-                            <p class="text-[10px] text-slate-500 font-bold uppercase">Purity Grade</p>
-                            <p id="goldPrintPurity" class="font-black text-slate-900 text-sm">-</p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] text-slate-500 font-bold uppercase">Net Weight</p>
-                            <p id="goldPrintWeight" class="font-black text-slate-900 text-sm">-</p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] text-slate-500 font-bold uppercase">Gold Rate per Gram</p>
-                            <p id="goldPrintRate" class="font-bold text-slate-900">-</p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] text-slate-500 font-bold uppercase">Base Gold Cost</p>
-                            <p id="goldPrintRawCost" class="font-bold text-slate-900">-</p>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3 text-xs border-t border-amber-200 pt-3">
-                        <div>
-                            <p class="text-[10px] text-slate-500 font-bold uppercase">Making Charges</p>
-                            <p id="goldPrintMaking" class="font-bold text-slate-900">-</p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] text-slate-500 font-bold uppercase">GST Tax Amount</p>
-                            <p id="goldPrintGst" class="font-bold text-slate-900">-</p>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-900 text-white p-3.5 rounded-xl flex justify-between items-center text-sm mt-2">
-                        <span class="font-black uppercase tracking-wider text-amber-400">ESTIMATED TOTAL COST</span>
-                        <span id="goldPrintTotal" class="font-black text-emerald-400 text-base">₹0.00</span>
-                    </div>
-                </div>
-
-                <p class="text-[10px] text-slate-500 italic text-center">Note: Rates are subject to market fluctuations. Final invoice price may vary slightly based on exact weight at billing.</p>
-            </div>
-
-            <!-- STATEMENT BOTTOM FOOTER CREDITS -->
-            <div class="mt-8 pt-4 border-t border-slate-300 flex justify-between items-end text-[10px] text-slate-500">
-                    <div class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center border text-slate-400 overflow-hidden shrink-0">
-                        <img id="settingsProfileImgPreview" src="" class="w-full h-full object-cover hidden">
-                        <i id="settingsProfileIcon" class="fa-solid fa-user text-base"></i>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="triggerProfilePhotoUpload()" class="bg-slate-900 text-amber-400 font-bold px-3 py-1.5 rounded-xl text-xs shadow">
-                            <i class="fa-solid fa-upload mr-1"></i> Upload Photo
-                        </button>
-                        <button onclick="removeAdminPhoto()" class="bg-rose-50 text-rose-600 font-bold px-3 py-1.5 rounded-xl text-xs border border-rose-200">
-                            Remove
-                        </button>
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
     </div>
 
@@ -1483,7 +1539,6 @@
 
         // ==================== INTERNET AUTO GOLD RATE SYNC & ESTIMATOR ENGINE ====================
         function renderGoldRates() {
-            // Update 18k automatically based on 24k ratio if not explicit
             if (!goldRate18k || goldRate18k === 0) {
                 goldRate18k = Math.round(goldRate24k * 0.75);
             }
@@ -1509,34 +1564,27 @@
                 modalSourceLbl.innerText = `Source: ${goldRateSourceType || 'Internet Auto-Sync'}`;
             }
 
-            // Update Standard Weight Table Rates
             renderStandardWeightRateTable();
-            // Re-calculate Jewellery Estimator Cost
             calculateJewelleryEstimate();
         }
 
-        // Render Standard Weight Rate Table dynamically
         function renderStandardWeightRateTable() {
-            // 24K Table
             document.getElementById('tbl24k1g').innerText = formatINR(goldRate24k);
             document.getElementById('tbl24k8g').innerText = formatINR(goldRate24k * 8);
             document.getElementById('tbl24k10g').innerText = formatINR(goldRate24k * 10);
             document.getElementById('tbl24k100g').innerText = formatINR(goldRate24k * 100);
 
-            // 22K Table
             document.getElementById('tbl22k1g').innerText = formatINR(goldRate22k);
             document.getElementById('tbl22k8g').innerText = formatINR(goldRate22k * 8);
             document.getElementById('tbl22k10g').innerText = formatINR(goldRate22k * 10);
             document.getElementById('tbl22k100g').innerText = formatINR(goldRate22k * 100);
 
-            // 18K Table
             document.getElementById('tbl18k1g').innerText = formatINR(goldRate18k);
             document.getElementById('tbl18k8g').innerText = formatINR(goldRate18k * 8);
             document.getElementById('tbl18k10g').innerText = formatINR(goldRate18k * 10);
             document.getElementById('tbl18k100g').innerText = formatINR(goldRate18k * 100);
         }
 
-        // Gold Jewellery Estimator Calculation Engine
         function calculateJewelleryEstimate() {
             const purity = document.getElementById('estPuritySelect').value;
             const weightGrams = parseFloat(document.getElementById('estWeightGrams').value) || 0;
@@ -1547,15 +1595,10 @@
             if (purity === '24K') ratePerGram = goldRate24k;
             else if (purity === '18K') ratePerGram = goldRate18k;
 
-            // Raw Gold Cost
             const rawGoldCost = weightGrams * ratePerGram;
-            // Making Charges
             const makingCost = rawGoldCost * (makingPct / 100);
-            // Subtotal before tax
             const subtotal = rawGoldCost + makingCost;
-            // GST Tax
             const gstCost = subtotal * (gstPct / 100);
-            // Estimated Total
             const estimatedTotal = subtotal + gstCost;
 
             document.getElementById('estRawGoldCostDisplay').innerText = formatINR(rawGoldCost);
@@ -1566,7 +1609,6 @@
             return { purity, weightGrams, ratePerGram, rawGoldCost, makingPct, makingCost, gstPct, gstCost, estimatedTotal };
         }
 
-        // SHARE GOLD JEWELLERY ESTIMATE ON WHATSAPP
         function shareGoldEstimateWhatsApp() {
             const est = calculateJewelleryEstimate();
 
@@ -1590,7 +1632,6 @@
             window.open(waUrl, '_blank');
         }
 
-        // PRINT / SAVE GOLD JEWELLERY ESTIMATE SLIP
         function printGoldEstimatePDF() {
             const est = calculateJewelleryEstimate();
             const todayStr = formatDateDDMMYYYY(new Date());
@@ -1611,6 +1652,7 @@
             document.getElementById('cashVaultPrintContent').classList.add('hidden');
             document.getElementById('goldEstimatePrintContent').classList.remove('hidden');
 
+            closeModal('goldRateModal');
             window.print();
         }
 
@@ -1624,15 +1666,14 @@
             let success = false;
 
             try {
-                // Primary Public Financial Gold API Endpoint for INR
                 const response = await fetch('https://data-asg.goldprice.org/dbXRates/INR', { cache: 'no-cache' });
                 if (response.ok) {
                     const data = await response.json();
                     if (data && data.items && data.items.length > 0 && data.items[0].xauPrice) {
-                        const xauPriceINR = data.items[0].xauPrice; // Price for 1 Troy Ounce of Gold in INR
-                        const gram24kINR = Math.round(xauPriceINR / 31.1034768); // 1 Troy Ounce = 31.1034768 grams
-                        const gram22kINR = Math.round(gram24kINR * 0.916); // 22K (91.6% Purity) Standard Calculation
-                        const gram18kINR = Math.round(gram24kINR * 0.75);  // 18K (75% Purity) Standard Calculation
+                        const xauPriceINR = data.items[0].xauPrice;
+                        const gram24kINR = Math.round(xauPriceINR / 31.1034768);
+                        const gram22kINR = Math.round(gram24kINR * 0.916);
+                        const gram18kINR = Math.round(gram24kINR * 0.75);
 
                         if (gram24kINR > 1000) {
                             goldRate24k = gram24kINR;
@@ -1648,7 +1689,6 @@
                 console.warn("Primary live gold rate fetch failed, trying secondary endpoint...", err);
             }
 
-            // Fallback API if primary is blocked by local network CORS
             if (!success) {
                 try {
                     const fallbackRes = await fetch('https://api.metalpriceapi.com/v1/latest?api_key=public&base=INR&currencies=XAU', { cache: 'no-cache' });
@@ -1717,7 +1757,6 @@
             showToast("Gold rates & estimator updated manually!", "fa-coins");
         }
 
-        // Profile Photo Handlers
         function triggerProfilePhotoUpload() {
             document.getElementById('adminPhotoInput').click();
         }
@@ -1762,7 +1801,6 @@
             }
         }
 
-        // Customer Review & Rating Engine with Modal Validation
         function setCustomerRating(stars) {
             selectedCustomerRating = stars;
             const buttons = document.querySelectorAll('#starRatingContainer .star-btn');
@@ -1822,7 +1860,6 @@
             window.open(waUrl, '_blank'); closeModal('ratingModal');
         }
 
-        // Toast Notification Trigger
         function showToast(msg, icon = "fa-circle-check") {
             const toast = document.getElementById('toastNotification');
             document.getElementById('toastMessage').innerText = msg;
@@ -1835,12 +1872,10 @@
             }, 3000);
         }
 
-        // INR Currency Formatter
         const formatINR = (amt) => {
             return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2 }).format(amt || 0);
         };
 
-        // Date Formatter (DD-MM-YYYY)
         function formatDateDDMMYYYY(dateInput) {
             if (!dateInput) return '-';
             let d = new Date(dateInput);
@@ -1850,7 +1885,6 @@
             return `${day}-${month}-${d.getFullYear()}`;
         }
 
-        // Helper: Generate UPI QR Code URL
         function generateUpiQrUrl(upiId, name = '', amount = '') {
             if (!upiId) return '';
             const cleanedUpi = upiId.trim();
@@ -1861,7 +1895,6 @@
             return `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiUri)}`;
         }
 
-        // DIRECT MOBILE PHONE CONTACTS PICKER FUNCTION
         async function pickContactForParty() {
             if ('contacts' in navigator && 'ContactsManager' in window) {
                 const props = ['name', 'tel'];
@@ -1888,7 +1921,6 @@
             }
         }
 
-        // Initialization
         window.addEventListener('DOMContentLoaded', () => {
             loadStorage();
             checkSessionLogin();
@@ -1906,10 +1938,8 @@
             selectedCustomerRating = 0;
             document.getElementById('printDate').innerText = formatDateDDMMYYYY(new Date());
 
-            // Auto-fetch live internet gold rate silently on app start
             fetchLiveGoldRateFromInternet(false);
 
-            // Close Autocomplete dropdown on outside click
             document.addEventListener('click', (e) => {
                 const searchBox = document.getElementById('mainCustomerSearchInput');
                 const autocomplete = document.getElementById('autocompleteSuggestions');
@@ -1925,7 +1955,6 @@
             });
         });
 
-        // PWA Manifest Generation
         function setupPWAManifest() {
             const manifestObj = {
                 name: "Sfinsys Banking & Cash Ledger",
@@ -1972,7 +2001,6 @@
             }
         }
 
-        // Touch Keypad Handling for PIN Entry
         function pressPinKey(digit) {
             if (enteredKeypadPin.length < 4) {
                 enteredKeypadPin += digit;
@@ -2269,7 +2297,6 @@
             showToast("Party Profile Saved!");
         }
 
-        // AUTOCOMPLETE SEARCH FOR DASHBOARD
         function handleCustomerSearchInput() {
             const query = document.getElementById('mainCustomerSearchInput').value.trim();
             const autocompleteBox = document.getElementById('autocompleteSuggestions');
@@ -2345,7 +2372,6 @@
             onPartyFilterChange();
         }
 
-        // INSTANT SEARCH BAR FOR ADD TRANSACTION MODAL
         function handleTxnPartySearchInput() {
             const query = document.getElementById('txnPartySearchInput').value.trim();
             const autocompleteBox = document.getElementById('txnAutocompleteSuggestions');
@@ -2476,36 +2502,36 @@
                 return `
                     <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-3">
                         <div class="flex items-start justify-between gap-2">
-                            <div>
-                                <h4 class="font-extrabold text-sm text-slate-900">${p.name}</h4>
-                                <p class="text-[10px] text-slate-500 font-bold"><i class="fa-solid fa-phone mr-1"></i>${p.phone || 'No Phone'}</p>
-                                ${p.bankAcc ? `<p class="text-[10px] text-emerald-800 font-bold"><i class="fa-solid fa-building-columns mr-1"></i>A/C: ${p.bankAcc}</p>` : ''}
-                                ${p.upiId ? `<p class="text-[10px] text-blue-700 font-bold"><i class="fa-solid fa-qrcode mr-1"></i>UPI: ${p.upiId}</p>` : ''}
-                                <p class="text-[10px] text-amber-700 font-bold mt-0.5">Rate: ${getSystemDisplayLabel(p.calcSystem, p.calcRate)}</p>
+                            <div class="min-w-0">
+                                <h4 class="font-extrabold text-sm text-slate-900 truncate">${p.name}</h4>
+                                <p class="text-[10px] text-slate-500 font-bold truncate"><i class="fa-solid fa-phone mr-1"></i>${p.phone || 'No Phone'}</p>
+                                ${p.bankAcc ? `<p class="text-[10px] text-emerald-800 font-bold truncate"><i class="fa-solid fa-building-columns mr-1"></i>A/C: ${p.bankAcc}</p>` : ''}
+                                ${p.upiId ? `<p class="text-[10px] text-blue-700 font-bold truncate"><i class="fa-solid fa-qrcode mr-1"></i>UPI: ${p.upiId}</p>` : ''}
+                                <p class="text-[10px] text-amber-700 font-bold mt-0.5 truncate">Rate: ${getSystemDisplayLabel(p.calcSystem, p.calcRate)}</p>
                             </div>
                             
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-2 shrink-0">
                                 ${hasQr ? `
                                     <div class="text-center bg-slate-50 p-1.5 rounded-xl border border-slate-200 shrink-0">
                                         <img src="${qrUrl}" alt="QR" class="w-14 h-14 object-contain mx-auto">
                                         <span class="text-[7px] font-black text-slate-600 block">UPI QR</span>
                                     </div>
                                 ` : ''}
-                                <div class="text-right">
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase">Total Payable</span>
-                                    <div class="text-sm font-black text-emerald-600">${formatINR(metrics.totalPayable)}</div>
-                                    <span class="text-[9px] text-slate-500 block">Principal: ${formatINR(metrics.netBalance)}</span>
+                                <div class="text-right min-w-0">
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase truncate block">Total Payable</span>
+                                    <div class="text-sm font-black text-emerald-600 truncate">${formatINR(metrics.totalPayable)}</div>
+                                    <span class="text-[9px] text-slate-500 block truncate">Principal: ${formatINR(metrics.netBalance)}</span>
                                 </div>
                             </div>
                         </div>
 
                         <div class="flex justify-between items-center border-t border-slate-100 pt-2.5 text-xs font-bold text-slate-600">
-                            <div class="flex gap-3 text-[10px]">
-                                <div>Gross Int: <span class="text-amber-600 font-black">${formatINR(metrics.grossInterest)}</span></div>
-                                <div>Int Paid: <span class="text-purple-600 font-black">${formatINR(metrics.interestPaidTotal)}</span></div>
+                            <div class="flex gap-3 text-[10px] min-w-0">
+                                <div class="truncate">Gross Int: <span class="text-amber-600 font-black">${formatINR(metrics.grossInterest)}</span></div>
+                                <div class="truncate">Int Paid: <span class="text-purple-600 font-black">${formatINR(metrics.interestPaidTotal)}</span></div>
                             </div>
                             
-                            <div class="flex items-center gap-3 border-l border-slate-200 pl-3">
+                            <div class="flex items-center gap-3 border-l border-slate-200 pl-3 shrink-0">
                                 <button onclick="sharePartyWhatsApp('${p.id}')" class="text-emerald-600 hover:text-emerald-800 p-1.5 bg-emerald-50 rounded-lg transition" title="Share via WhatsApp">
                                     <i class="fa-brands fa-whatsapp text-sm"></i>
                                 </button>
@@ -2525,7 +2551,6 @@
             }).join('');
         }
 
-        // ==================== CASH ON HAND LOGIC & CALCULATIONS ====================
         function saveCashTransaction(e) {
             e.preventDefault();
             const type = document.getElementById('cashTxnType').value;
@@ -2559,7 +2584,6 @@
             const startDate = document.getElementById('cashStartDate').value;
             const endDate = document.getElementById('cashEndDate').value;
 
-            // Combine manual cash txns and ledger cash entries
             let combined = [];
 
             cashTransactions.forEach(c => {
@@ -2632,17 +2656,17 @@
 
             container.innerHTML = filtered.map(c => `
                 <div class="bg-white p-3 rounded-xl border border-slate-200/80 shadow-sm flex justify-between items-center text-xs">
-                    <div>
+                    <div class="min-w-0 pr-2">
                         <div class="flex items-center gap-1.5 mb-0.5">
-                            <span class="px-2 py-0.5 rounded text-[8px] font-black ${c.type === 'IN' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                            <span class="px-2 py-0.5 rounded text-[8px] font-black shrink-0 ${c.type === 'IN' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
                                 ${c.type === 'IN' ? 'CASH IN' : 'CASH OUT'}
                             </span>
-                            <span class="text-[10px] text-slate-400 font-bold">${formatDateDDMMYYYY(c.date)}</span>
+                            <span class="text-[10px] text-slate-400 font-bold shrink-0">${formatDateDDMMYYYY(c.date)}</span>
                         </div>
-                        <p class="font-extrabold text-slate-900">${c.note}</p>
+                        <p class="font-extrabold text-slate-900 truncate">${c.note}</p>
                     </div>
-                    <div class="text-right">
-                        <span class="font-black text-sm ${c.type === 'IN' ? 'text-emerald-600' : 'text-rose-600'}">${c.type === 'IN' ? '+' : '-'}${formatINR(c.amount)}</span>
+                    <div class="text-right shrink-0">
+                        <span class="font-black text-sm block ${c.type === 'IN' ? 'text-emerald-600' : 'text-rose-600'}">${c.type === 'IN' ? '+' : '-'}${formatINR(c.amount)}</span>
                         ${c.isManual ? `
                             <button onclick="deleteCashTransaction('${c.id}')" class="block ml-auto text-slate-400 hover:text-rose-600 text-[10px] mt-1" title="Delete">
                                 <i class="fa-solid fa-trash-can"></i>
@@ -2691,6 +2715,7 @@
 
             document.getElementById('individualPrintContent').classList.add('hidden');
             document.getElementById('masterPrintContent').classList.add('hidden');
+            document.getElementById('goldEstimatePrintContent').classList.add('hidden');
             document.getElementById('cashVaultPrintContent').classList.remove('hidden');
             window.print();
         }
@@ -2930,16 +2955,16 @@
 
                 return `
                     <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
-                        <div>
+                        <div class="min-w-0 pr-2">
                             <div class="flex items-center gap-1.5 mb-1">
-                                <span class="px-2 py-0.5 rounded-md text-[9px] font-black ${badgeClass}">${typeLabel}</span>
-                                <span class="text-[10px] font-bold text-slate-400">${formatDateDDMMYYYY(t.date)}</span>
+                                <span class="px-2 py-0.5 rounded-md text-[9px] font-black shrink-0 ${badgeClass}">${typeLabel}</span>
+                                <span class="text-[10px] font-bold text-slate-400 shrink-0">${formatDateDDMMYYYY(t.date)}</span>
                             </div>
-                            <h4 class="font-extrabold text-xs text-slate-900">${party ? party.name : 'Unknown'}</h4>
-                            <p class="text-[10px] text-slate-500 mt-0.5">${t.note || 'No description'} (${t.mode || 'Cash'})</p>
+                            <h4 class="font-extrabold text-xs text-slate-900 truncate">${party ? party.name : 'Unknown'}</h4>
+                            <p class="text-[10px] text-slate-500 mt-0.5 truncate">${t.note || 'No description'} (${t.mode || 'Cash'})</p>
                         </div>
-                        <div class="text-right">
-                            <div class="text-sm font-black text-slate-900">${formatINR(t.amount)}</div>
+                        <div class="text-right shrink-0">
+                            <div class="text-sm font-black text-slate-900 truncate">${formatINR(t.amount)}</div>
                             <div class="flex items-center justify-end gap-3 mt-1.5">
                                 <button onclick="editTransaction('${t.id}')" class="text-slate-400 hover:text-blue-600 text-xs p-1 bg-slate-50 hover:bg-blue-50 rounded-lg transition" title="Edit Entry">
                                     <i class="fa-solid fa-pen-to-square"></i>
@@ -3080,6 +3105,7 @@
 
             document.getElementById('individualPrintContent').classList.add('hidden');
             document.getElementById('cashVaultPrintContent').classList.add('hidden');
+            document.getElementById('goldEstimatePrintContent').classList.add('hidden');
             document.getElementById('masterPrintContent').classList.remove('hidden');
             closeModal('printModal');
             window.print();
@@ -3165,6 +3191,7 @@
 
             document.getElementById('masterPrintContent').classList.add('hidden');
             document.getElementById('cashVaultPrintContent').classList.add('hidden');
+            document.getElementById('goldEstimatePrintContent').classList.add('hidden');
             document.getElementById('individualPrintContent').classList.remove('hidden');
             closeModal('printModal');
             window.print();
