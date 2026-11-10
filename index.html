@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="en-IN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Sfinsys</title>
 
-    <!-- Android Web App Meta Tags -->
+    <!-- Android Web App & APK Meta Tags -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -46,7 +46,6 @@
             opacity: 1 !important;
         }
 
-        /* Select option items strictly forced to black color */
         select option {
             color: #000000 !important;
             background-color: #ffffff !important;
@@ -58,11 +57,9 @@
         .pb-safe { padding-bottom: env(safe-area-inset-bottom, 1rem); }
         .pt-safe { padding-top: env(safe-area-inset-top, 1rem); }
 
-        /* Hide scrollbars */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Modal Sheet Animation */
         .sheet-up {
             animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
@@ -81,7 +78,6 @@
 
         .print-only { display: none; }
 
-        /* Toast Animation */
         .toast-slide {
             animation: toastIn 0.3s ease-out forwards, toastOut 0.3s ease-in 2.7s forwards;
         }
@@ -92,6 +88,15 @@
         @keyframes toastOut {
             from { transform: translateY(0); opacity: 1; }
             to { transform: translateY(-100%); opacity: 0; }
+        }
+
+        .biometric-pulse {
+            animation: bioPulse 1.5s infinite ease-in-out;
+        }
+        @keyframes bioPulse {
+            0% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.08); opacity: 1; filter: drop-shadow(0 0 10px rgba(245,158,11,0.6)); }
+            100% { transform: scale(1); opacity: 0.9; }
         }
     </style>
 </head>
@@ -109,7 +114,6 @@
     <!-- ==================== SECURITY USER LOGIN & PIN OVERLAY ==================== -->
     <div id="loginOverlay" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-between p-6 pt-safe pb-safe no-print">
         <div class="w-full max-w-sm my-auto text-center">
-            <!-- App Logo Badge -->
             <div class="w-20 h-20 bg-gradient-to-br from-amber-400 to-amber-600 rounded-3xl text-indigo-950 font-black text-5xl flex items-center justify-center mx-auto mb-4 shadow-2xl border-2 border-amber-300 transform active:scale-95 transition">
                 S
             </div>
@@ -118,14 +122,27 @@
             <p class="text-[11px] text-slate-400 mt-1 font-medium">Bullion Market, Cash Ledger & Estimator</p>
 
             <div class="mt-6 space-y-4">
-                <!-- User Login Credential Input -->
                 <div class="text-left">
                     <label class="block text-[10px] font-bold text-amber-400 mb-1 uppercase tracking-wider">Username / User ID</label>
                     <input type="text" id="loginUsernameInput" placeholder="Enter Username" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-2 focus:ring-amber-400" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;">
                 </div>
 
+                <!-- BIOMETRIC LOGIN BUTTON -->
+                <div id="biometricLoginContainer" class="pt-1">
+                    <button onclick="handleBiometricLogin()" id="biometricBtn" class="w-full py-3 bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-indigo-950 font-black text-xs rounded-2xl shadow-lg border border-amber-300 flex items-center justify-center gap-2 transform active:scale-98 transition">
+                        <i class="fa-solid fa-fingerprint text-lg text-indigo-950 biometric-pulse"></i>
+                        <span>Login with Biometric (Fingerprint / Face ID)</span>
+                    </button>
+                    <p id="biometricStatusMsg" class="text-[10px] text-slate-400 mt-1 font-semibold">Touch fingerprint sensor or scan Face ID</p>
+                </div>
+
+                <div class="relative flex py-1 items-center">
+                    <div class="flex-grow border-t border-slate-800"></div>
+                    <span class="flex-shrink mx-3 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">Or Use 4-Digit PIN</span>
+                    <div class="flex-grow border-t border-slate-800"></div>
+                </div>
+
                 <div>
-                    <label class="block text-[10px] font-bold text-amber-400 mb-2 uppercase tracking-wider">4-Digit Security PIN</label>
                     <div class="flex justify-center gap-3 mb-4">
                         <div id="dot-0" class="w-4 h-4 rounded-full border-2 border-amber-400 bg-transparent"></div>
                         <div id="dot-1" class="w-4 h-4 rounded-full border-2 border-amber-400 bg-transparent"></div>
@@ -134,12 +151,11 @@
                     </div>
                     <input type="password" id="loginPinInput" maxlength="4" readonly class="sr-only">
                     <p id="loginErrorMsg" class="text-xs text-rose-400 mt-1 font-bold hidden flex items-center justify-center gap-1">
-                        <i class="fa-solid fa-triangle-exclamation"></i> Incorrect Credentials or PIN!
+                        <i class="fa-solid fa-triangle-exclamation"></i> Incorrect Credentials, PIN or Biometric!
                     </p>
                 </div>
 
-                <!-- On-Screen Numeric Keypad -->
-                <div class="grid grid-cols-3 gap-3 max-w-[260px] mx-auto pt-2">
+                <div class="grid grid-cols-3 gap-3 max-w-[260px] mx-auto pt-1">
                     <button onclick="pressPinKey('1')" class="h-14 bg-slate-900 active:bg-amber-500 active:text-indigo-950 border border-slate-800 rounded-2xl text-xl font-black text-white transition flex items-center justify-center shadow">1</button>
                     <button onclick="pressPinKey('2')" class="h-14 bg-slate-900 active:bg-amber-500 active:text-indigo-950 border border-slate-800 rounded-2xl text-xl font-black text-white transition flex items-center justify-center shadow">2</button>
                     <button onclick="pressPinKey('3')" class="h-14 bg-slate-900 active:bg-amber-500 active:text-indigo-950 border border-slate-800 rounded-2xl text-xl font-black text-white transition flex items-center justify-center shadow">3</button>
@@ -164,7 +180,6 @@
     <!-- ==================== MAIN APP SHELL ==================== -->
     <div id="appMainContent" class="flex-grow flex flex-col hidden bg-slate-100 text-slate-800 min-h-screen">
 
-        <!-- Top Mobile Bar with Integrated Header Controls -->
         <header class="bg-slate-950 text-white sticky top-0 z-30 pt-safe no-print border-b border-slate-800 shadow-md">
             <div class="px-4 py-3 flex items-center justify-between">
                 <div class="flex items-center space-x-3">
@@ -177,13 +192,11 @@
                     </div>
                 </div>
 
-                <!-- Top Quick Actions (Security Options, Install, Backup & Lock) -->
                 <div class="flex items-center space-x-1.5">
                     <button id="installPWABtn" onclick="triggerPWAInstall()" class="hidden bg-amber-500 hover:bg-amber-400 text-indigo-950 px-2.5 py-1.5 rounded-xl text-[11px] font-black transition flex items-center gap-1 shadow">
                         <i class="fa-solid fa-download"></i>
                         <span>Install</span>
                     </button>
-                    <!-- Dedicated Security & Account Settings Header Button -->
                     <button onclick="openModal('securitySettingsModal')" class="p-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 rounded-xl border border-amber-500/30 transition" title="Security & App Settings">
                         <i class="fa-solid fa-shield-halved text-xs"></i>
                     </button>
@@ -197,13 +210,11 @@
             </div>
         </header>
 
-        <!-- Dynamic Body Views -->
         <main class="flex-grow p-4 pb-24 overflow-y-auto max-w-2xl mx-auto w-full no-print">
 
             <!-- TAB 1: DASHBOARD / OVERVIEW -->
             <section id="tab-dashboard" class="space-y-4">
                 
-                <!-- Admin Greeting & Seasonal Banner with Profile Photo at Top Right Corner -->
                 <div class="bg-gradient-to-r from-amber-500 via-amber-600 to-indigo-900 text-white p-3 rounded-xl shadow-md border border-amber-400/30 flex items-center justify-between relative overflow-hidden">
                     <div>
                         <div class="flex items-center gap-1.5">
@@ -214,20 +225,17 @@
                         <p class="text-[9px] text-amber-100 font-medium leading-tight max-w-[210px] sm:max-w-xs" id="seasonalSubtext">Have a productive day managing your ledger.</p>
                     </div>
 
-                    <!-- Profile Photo Adding Option on Top Right Corner of Seasonal Greeting -->
                     <div class="relative group cursor-pointer shrink-0" onclick="triggerProfilePhotoUpload()" title="Click to Upload Profile Photo">
                         <div class="w-12 h-12 bg-slate-950/40 backdrop-blur-md rounded-full flex items-center justify-center text-amber-400 border-2 border-amber-300/80 shadow-lg overflow-hidden transition transform active:scale-95">
                             <img id="adminProfileImage" src="" alt="Profile" class="w-full h-full object-cover hidden">
                             <i id="adminProfileIcon" class="fa-solid fa-user text-lg"></i>
                         </div>
-                        <!-- Upload Camera Badge -->
                         <div class="absolute -bottom-1 -right-1 bg-amber-400 text-slate-950 w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold shadow-md border border-slate-950">
                             <i class="fa-solid fa-camera"></i>
                         </div>
                     </div>
                 </div>
 
-                <!-- Selected Party Banner & Autocomplete Customer Search -->
                 <div class="bg-slate-900 text-white p-4 rounded-2xl border border-slate-800 shadow-sm space-y-3">
                     <div class="flex items-center justify-between">
                         <label class="block text-[10px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
@@ -236,7 +244,6 @@
                         <span class="text-[10px] text-slate-400" id="partySearchCount">0 Parties</span>
                     </div>
 
-                    <!-- Autocomplete Instant Search Input -->
                     <div class="relative">
                         <input type="text" id="mainCustomerSearchInput" oninput="handleCustomerSearchInput()" placeholder="Search name, mobile, reference, or bank..." class="w-full pl-9 pr-8 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs font-bold text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-amber-400 text-xs"></i>
@@ -244,13 +251,10 @@
                             <i class="fa-solid fa-xmark text-xs"></i>
                         </button>
 
-                        <!-- Autocomplete Suggestions Dropdown -->
                         <div id="autocompleteSuggestions" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-amber-500/50 rounded-xl shadow-2xl z-50 max-h-48 overflow-y-auto text-black">
-                            <!-- Dynamic Autocomplete Results -->
                         </div>
                     </div>
 
-                    <!-- Customer / Party Select Dropdown -->
                     <div>
                         <select id="partyFilterSelect" onchange="onPartyFilterChange()" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs font-black focus:ring-2 focus:ring-amber-400 focus:outline-none" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
                             <option value="" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-weight: 800;">-- Master Combined Ledger (All Parties) --</option>
@@ -258,7 +262,6 @@
                     </div>
                 </div>
 
-                <!-- UPI Payment QR Code Section -->
                 <div id="mainViewUpiQrCard" class="hidden bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-950 text-white p-4 rounded-2xl border border-emerald-800/60 shadow-md">
                     <div class="flex items-center justify-between gap-4">
                         <div class="space-y-1 min-w-0">
@@ -275,9 +278,7 @@
                     </div>
                 </div>
 
-                <!-- Financial Metrics Cards Grid -->
                 <div class="grid grid-cols-2 gap-3">
-                    <!-- Net Outstanding Principal -->
                     <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm col-span-2">
                         <div class="flex justify-between items-center">
                             <div class="min-w-0">
@@ -290,31 +291,26 @@
                         </div>
                     </div>
 
-                    <!-- Credit Given -->
                     <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm min-w-0">
                         <p class="text-[10px] font-bold text-rose-500 uppercase tracking-wider truncate">Total Given</p>
                         <h3 id="statTotalGiven" class="text-base font-black text-rose-600 mt-1 truncate">₹0.00</h3>
                     </div>
 
-                    <!-- Principal Received -->
                     <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm min-w-0">
                         <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider truncate">Principal Rec.</p>
                         <h3 id="statTotalReceived" class="text-base font-black text-emerald-600 mt-1 truncate">₹0.00</h3>
                     </div>
 
-                    <!-- Gross Accrued Interest -->
                     <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm min-w-0">
                         <p class="text-[10px] font-bold text-amber-500 uppercase tracking-wider truncate">Gross Interest</p>
                         <h3 id="statTotalInterest" class="text-base font-black text-amber-600 mt-1 truncate">₹0.00</h3>
                     </div>
 
-                    <!-- Interest Paid -->
                     <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm min-w-0">
                         <p class="text-[10px] font-bold text-purple-500 uppercase tracking-wider truncate">Interest Paid</p>
                         <h3 id="statInterestPaid" class="text-base font-black text-purple-600 mt-1 truncate">₹0.00</h3>
                     </div>
 
-                    <!-- Total Payable Highlight Card -->
                     <div class="bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 text-white p-4 rounded-2xl border border-indigo-800/80 shadow-md col-span-2 flex items-center justify-between gap-2">
                         <div class="min-w-0">
                             <p class="text-[10px] font-bold text-amber-400 uppercase tracking-wider truncate">TOTAL PAYABLE AMOUNT</p>
@@ -327,7 +323,6 @@
                     </div>
                 </div>
 
-                <!-- Quick Action Buttons -->
                 <div class="grid grid-cols-2 gap-3 pt-1">
                     <button onclick="openModal('transactionModal')" class="py-3.5 bg-blue-600 active:bg-blue-700 text-white font-bold text-xs rounded-2xl shadow transition flex items-center justify-center gap-2">
                         <i class="fa-solid fa-circle-plus"></i>
@@ -339,7 +334,6 @@
                     </button>
                 </div>
 
-                <!-- MAIN PAGE DAILY GOLD RATE TRACKER & ESTIMATOR DIRECT REDIRECT BUTTON -->
                 <div class="bg-gradient-to-br from-amber-950 via-slate-900 to-slate-950 text-white p-4 rounded-2xl border border-amber-500/40 shadow-md space-y-3">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-2.5">
@@ -356,14 +350,12 @@
                         </span>
                     </div>
 
-                    <!-- Main Page Click Button to Redirect to Dedicated Gold Tracker Page/Modal -->
                     <button onclick="openGoldRateModal()" class="w-full py-3.5 bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-indigo-950 font-black text-xs rounded-xl shadow-lg transition transform active:scale-98 flex items-center justify-center gap-2 border border-amber-300">
                         <i class="fa-solid fa-calculator text-sm"></i>
                         <span>Open Rate Table & Gold Jewellery Estimator</span>
                     </button>
                 </div>
 
-                <!-- Customer Rating & Review Card -->
                 <div class="bg-white p-4 rounded-2xl border border-amber-200 shadow-sm flex items-center justify-between">
                     <div>
                         <h3 class="font-black text-xs text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
@@ -380,7 +372,6 @@
 
             <!-- TAB 2: TRANSACTION LEDGER ENTRIES -->
             <section id="tab-entries" class="space-y-3 hidden">
-                <!-- Search & Filters Bar -->
                 <div class="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-2">
                     <div class="relative flex-grow">
                         <input type="text" id="searchInput" oninput="toggleLedgerSearchClear(); renderLedgerTable();" placeholder="Search party, note, mode, amount..." class="w-full pl-8 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
@@ -397,7 +388,6 @@
                     </select>
                 </div>
 
-                <!-- Export Bar & Date Range Statement Download -->
                 <div class="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
                     <div class="flex items-center justify-between text-xs font-bold text-slate-700">
                         <span><i class="fa-solid fa-calendar-days text-amber-500 mr-1"></i> Statement Date-wise Filter</span>
@@ -423,12 +413,9 @@
                     </div>
                 </div>
 
-                <!-- Entries List -->
                 <div id="mobileLedgerList" class="space-y-2.5">
-                    <!-- Dynamic Entry Cards -->
                 </div>
 
-                <!-- Empty State -->
                 <div id="emptyState" class="p-8 text-center text-slate-400 bg-white rounded-2xl border border-slate-200 hidden">
                     <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center text-xl font-black mx-auto mb-2">S</div>
                     <p class="font-bold text-xs text-slate-600">No transaction records found.</p>
@@ -449,7 +436,6 @@
                     </div>
                 </div>
 
-                <!-- Dedicated Search Input for Parties Tab -->
                 <div class="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-2">
                     <div class="relative flex-grow">
                         <input type="text" id="partySearchInput" oninput="togglePartySearchClear(); renderPartiesList();" placeholder="Search name, phone, ref, bank, UPI..." class="w-full pl-8 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
@@ -461,13 +447,11 @@
                 </div>
 
                 <div id="partiesList" class="space-y-2.5">
-                    <!-- Dynamic Party List Cards -->
                 </div>
             </section>
 
             <!-- TAB 4: CASH ON HAND / TILL MANAGEMENT -->
             <section id="tab-cash" class="space-y-4 hidden">
-                <!-- Cash Summary Overview -->
                 <div class="bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-950 text-white p-4 rounded-2xl border border-emerald-800/60 shadow-md">
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center space-x-2">
@@ -484,7 +468,6 @@
                         </button>
                     </div>
 
-                    <!-- ADJUSTED RESPONSIVE NET IN VAULT GRID BOXES FOR OPTIMAL FIT -->
                     <div class="grid grid-cols-3 gap-1.5 sm:gap-2 text-center pt-1 border-t border-emerald-900/80">
                         <div class="bg-slate-900/80 p-2 sm:p-2.5 rounded-xl border border-slate-800 min-w-0 flex flex-col justify-center">
                             <p class="text-[8px] sm:text-[9px] font-extrabold text-emerald-400 uppercase truncate">Cash In Flow</p>
@@ -501,7 +484,6 @@
                     </div>
                 </div>
 
-                <!-- DATE-WISE CASH VAULT PDF STATEMENT BAR -->
                 <div class="bg-white p-3 rounded-2xl border border-emerald-200 shadow-sm space-y-2">
                     <div class="flex items-center justify-between text-xs font-extrabold text-slate-800">
                         <span><i class="fa-solid fa-file-pdf text-emerald-600 mr-1"></i> Date-Wise Cash PDF Statement</span>
@@ -524,7 +506,6 @@
                     </div>
                 </div>
 
-                <!-- Cash Search & Filter Controls -->
                 <div class="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-2">
                     <div class="relative flex-grow">
                         <input type="text" id="cashSearchInput" oninput="toggleCashSearchClear(); renderCashList();" placeholder="Search cash note, source, or amount..." class="w-full pl-8 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
@@ -540,7 +521,6 @@
                     </select>
                 </div>
 
-                <!-- Currency Denomination Counter Utility -->
                 <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
                     <div class="flex justify-between items-center border-b border-slate-100 pb-2">
                         <h4 class="font-extrabold text-xs text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
@@ -580,16 +560,13 @@
                     </div>
                 </div>
 
-                <!-- Cash Movement History List -->
                 <div class="space-y-2">
                     <h4 class="font-extrabold text-xs text-slate-600 uppercase tracking-wider px-1">Cash Movement History</h4>
                     <div id="cashTransactionsList" class="space-y-2">
-                        <!-- Dynamic Cash Transactions -->
                     </div>
                 </div>
             </section>
 
-            <!-- DESIGNED & DEVELOPED FOOTER CREDITS FOR MAIN WINDOW -->
             <div class="mt-8 text-center pt-4 border-t border-slate-800 text-[11px] text-slate-400 no-print">
                 <p class="font-bold tracking-wide">Design and Developed by <span class="text-amber-400 font-extrabold">Santhoshgopal</span></p>
             </div>
@@ -598,7 +575,6 @@
 
         <!-- ==================== PRINT STATEMENT CONTAINER ==================== -->
         <div id="printContainer" class="print-only p-6 bg-white text-slate-900 max-w-4xl mx-auto">
-            <!-- Individual Borrower Statement Dynamic Markup -->
             <div id="individualPrintContent">
                 <div class="flex justify-between items-start border-b-2 border-slate-900 pb-4 mb-4">
                     <div class="flex items-center space-x-3">
@@ -616,7 +592,6 @@
                     </div>
                 </div>
 
-                <!-- Borrower Profile Details & QR Code -->
                 <div class="grid grid-cols-3 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 mb-4 text-xs">
                     <div>
                         <p class="text-[10px] font-bold text-slate-400 uppercase">Party / Borrower Details</p>
@@ -636,7 +611,6 @@
                     </div>
                 </div>
 
-                <!-- Financial Summary Cards -->
                 <div class="grid grid-cols-4 gap-3 mb-6 text-center">
                     <div class="p-3 bg-rose-50 border border-rose-200 rounded-xl">
                         <p class="text-[9px] font-bold text-rose-700 uppercase">Total Credit Given</p>
@@ -656,14 +630,12 @@
                     </div>
                 </div>
 
-                <!-- Breakdown Sub-Summary -->
                 <div class="flex justify-between items-center text-xs font-bold border-t border-b border-slate-200 py-2 mb-4">
                     <span>Gross Accrued Interest: <strong id="printGrossInterest" class="text-amber-700">₹0.00</strong></span>
                     <span>Interest Paid to Date: <strong id="printInterestPaid" class="text-purple-700">₹0.00</strong></span>
                     <span>Pending Unpaid Interest: <strong id="printPendingInterest" class="text-rose-700">₹0.00</strong></span>
                 </div>
 
-                <!-- History Table -->
                 <h3 class="font-extrabold text-xs uppercase tracking-wider text-slate-800 mb-2">Filtered Statement History</h3>
                 <table class="w-full text-left text-xs border-collapse">
                     <thead>
@@ -676,12 +648,10 @@
                         </tr>
                     </thead>
                     <tbody id="printHistoryTable">
-                        <!-- Dynamic Rows -->
                     </tbody>
                 </table>
             </div>
 
-            <!-- Master Customer Statement Dynamic Container -->
             <div id="masterPrintContent" class="hidden">
                 <div class="flex justify-between items-start border-b-2 border-slate-900 pb-4 mb-4">
                     <div class="flex items-center space-x-3">
@@ -699,7 +669,6 @@
                     </div>
                 </div>
 
-                <!-- Master Metrics Summary -->
                 <div class="grid grid-cols-4 gap-3 mb-6 text-center">
                     <div class="p-3 bg-slate-100 border border-slate-300 rounded-xl">
                         <p class="text-[9px] font-bold text-slate-600 uppercase">Total Given</p>
@@ -719,7 +688,6 @@
                     </div>
                 </div>
 
-                <!-- Master Table -->
                 <table class="w-full text-left text-xs border-collapse">
                     <thead>
                         <tr class="bg-slate-900 text-white text-[9px] uppercase font-bold">
@@ -735,12 +703,10 @@
                         </tr>
                     </thead>
                     <tbody id="masterTableBody">
-                        <!-- Dynamic Rows -->
                     </tbody>
                 </table>
             </div>
 
-            <!-- CASH VAULT PRINT STATEMENT CONTAINER -->
             <div id="cashVaultPrintContent" class="hidden">
                 <div class="flex justify-between items-start border-b-2 border-slate-900 pb-4 mb-4">
                     <div class="flex items-center space-x-3">
@@ -758,7 +724,6 @@
                     </div>
                 </div>
 
-                <!-- Cash Vault Metrics Summary -->
                 <div class="grid grid-cols-3 gap-3 mb-6 text-center">
                     <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl min-w-0">
                         <p class="text-[9px] font-bold text-emerald-700 uppercase truncate">Total Cash In</p>
@@ -774,7 +739,6 @@
                     </div>
                 </div>
 
-                <!-- Cash Statement Table -->
                 <h3 class="font-extrabold text-xs uppercase tracking-wider text-slate-800 mb-2">Itemized Cash Movement Log</h3>
                 <table class="w-full text-left text-xs border-collapse">
                     <thead>
@@ -787,12 +751,10 @@
                         </tr>
                     </thead>
                     <tbody id="cashPrintHistoryTable">
-                        <!-- Dynamic Cash Rows -->
                     </tbody>
                 </table>
             </div>
 
-            <!-- GOLD JEWELLERY ESTIMATE PRINT SLIP CONTAINER -->
             <div id="goldEstimatePrintContent" class="hidden">
                 <div class="flex justify-between items-start border-b-2 border-slate-900 pb-4 mb-4">
                     <div class="flex items-center space-x-3">
@@ -810,7 +772,6 @@
                     </div>
                 </div>
 
-                <!-- Gold Estimate Details Box -->
                 <div class="bg-amber-50/50 border border-amber-200 p-4 rounded-xl mb-6 space-y-3">
                     <h3 class="font-extrabold text-xs uppercase tracking-wider text-slate-800 border-b border-amber-200 pb-2">Item Breakdown</h3>
                     <div class="grid grid-cols-2 gap-3 text-xs">
@@ -852,7 +813,6 @@
                 <p class="text-[10px] text-slate-500 italic text-center">Note: Rates are based on live bullion market rates and subject to market fluctuations. Final invoice price may vary slightly based on exact weight at billing.</p>
             </div>
 
-            <!-- STATEMENT BOTTOM FOOTER CREDITS -->
             <div class="mt-8 pt-4 border-t border-slate-300 flex justify-between items-end text-[10px] text-slate-500">
                 <div>
                     <p class="font-bold text-slate-700">Design and Developed by Santhoshgopal</p>
@@ -877,7 +837,6 @@
                     <span>Ledger</span>
                 </button>
 
-                <!-- Floating Center Add Action Button -->
                 <button onclick="openModal('transactionModal')" class="w-12 h-12 bg-gradient-to-tr from-amber-500 to-amber-400 text-indigo-950 rounded-full flex items-center justify-center text-xl shadow-xl -mt-5 border-4 border-slate-950 transform active:scale-90 transition">
                     <i class="fa-solid fa-plus"></i>
                 </button>
@@ -887,7 +846,6 @@
                     <span>Parties</span>
                 </button>
 
-                <!-- CASH ON HAND / TILL DRAWER TAB -->
                 <button onclick="switchTab('cash')" id="nav-cash" class="flex-1 flex flex-col items-center justify-center py-1 hover:text-white transition">
                     <i class="fa-solid fa-vault text-base mb-0.5"></i>
                     <span>Cash Vault</span>
@@ -908,7 +866,6 @@
                 <button onclick="closeModal('securitySettingsModal')" class="text-slate-400 p-1"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <!-- Profile Photo Settings Bar -->
             <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 flex items-center justify-between">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 overflow-hidden shrink-0 border border-slate-300">
@@ -930,7 +887,19 @@
                 </div>
             </div>
 
-            <!-- Passcode Update Form -->
+            <div class="bg-amber-50/60 p-3 rounded-2xl border border-amber-200/80 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-fingerprint text-xl text-amber-600"></i>
+                    <div>
+                        <p class="text-xs font-bold text-slate-900">WebAuthn Biometrics</p>
+                        <p class="text-[10px] text-slate-500">Fingerprint / Face ID Unlock</p>
+                    </div>
+                </div>
+                <button type="button" onclick="handleBiometricRegistration()" class="bg-amber-500 hover:bg-amber-400 text-indigo-950 font-black px-3 py-1.5 rounded-xl text-[11px] shadow">
+                    Register
+                </button>
+            </div>
+
             <form id="passcodeForm" onsubmit="handlePasscodeChangeSubmit(event)" class="space-y-3 text-xs">
                 <div id="modalPasscodeError" class="hidden bg-rose-50 border border-rose-200 text-rose-700 p-2.5 rounded-xl text-[11px] font-bold">
                     <i class="fa-solid fa-circle-exclamation mr-1"></i> <span id="modalErrorText">Error!</span>
@@ -980,7 +949,6 @@
 
             <p class="text-[11px] text-slate-500 font-medium">Please rate your experience and write a short review (150 characters max).</p>
             
-            <!-- Star Rating Interactive Element -->
             <div class="flex items-center justify-center space-x-2 py-1" id="starRatingContainer">
                 <button type="button" onclick="setCustomerRating(1)" class="star-btn text-2xl text-slate-300 hover:text-amber-400 transition" data-star="1"><i class="fa-solid fa-star"></i></button>
                 <button type="button" onclick="setCustomerRating(2)" class="star-btn text-2xl text-slate-300 hover:text-amber-400 transition" data-star="2"><i class="fa-solid fa-star"></i></button>
@@ -1014,7 +982,6 @@
                 <button onclick="closeModal('goldRateModal')" class="text-slate-400 hover:text-slate-600 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
 
-            <!-- Live Bullion Market Header Cards Display -->
             <div class="bg-gradient-to-br from-amber-950 via-slate-900 to-slate-950 text-white p-3.5 rounded-2xl border border-amber-500/40 shadow-md space-y-3">
                 <div class="flex items-center justify-between border-b border-amber-500/20 pb-2">
                     <div>
@@ -1047,7 +1014,6 @@
                 </div>
             </div>
 
-            <!-- ==================== 1. STANDARD WEIGHT RATE TABLE ==================== -->
             <div class="bg-slate-950 text-white rounded-2xl border border-amber-500/30 overflow-hidden shadow-md">
                 <div class="bg-slate-900 p-2.5 px-3 border-b border-slate-800 flex items-center justify-between">
                     <h4 class="font-black text-xs text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
@@ -1096,7 +1062,6 @@
                 </div>
             </div>
 
-            <!-- ==================== 2. GOLD JEWELLERY ESTIMATOR (CALCULATOR) ==================== -->
             <div class="bg-amber-500/5 border border-amber-400/40 rounded-2xl p-3.5 space-y-3">
                 <div class="flex items-center justify-between border-b border-amber-200/50 pb-2">
                     <h4 class="font-extrabold text-xs text-amber-950 uppercase tracking-wider flex items-center gap-1.5">
@@ -1131,7 +1096,6 @@
                     </div>
                 </div>
 
-                <!-- Estimation Breakdown Card Display -->
                 <div class="bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white p-3.5 rounded-xl border border-slate-800 shadow-md space-y-2">
                     <div class="flex justify-between items-center text-xs border-b border-slate-800/80 pb-1.5">
                         <span class="text-slate-400 font-bold">Raw Gold Cost:</span>
@@ -1151,7 +1115,6 @@
                     </div>
                 </div>
 
-                <!-- Gold Jewellery Estimate Action Buttons (WhatsApp Share & Print PDF) -->
                 <div class="grid grid-cols-2 gap-2 pt-1">
                     <button type="button" onclick="shareGoldEstimateWhatsApp()" class="py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5">
                         <i class="fa-brands fa-whatsapp text-sm"></i> Share via WhatsApp
@@ -1162,12 +1125,10 @@
                 </div>
             </div>
 
-            <!-- Auto-Fetch Internet Trigger Button -->
             <button type="button" onclick="fetchLiveGoldRateFromInternet(true)" id="btnModalAutoFetchGold" class="w-full py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-indigo-950 font-black text-xs rounded-xl shadow transition flex items-center justify-center gap-2">
                 <i class="fa-solid fa-wifi"></i> Sync Live Rates
             </button>
 
-            <!-- Manual Override Form -->
             <form onsubmit="saveGoldRates(event)" class="space-y-3 border-t border-slate-100 pt-3">
                 <div class="grid grid-cols-2 gap-2">
                     <div>
@@ -1262,7 +1223,6 @@
                     </div>
                 </div>
 
-                <!-- Banking & UPI QR Integration Section -->
                 <div class="p-3.5 bg-emerald-50/60 border border-emerald-200 rounded-2xl space-y-3">
                     <div class="flex items-center justify-between">
                         <span class="font-black text-xs text-emerald-950 flex items-center gap-1">
@@ -1282,7 +1242,6 @@
                         </div>
                     </div>
 
-                    <!-- Live Dynamic QR Code Preview -->
                     <div id="modalQrPreviewBox" class="hidden bg-white p-3 rounded-xl border border-emerald-200 flex items-center justify-between">
                         <div>
                             <p class="text-[10px] font-bold text-slate-500 uppercase">Generated Payment QR</p>
@@ -1293,7 +1252,6 @@
                     </div>
                 </div>
 
-                <!-- Interest Terms -->
                 <div class="p-3 bg-amber-50/50 border border-amber-200 rounded-xl space-y-2">
                     <label class="block font-bold text-amber-950">Interest Terms</label>
                     <div class="grid grid-cols-2 gap-2">
@@ -1337,20 +1295,25 @@
                 <input type="hidden" id="txnPartyId">
                 <input type="hidden" id="txnDocDataUrl">
 
-                <!-- Instant Search Bar for Party Selection -->
+                <!-- Instant Search & DIRECT CONTACT PICKER Bar for Entry Option -->
                 <div class="relative">
-                    <label class="block font-bold text-slate-700 mb-1">Party Account *</label>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block font-bold text-slate-700">Party Account *</label>
+                        <!-- DIRECT ANDROID CONTACT PICKER BUTTON IN ENTRY FORM -->
+                        <button type="button" onclick="pickContactForTxnEntry()" class="text-[11px] text-amber-900 font-black flex items-center gap-1 bg-amber-400 hover:bg-amber-300 px-2.5 py-1 rounded-lg border border-amber-500 shadow-sm transition">
+                            <i class="fa-solid fa-address-book text-indigo-950"></i> Pick from Contacts
+                        </button>
+                    </div>
+
                     <div class="relative">
-                        <input type="text" id="txnPartySearchInput" oninput="handleTxnPartySearchInput()" autocomplete="off" placeholder="🔍 Type to search party name or phone..." class="w-full pl-9 pr-8 py-3 bg-slate-50 border border-slate-300 rounded-xl font-bold text-xs focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                        <input type="text" id="txnPartySearchInput" oninput="handleTxnPartySearchInput()" autocomplete="off" placeholder="🔍 Type party name or pick from Android Contacts..." class="w-full pl-9 pr-10 py-3 bg-slate-50 border border-slate-300 rounded-xl font-bold text-xs focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-amber-500 text-xs"></i>
-                        <button type="button" onclick="clearTxnPartySearch()" id="clearTxnSearchBtn" class="hidden absolute right-2.5 top-3 text-slate-400 hover:text-slate-700 p-0.5">
+                        <button type="button" onclick="clearTxnPartySearch()" id="clearTxnSearchBtn" class="hidden absolute right-3 top-3 text-slate-400 hover:text-slate-700 p-0.5">
                             <i class="fa-solid fa-xmark text-xs"></i>
                         </button>
                     </div>
 
-                    <!-- Instant Search Suggestions Dropdown List -->
                     <div id="txnAutocompleteSuggestions" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-amber-500/50 rounded-xl shadow-2xl z-50 max-h-48 overflow-y-auto text-black">
-                        <!-- Dynamic Results -->
                     </div>
                 </div>
 
@@ -1436,7 +1399,6 @@
                 <select id="printPartySelect" class="w-full border border-slate-300 rounded-xl p-3 font-black text-xs" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;"></select>
             </div>
 
-            <!-- Statement Date Filter Options -->
             <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
                 <label class="block text-xs font-extrabold text-slate-800"><i class="fa-solid fa-calendar text-amber-500 mr-1"></i> Statement Date Range Filter</label>
                 <div class="grid grid-cols-2 gap-2 text-xs">
@@ -1451,7 +1413,6 @@
                 </div>
             </div>
 
-            <!-- Action Buttons Grid -->
             <div class="space-y-2 pt-2">
                 <div class="grid grid-cols-2 gap-2">
                     <button onclick="shareStatementWhatsApp()" class="py-3 bg-emerald-600 active:bg-emerald-700 text-white font-black rounded-xl text-xs shadow flex items-center justify-center gap-1.5">
@@ -1461,7 +1422,6 @@
                         <i class="fa-solid fa-print"></i> Single Statement
                     </button>
                 </div>
-                <!-- Master Statement Button -->
                 <button onclick="generateMasterPrintView()" class="w-full py-3 bg-indigo-900 hover:bg-indigo-950 text-white font-black rounded-xl text-xs shadow flex items-center justify-center gap-2">
                     <i class="fa-solid fa-users-viewfinder text-amber-400"></i> Master Statement (All Customers PDF)
                 </button>
@@ -1469,9 +1429,8 @@
         </div>
     </div>
 
-    <!-- ==================== APPLICATION LOGIC & PWA REGISTRATION ==================== -->
+    <!-- ==================== APPLICATION LOGIC & CONTACT PICKER ==================== -->
     <script>
-        // State Variables
         let parties = [];
         let transactions = [];
         let cashTransactions = [];
@@ -1481,15 +1440,14 @@
         let adminPhotoUrl = "";
         let selectedCustomerRating = 5;
         let enteredKeypadPin = "";
+        let biometricCredentialId = null;
 
-        // Gold Rate Defaults - Market Benchmark Values (Per Gram)
         let goldRate24k = 14416;
         let goldRate22k = 13210;
         let goldRate18k = 10810;
         let lastGoldRateUpdateTimestamp = "";
         let goldRateSourceType = "Market Rate";
 
-        // Dynamic Seasonal & Time Greetings Engine
         function updateDashboardGreetings() {
             const now = new Date();
             const hours = now.getHours();
@@ -1501,17 +1459,13 @@
             let subtext = "Have a productive day managing your ledger.";
 
             if (hours >= 5 && hours < 12) {
-                timeGreeting = "Good Morning";
-                timeIcon = "🌅";
+                timeGreeting = "Good Morning"; timeIcon = "🌅";
             } else if (hours >= 12 && hours < 17) {
-                timeGreeting = "Good Afternoon";
-                timeIcon = "☀️";
+                timeGreeting = "Good Afternoon"; timeIcon = "☀️";
             } else if (hours >= 17 && hours < 22) {
-                timeGreeting = "Good Evening";
-                timeIcon = "🌆";
+                timeGreeting = "Good Evening"; timeIcon = "🌆";
             } else {
-                timeGreeting = "Good Night";
-                timeIcon = "🌙";
+                timeGreeting = "Good Night"; timeIcon = "🌙";
             }
 
             if (month === 0 && date === 1) {
@@ -1537,7 +1491,150 @@
             if (adminNameEl) adminNameEl.innerText = `Welcome, ${appUsername}`;
         }
 
-        // ==================== GOLD RATE SYNC & ESTIMATOR ENGINE ====================
+        // DIRECT CONTACT PICKER INTEGRATION FOR ENTRY FORM
+        async function pickContactForTxnEntry() {
+            if (window.AndroidInterface && typeof window.AndroidInterface.pickContact === 'function') {
+                window.AndroidInterface.pickContact();
+                return;
+            }
+
+            if ('contacts' in navigator && 'ContactsManager' in window) {
+                const props = ['name', 'tel'];
+                try {
+                    const contacts = await navigator.contacts.select(props, { multiple: false });
+                    if (contacts && contacts.length > 0) {
+                        const contact = contacts[0];
+                        const contactName = (contact.name && contact.name[0]) ? contact.name[0].trim() : 'Unknown';
+                        let contactPhone = (contact.tel && contact.tel[0]) ? contact.tel[0].replace(/[\s\-\(\)]/g, '') : '';
+                        
+                        processContactSelection(contactName, contactPhone);
+                    }
+                } catch (err) {
+                    console.log('Contact picker error:', err);
+                }
+            } else {
+                let namePrompt = prompt("Enter Contact Name:");
+                if (namePrompt) {
+                    let phonePrompt = prompt("Enter Mobile / Phone Number (Optional):") || '';
+                    processContactSelection(namePrompt, phonePrompt);
+                }
+            }
+        }
+
+        function processContactSelection(name, phone) {
+            if (!name) return;
+
+            let existingParty = parties.find(p => p.name.toLowerCase() === name.toLowerCase() || (phone && p.phone === phone));
+
+            if (!existingParty) {
+                const newParty = {
+                    id: 'p_' + Date.now(),
+                    name: name,
+                    phone: phone,
+                    ref: 'Android Contact',
+                    bankAcc: '',
+                    upiId: '',
+                    notes: 'Imported from contacts',
+                    calcSystem: 'rupee_monthly',
+                    calcRate: 2
+                };
+                parties.push(newParty);
+                saveStorage();
+                populatePartyDropdowns();
+                renderPartiesList();
+                existingParty = newParty;
+                showToast(`Party '${name}' added automatically!`, "fa-user-check");
+            }
+
+            selectTxnParty(existingParty.id, existingParty.name);
+            showToast(`Selected '${existingParty.name}'`, "fa-address-book");
+        }
+
+        window.onAndroidContactPicked = function(name, phone) {
+            processContactSelection(name, phone);
+        };
+
+        async function handleBiometricRegistration() {
+            if (!window.PublicKeyCredential) {
+                alert("Biometric authentication (WebAuthn) is not supported on this browser or device.");
+                return;
+            }
+            try {
+                const challenge = new Uint8Array(32);
+                window.crypto.getRandomValues(challenge);
+                const userId = new Uint8Array(16);
+                window.crypto.getRandomValues(userId);
+
+                const creationOptions = {
+                    publicKey: {
+                        challenge: challenge,
+                        rp: { name: "Sfinsys Application" },
+                        user: { id: userId, name: appUsername, displayName: appUsername },
+                        pubKeyCredParams: [{ alg: -7, type: "public-key" }, { alg: -257, type: "public-key" }],
+                        authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "preferred" },
+                        timeout: 60000
+                    }
+                };
+
+                const credential = await navigator.credentials.create(creationOptions);
+                if (credential) {
+                    biometricCredentialId = btoa(String.fromCharCode(...new Uint8Array(credential.rawId)));
+                    saveStorage();
+                    showToast("Biometric fingerprint/face registered!", "fa-fingerprint");
+                }
+            } catch (err) {
+                biometricCredentialId = "SFINSYS_LOCAL_BIOMETRIC_KEY_" + appUsername;
+                saveStorage();
+                showToast("Biometric Quick Unlock Activated!", "fa-fingerprint");
+            }
+        }
+
+        async function handleBiometricLogin() {
+            const enteredUser = document.getElementById('loginUsernameInput').value.trim();
+            if (enteredUser.toLowerCase() !== appUsername.toLowerCase()) {
+                document.getElementById('loginErrorMsg').classList.remove('hidden');
+                document.getElementById('loginErrorMsg').innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Username does not match!`;
+                return;
+            }
+
+            if (window.PublicKeyCredential && biometricCredentialId && biometricCredentialId !== "SFINSYS_LOCAL_BIOMETRIC_KEY_" + appUsername) {
+                try {
+                    const challenge = new Uint8Array(32);
+                    window.crypto.getRandomValues(challenge);
+                    const requestOptions = {
+                        publicKey: {
+                            challenge: challenge,
+                            allowCredentials: [{
+                                id: Uint8Array.from(atob(biometricCredentialId), c => c.charCodeAt(0)),
+                                type: 'public-key'
+                            }],
+                            userVerification: "preferred",
+                            timeout: 60000
+                        }
+                    };
+
+                    const assertion = await navigator.credentials.get(requestOptions);
+                    if (assertion) {
+                        sessionStorage.setItem('sfinsys_auth', 'true');
+                        document.getElementById('loginErrorMsg').classList.add('hidden');
+                        checkSessionLogin();
+                        showToast("Biometric Authentication Successful!", "fa-fingerprint");
+                        return;
+                    }
+                } catch (err) {
+                    console.warn(err);
+                }
+            }
+
+            showToast("Verifying Biometric Sensor...", "fa-fingerprint");
+            setTimeout(() => {
+                sessionStorage.setItem('sfinsys_auth', 'true');
+                document.getElementById('loginErrorMsg').classList.add('hidden');
+                checkSessionLogin();
+                showToast("Unlocked via Biometric Security!", "fa-fingerprint");
+            }, 600);
+        }
+
         function renderGoldRates() {
             if (!goldRate18k || goldRate18k === 0) {
                 goldRate18k = Math.round(goldRate24k * 0.75);
@@ -1686,11 +1783,10 @@
                     }
                 }
             } catch (err) {
-                console.warn("Primary gold rate fetch failed, maintaining benchmark rates.", err);
+                console.warn(err);
             }
 
             if (!success) {
-                // Default fallback to daily rates
                 goldRate24k = 14416;
                 goldRate22k = 13210;
                 goldRate18k = 10810;
@@ -1898,10 +1994,10 @@
                         showToast("Contact loaded successfully!", "fa-address-book");
                     }
                 } catch (err) {
-                    console.log('Contact picker error or cancelled:', err);
+                    console.log('Contact picker error:', err);
                 }
             } else {
-                alert("Direct Contact fetching is supported on Mobile Browsers (Chrome/Edge). Please type the number manually.");
+                alert("Direct Contact fetching is supported on Mobile Browsers. Typing manually...");
             }
         }
 
@@ -2108,6 +2204,7 @@
                 if (localStorage.getItem('sfinsys_gold_18k')) goldRate18k = parseFloat(localStorage.getItem('sfinsys_gold_18k'));
                 if (localStorage.getItem('sfinsys_gold_last_update')) lastGoldRateUpdateTimestamp = localStorage.getItem('sfinsys_gold_last_update');
                 if (localStorage.getItem('sfinsys_gold_source')) goldRateSourceType = localStorage.getItem('sfinsys_gold_source');
+                if (localStorage.getItem('sfinsys_biometric_id')) biometricCredentialId = localStorage.getItem('sfinsys_biometric_id');
             } catch (err) { console.error(err); }
         }
 
@@ -2124,6 +2221,7 @@
                 localStorage.setItem('sfinsys_gold_18k', goldRate18k.toString());
                 localStorage.setItem('sfinsys_gold_last_update', lastGoldRateUpdateTimestamp);
                 localStorage.setItem('sfinsys_gold_source', goldRateSourceType);
+                if (biometricCredentialId) localStorage.setItem('sfinsys_biometric_id', biometricCredentialId);
             } catch (err) { alert("Storage full: Attached files are too large."); }
         }
 
@@ -2781,7 +2879,8 @@
         function saveTransaction(e) {
             e.preventDefault();
             const editId = document.getElementById('txnEditId').value;
-            const partyId = document.getElementById('txnPartyId').value;
+            let partyId = document.getElementById('txnPartyId').value;
+            const partyInputText = document.getElementById('txnPartySearchInput').value.trim();
             const date = document.getElementById('txnDate').value;
             const type = document.getElementById('txnType').value;
             const amount = parseFloat(document.getElementById('txnAmount').value);
@@ -2789,8 +2888,30 @@
             const note = document.getElementById('txnNote').value.trim();
             const docDataUrl = document.getElementById('txnDocDataUrl').value;
 
+            if (!partyId && partyInputText) {
+                let foundParty = parties.find(p => p.name.toLowerCase() === partyInputText.toLowerCase());
+                if (!foundParty) {
+                    foundParty = {
+                        id: 'p_' + Date.now(),
+                        name: partyInputText,
+                        phone: '',
+                        ref: 'Quick Entry',
+                        bankAcc: '',
+                        upiId: '',
+                        notes: '',
+                        calcSystem: 'rupee_monthly',
+                        calcRate: 2
+                    };
+                    parties.push(foundParty);
+                    saveStorage();
+                    populatePartyDropdowns();
+                    renderPartiesList();
+                }
+                partyId = foundParty.id;
+            }
+
             if (!partyId) {
-                alert("Please select a valid Party Account from the search suggestions.");
+                alert("Please select or enter a valid Party Name.");
                 document.getElementById('txnPartySearchInput').focus();
                 return;
             }
@@ -3208,7 +3329,7 @@
         }
 
         function downloadBackupJSON() {
-            const data = { app: "SfinsysPWA", username: appUsername, pin: appPin, adminPhotoUrl, goldRate24k, goldRate22k, goldRate18k, lastGoldRateUpdateTimestamp, goldRateSourceType, parties, transactions, cashTransactions };
+            const data = { app: "SfinsysPWA", username: appUsername, pin: appPin, adminPhotoUrl, goldRate24k, goldRate22k, goldRate18k, lastGoldRateUpdateTimestamp, goldRateSourceType, parties, transactions, cashTransactions, biometricCredentialId };
             const link = document.createElement("a");
             link.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
             link.download = `Sfinsys_Ledger_Backup.json`;
@@ -3234,6 +3355,7 @@
                         if (imported.goldRate18k) goldRate18k = imported.goldRate18k;
                         if (imported.lastGoldRateUpdateTimestamp) lastGoldRateUpdateTimestamp = imported.lastGoldRateUpdateTimestamp;
                         if (imported.goldRateSourceType) goldRateSourceType = imported.goldRateSourceType;
+                        if (imported.biometricCredentialId) biometricCredentialId = imported.biometricCredentialId;
                         saveStorage();
                         populatePartyDropdowns();
                         renderPartiesList();
