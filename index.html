@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Sfinsys</title>
+    <title>Sfinsys v8.0</title>
 
     <!-- Android Web App Meta Tags -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -1244,10 +1244,15 @@
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <div class="flex justify-between items-center mb-1">
-                            <label class="block font-bold text-slate-700">Mobile / Phone Number</label>
-                            <button type="button" onclick="pickContactForParty()" class="text-[10px] text-amber-700 font-extrabold hover:underline flex items-center gap-1 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
-                                <i class="fa-solid fa-address-book"></i> Contacts
-                            </button>
+                            <label class="block font-bold text-slate-700">Mobile / Phone</label>
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="pickContactForParty()" class="text-[9px] text-amber-800 font-extrabold hover:underline flex items-center gap-0.5 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-300">
+                                    <i class="fa-solid fa-address-book text-amber-600"></i> Contacts
+                                </button>
+                                <button type="button" onclick="openWhatsAppContactPicker('party')" class="text-[9px] text-emerald-800 font-extrabold hover:underline flex items-center gap-0.5 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-300">
+                                    <i class="fa-brands fa-whatsapp text-emerald-600"></i> WhatsApp
+                                </button>
+                            </div>
                         </div>
                         <div class="relative">
                             <input type="tel" id="partyPhone" placeholder="+91 9876543210" class="w-full border border-slate-200 rounded-xl p-3 font-bold pr-9" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
@@ -1339,7 +1344,17 @@
 
                 <!-- Instant Search Bar for Party Selection -->
                 <div class="relative">
-                    <label class="block font-bold text-slate-700 mb-1">Party Account *</label>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block font-bold text-slate-700">Party Account *</label>
+                        <div class="flex items-center gap-1">
+                            <button type="button" onclick="pickContactForTxnParty()" class="text-[10px] text-amber-800 font-extrabold hover:underline flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-300">
+                                <i class="fa-solid fa-address-book text-amber-600"></i> Contacts
+                            </button>
+                            <button type="button" onclick="openWhatsAppContactPicker('txn')" class="text-[10px] text-emerald-800 font-extrabold hover:underline flex items-center gap-1 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-300">
+                                <i class="fa-brands fa-whatsapp text-emerald-600"></i> WhatsApp
+                            </button>
+                        </div>
+                    </div>
                     <div class="relative">
                         <input type="text" id="txnPartySearchInput" oninput="handleTxnPartySearchInput()" autocomplete="off" placeholder="🔍 Type to search party name or phone..." class="w-full pl-9 pr-8 py-3 bg-slate-50 border border-slate-300 rounded-xl font-bold text-xs focus:outline-none focus:ring-2 focus:ring-amber-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-amber-500 text-xs"></i>
@@ -1465,6 +1480,51 @@
                 <button onclick="generateMasterPrintView()" class="w-full py-3 bg-indigo-900 hover:bg-indigo-950 text-white font-black rounded-xl text-xs shadow flex items-center justify-center gap-2">
                     <i class="fa-solid fa-users-viewfinder text-amber-400"></i> Master Statement (All Customers PDF)
                 </button>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Modal: WhatsApp Contact Fetch / Paste Sheet -->
+    <div id="waContactModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden no-print">
+        <div class="bg-white w-full max-w-sm rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl sheet-up text-slate-800 space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-2.5">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-emerald-600 text-white rounded-xl font-black text-sm flex items-center justify-center shadow">
+                        <i class="fa-brands fa-whatsapp"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-slate-900 text-sm">Fetch WhatsApp Contact</h3>
+                        <p class="text-[10px] text-slate-500 font-bold">Import phone / contact info</p>
+                    </div>
+                </div>
+                <button onclick="closeModal('waContactModal')" class="text-slate-400 hover:text-slate-600 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <p class="text-xs text-slate-600 font-medium">
+                Select your phone contact list or paste shared WhatsApp text/vCard to extract contact details:
+            </p>
+
+            <div class="space-y-2">
+                <button type="button" onclick="triggerDeviceContactForWA()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-address-book text-sm"></i>
+                    <span>Pick from Phone / WhatsApp Contacts</span>
+                </button>
+                
+                <div class="relative py-1 flex items-center justify-center">
+                    <span class="bg-white px-2 text-[10px] text-slate-400 font-bold uppercase z-10">OR PASTE WHATSAPP INFO</span>
+                    <div class="absolute inset-x-0 h-px bg-slate-200"></div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-600 mb-1">Paste Copied WhatsApp Text or Phone Number</label>
+                    <textarea id="waContactPasteInput" rows="3" placeholder="Paste text copied from WhatsApp chat (e.g. Ramesh +91 9876543210)..." class="w-full border border-slate-300 rounded-xl p-2.5 text-xs font-bold focus:ring-2 focus:ring-emerald-500 focus:outline-none" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;"></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-1">
+                <button type="button" onclick="closeModal('waContactModal')" class="px-4 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-bold text-xs">Cancel</button>
+                <button type="button" onclick="processWhatsAppPasteText()" class="px-5 py-2.5 bg-slate-950 text-emerald-400 font-extrabold rounded-xl shadow text-xs">Extract & Apply</button>
             </div>
         </div>
     </div>
@@ -1902,6 +1962,134 @@
                 }
             } else {
                 alert("Direct Contact fetching is supported on Mobile Browsers (Chrome/Edge). Please type the number manually.");
+            }
+        }
+
+        
+        let currentWaTargetContext = 'txn'; // 'txn' or 'party'
+
+        function openWhatsAppContactPicker(context = 'txn') {
+            currentWaTargetContext = context;
+            document.getElementById('waContactPasteInput').value = '';
+            openModal('waContactModal');
+        }
+
+        async function triggerDeviceContactForWA() {
+            if ('contacts' in navigator && 'ContactsManager' in window) {
+                const props = ['name', 'tel'];
+                try {
+                    const contacts = await navigator.contacts.select(props, { multiple: false });
+                    if (contacts && contacts.length > 0) {
+                        const contact = contacts[0];
+                        let rawTel = (contact.tel && contact.tel.length > 0) ? contact.tel[0] : '';
+                        let rawName = (contact.name && contact.name.length > 0) ? contact.name[0] : '';
+                        
+                        applyContactToTarget(rawName, rawTel);
+                        closeModal('waContactModal');
+                    }
+                } catch (err) {
+                    console.log('Contact selection cancelled or unavailable:', err);
+                }
+            } else {
+                alert("Direct contact selection is supported on Mobile Browsers (Chrome/Edge). Please paste the WhatsApp contact text below.");
+            }
+        }
+
+        function processWhatsAppPasteText() {
+            const text = document.getElementById('waContactPasteInput').value.trim();
+            if (!text) {
+                alert("Please paste WhatsApp contact text or phone number.");
+                return;
+            }
+
+            // Extract phone number (digit sequence 10 to 12 digits)
+            const phoneMatch = text.match(/(\+?91[\s\-]?)?[6-9]\d{4}[\s\-]?\d{5}/) || text.match(/\d{10,12}/);
+            let extractedPhone = phoneMatch ? phoneMatch[0].replace(/[\s\-\(\)\+]/g, '') : '';
+            if (extractedPhone.length > 10 && extractedPhone.startsWith('91')) {
+                extractedPhone = extractedPhone.slice(2);
+            }
+
+            // Extract name (text preceding number or first word)
+            let extractedName = text.replace(/(\+?91[\s\-]?)?[6-9]\d{4}[\s\-]?\d{5}/g, '').replace(/\d+/g, '').replace(/[\:\,\-\/]/g, ' ').trim();
+            if (!extractedName && text.length > 0) {
+                extractedName = text.split(/\s+/)[0];
+            }
+
+            applyContactToTarget(extractedName, extractedPhone);
+            closeModal('waContactModal');
+        }
+
+        function applyContactToTarget(name, phone) {
+            let cleanPhone = phone ? phone.replace(/[\s\-\(\)\+]/g, '') : '';
+            if (cleanPhone.length > 10 && cleanPhone.startsWith('91')) {
+                cleanPhone = cleanPhone.slice(2);
+            }
+
+            if (currentWaTargetContext === 'party') {
+                if (cleanPhone) document.getElementById('partyPhone').value = cleanPhone;
+                if (name && !document.getElementById('partyName').value.trim()) {
+                    document.getElementById('partyName').value = name;
+                    updatePartyModalQrPreview();
+                }
+                showToast("WhatsApp contact applied to Party!", "fa-brands fa-whatsapp");
+            } else {
+                // Transaction / New Entry context
+                // 1. Search existing party by phone or name
+                let existingParty = null;
+                if (cleanPhone) {
+                    existingParty = parties.find(p => p.phone && p.phone.replace(/[^0-9]/g, '').includes(cleanPhone));
+                }
+                if (!existingParty && name) {
+                    existingParty = parties.find(p => p.name.toLowerCase().includes(name.toLowerCase()));
+                }
+
+                if (existingParty) {
+                    selectTxnParty(existingParty.id, existingParty.name);
+                    showToast(`Matched Party: ${existingParty.name}`, "fa-circle-check");
+                } else if (name || cleanPhone) {
+                    // Create new Party account automatically or prompt
+                    const newPartyName = name || `Contact (${cleanPhone})`;
+                    const newPartyId = 'p_' + Date.now();
+                    const newPartyObj = {
+                        id: newPartyId,
+                        name: newPartyName,
+                        phone: cleanPhone,
+                        ref: 'WhatsApp Import',
+                        bankAcc: '',
+                        upiId: '',
+                        notes: 'Added via WhatsApp Contact Fetch',
+                        calcSystem: 'rupee_monthly',
+                        calcRate: 2
+                    };
+                    parties.push(newPartyObj);
+                    saveStorage();
+                    populatePartyDropdowns();
+                    renderPartiesList();
+
+                    selectTxnParty(newPartyId, newPartyName);
+                    showToast(`New Party Profile created: ${newPartyName}`, "fa-user-plus");
+                }
+            }
+        }
+
+        async function pickContactForTxnParty() {
+            if ('contacts' in navigator && 'ContactsManager' in window) {
+                const props = ['name', 'tel'];
+                try {
+                    const contacts = await navigator.contacts.select(props, { multiple: false });
+                    if (contacts && contacts.length > 0) {
+                        const contact = contacts[0];
+                        let rawTel = (contact.tel && contact.tel.length > 0) ? contact.tel[0] : '';
+                        let rawName = (contact.name && contact.name.length > 0) ? contact.name[0] : '';
+                        
+                        currentWaTargetContext = 'txn';
+                        applyContactToTarget(rawName, rawTel);
+                    }
+                } catch (err) {
+                    console.log('Contact picker error or cancelled:', err);
+                }
+            } else {
+                openWhatsAppContactPicker('txn');
             }
         }
 
