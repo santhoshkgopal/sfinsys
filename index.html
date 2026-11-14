@@ -392,6 +392,20 @@
                         <span>Submit Review</span>
                     </button>
                 </div>
+
+                <!-- Invite Friends Card -->
+                <div class="bg-gradient-to-r from-indigo-950 via-slate-900 to-slate-950 text-white p-4 rounded-2xl border border-indigo-800/70 shadow-sm flex items-center justify-between gap-3">
+                    <div class="min-w-0">
+                        <h3 class="font-black text-xs text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-user-group text-amber-400"></i> Invite Friends
+                        </h3>
+                        <p class="text-[11px] text-slate-300 font-medium mt-0.5">Share Sfinsys with friends & business associates</p>
+                    </div>
+                    <button onclick="openInviteModal()" class="py-2.5 px-4 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-indigo-950 font-black text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5 shrink-0">
+                        <i class="fa-solid fa-share-nodes text-xs"></i>
+                        <span>Invite</span>
+                    </button>
+                </div>
             </section>
 
             <!-- TAB 2: TRANSACTION LEDGER ENTRIES -->
@@ -1030,6 +1044,42 @@
                 <i class="fa-solid fa-paper-plane text-xs"></i>
                 <span>Submit Review</span>
             </button>
+        </div>
+    </div>
+
+    <!-- Modal: Invite Friends -->
+    <div id="inviteModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden no-print">
+        <div class="bg-white w-full max-w-sm rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl sheet-up text-slate-800 space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-amber-500 text-indigo-950 rounded-xl font-black text-sm flex items-center justify-center shadow">
+                        <i class="fa-solid fa-user-group"></i>
+                    </div>
+                    <h3 class="font-extrabold text-slate-900 text-sm">Invite Friends</h3>
+                </div>
+                <button onclick="closeModal('inviteModal')" class="text-slate-400 hover:text-slate-600 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <p class="text-[11px] text-slate-500 font-medium">Invite your friends to manage their Bullion Market, Cash Ledger & Gold Jewellery Estimator with <strong class="text-slate-800">Sfinsys</strong>.</p>
+
+            <!-- Custom Optional App Link Input -->
+            <div class="text-xs">
+                <label class="block font-bold text-slate-700 mb-1">App Link / URL <span class="text-[9px] text-slate-400 font-semibold">(Optional)</span></label>
+                <input type="url" id="inviteAppLinkInput" value="https://santhoshkgopal.github.io/sfinsys--apk/" oninput="updateInvitePreview()" placeholder="https://santhoshkgopal.github.io/sfinsys--apk/" class="w-full border border-slate-200 rounded-xl p-2.5 text-xs font-bold focus:ring-2 focus:ring-amber-500 focus:outline-none" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+            </div>
+
+            <!-- Invitation Message Preview -->
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 space-y-1.5">
+                <span class="text-[9px] font-black uppercase tracking-wider text-amber-700">Invitation Message Preview</span>
+                <p id="inviteMessagePreview" class="text-[11px] text-slate-700 font-semibold whitespace-pre-line leading-relaxed"></p>
+            </div>
+
+            <!-- Share Action -->
+            <div class="pt-1">
+                <button type="button" onclick="shareInviteWhatsApp()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5">
+                    <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp Share
+                </button>
+            </div>
         </div>
     </div>
 
@@ -1930,6 +1980,43 @@
             const waNum = "919481882789";
             const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
             window.open(waUrl, '_blank'); closeModal('ratingModal');
+        }
+
+        // ==================== INVITE FRIENDS ENGINE ====================
+        const DEFAULT_INVITE_URL = "https://santhoshkgopal.github.io/sfinsys--apk/";
+
+        function getInviteMessageText() {
+            const customLink = document.getElementById('inviteAppLinkInput')?.value.trim() || DEFAULT_INVITE_URL;
+            let msg = `✨ *Try Sfinsys - Bullion Market, Cash Ledger & Jewellery Estimator!* ✨\n\n`;
+            msg += `Manage party ledgers, simple/compound interest, daily cash vault, UPI QR payments, and instant 24K/22K/18K gold jewellery estimates effortlessly.\n`;
+            if (customLink) {
+                msg += `\n🔗 *App Link:* ${customLink}\n`;
+            }
+            msg += `\nInvited by *${appUsername}* via Sfinsys`;
+            return msg;
+        }
+
+        function updateInvitePreview() {
+            const previewEl = document.getElementById('inviteMessagePreview');
+            if (previewEl) {
+                previewEl.innerText = getInviteMessageText().replace(/\*/g, '');
+            }
+        }
+
+        function openInviteModal() {
+            const linkInput = document.getElementById('inviteAppLinkInput');
+            if (linkInput && !linkInput.value.trim()) {
+                linkInput.value = DEFAULT_INVITE_URL;
+            }
+            updateInvitePreview();
+            openModal('inviteModal');
+        }
+
+        function shareInviteWhatsApp() {
+            const msg = getInviteMessageText();
+            const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+            window.open(waUrl, '_blank');
+            closeModal('inviteModal');
         }
 
         function showToast(msg, icon = "fa-circle-check") {
