@@ -835,8 +835,16 @@
                             <p id="goldPrintPurity" class="font-black text-slate-900 text-sm">-</p>
                         </div>
                         <div>
-                            <p class="text-[10px] text-slate-500 font-bold uppercase">Net Weight</p>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase">Gold Weight</p>
                             <p id="goldPrintWeight" class="font-black text-slate-900 text-sm">-</p>
+                        </div>
+                        <div id="goldPrintStoneBox" class="hidden">
+                            <p class="text-[10px] text-slate-500 font-bold uppercase">Stone Weight</p>
+                            <p id="goldPrintStoneWeight" class="font-bold text-slate-900">-</p>
+                        </div>
+                        <div id="goldPrintStoneCostBox" class="hidden">
+                            <p class="text-[10px] text-slate-500 font-bold uppercase">Stone Cost</p>
+                            <p id="goldPrintStoneCost" class="font-bold text-slate-900">-</p>
                         </div>
                         <div>
                             <p class="text-[10px] text-slate-500 font-bold uppercase">Gold Rate per Gram</p>
@@ -852,6 +860,14 @@
                         <div>
                             <p class="text-[10px] text-slate-500 font-bold uppercase">Making Charges</p>
                             <p id="goldPrintMaking" class="font-bold text-slate-900">-</p>
+                        </div>
+                        <div id="goldPrintDiscountBox" class="hidden">
+                            <p class="text-[10px] text-slate-500 font-bold uppercase">Discount</p>
+                            <p id="goldPrintDiscount" class="font-bold text-rose-700">-</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase">Total Before GST</p>
+                            <p id="goldPrintPreGstTotal" class="font-extrabold text-slate-900">-</p>
                         </div>
                         <div>
                             <p class="text-[10px] text-slate-500 font-bold uppercase">GST Tax Amount</p>
@@ -1079,7 +1095,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">Weight (Grams)</label>
+                        <label class="block font-bold text-slate-700 mb-1">Gold Weight (Grams)</label>
                         <input type="number" id="estWeightGrams" value="8" step="0.001" min="0.001" oninput="calculateJewelleryEstimate()" placeholder="e.g. 8" class="w-full border border-slate-300 rounded-xl p-2.5 font-black bg-white text-center" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
                     </div>
                 </div>
@@ -1095,15 +1111,57 @@
                     </div>
                 </div>
 
+                <!-- Optional Stone Weight, Stone Rate, Direct Total Stone Price & Discount Section -->
+                <div class="grid grid-cols-3 gap-2 text-xs">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1 text-[11px]">Stone Wt (g) <span class="text-[8px] text-slate-400 font-semibold">(Opt)</span></label>
+                        <input type="number" id="estStoneWeightGrams" value="" step="0.001" min="0" oninput="onStoneWeightOrRateInput()" placeholder="0.000" class="w-full border border-slate-300 rounded-xl p-2.5 font-black bg-white text-center" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1 text-[11px]">Stone Price (₹/g)</label>
+                        <input type="number" id="estStoneRatePerGram" value="" step="0.01" min="0" oninput="onStoneWeightOrRateInput()" placeholder="0.00" class="w-full border border-slate-300 rounded-xl p-2.5 font-black bg-white text-center" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-purple-800 mb-1 text-[11px]">Total Stone (₹)</label>
+                        <input type="number" id="estStoneTotalCostInput" value="" step="0.01" min="0" oninput="onDirectStoneTotalInput()" placeholder="0.00" class="w-full border border-purple-300 rounded-xl p-2.5 font-black bg-purple-50/40 text-center focus:ring-2 focus:ring-purple-500" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                    </div>
+                </div>
+                <div class="text-xs">
+                    <label class="block font-bold text-slate-700 mb-1">Discount <span class="text-[9px] text-slate-400 font-semibold">(Optional)</span></label>
+                    <div class="flex gap-1">
+                        <select id="estDiscountType" onchange="calculateJewelleryEstimate()" class="border border-slate-300 rounded-xl px-3 py-2.5 font-black bg-white text-xs shrink-0" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                            <option value="PCT">%</option>
+                            <option value="AMT">₹</option>
+                        </select>
+                        <input type="number" id="estDiscountVal" value="" step="0.01" min="0" oninput="calculateJewelleryEstimate()" placeholder="0" class="w-full border border-slate-300 rounded-xl p-2.5 font-black bg-white text-center min-w-0" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important;">
+                    </div>
+                </div>
+
                 <!-- Estimation Breakdown Card Display -->
                 <div class="bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white p-3.5 rounded-xl border border-slate-800 shadow-md space-y-2">
+                    <div id="estNetGoldWeightRow" class="hidden flex justify-between items-center text-xs border-b border-slate-800/80 pb-1.5">
+                        <span class="text-amber-300 font-bold">Net Gold Weight (excl. Stone):</span>
+                        <span id="estNetGoldWeightDisplay" class="font-black text-amber-300">8.000 g</span>
+                    </div>
                     <div class="flex justify-between items-center text-xs border-b border-slate-800/80 pb-1.5">
                         <span class="text-slate-400 font-bold">Raw Gold Cost:</span>
                         <span id="estRawGoldCostDisplay" class="font-black text-slate-100">₹1,05,680.00</span>
                     </div>
+                    <div id="estStoneCostRow" class="flex justify-between items-center text-xs border-b border-slate-800/80 pb-1.5">
+                        <span class="text-purple-300 font-bold">Total Stone Cost:</span>
+                        <span id="estStoneCostDisplay" class="font-black text-purple-300">₹0.00</span>
+                    </div>
                     <div class="flex justify-between items-center text-xs border-b border-slate-800/80 pb-1.5">
                         <span class="text-amber-400 font-bold">Making Charges:</span>
                         <span id="estMakingCostDisplay" class="font-black text-amber-400">₹12,681.60</span>
+                    </div>
+                    <div id="estDiscountRow" class="hidden flex justify-between items-center text-xs border-b border-slate-800/80 pb-1.5">
+                        <span class="text-rose-400 font-bold">Discount Applied:</span>
+                        <span id="estDiscountCostDisplay" class="font-black text-rose-400">-₹0.00</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs border-b border-slate-700/90 pb-1.5 pt-0.5 bg-slate-800/40 px-2 py-1 rounded">
+                        <span class="text-slate-200 font-extrabold">Total Before GST:</span>
+                        <span id="estPreGstTotalDisplay" class="font-black text-white">₹1,18,361.60</span>
                     </div>
                     <div class="flex justify-between items-center text-xs border-b border-slate-800/80 pb-1.5">
                         <span class="text-sky-400 font-bold">GST Tax:</span>
@@ -1552,28 +1610,105 @@
             calculateJewelleryEstimate();
         }
 
+        function onStoneWeightOrRateInput() {
+            const stoneWeightGrams = parseFloat(document.getElementById('estStoneWeightGrams').value) || 0;
+            const stoneRatePerGram = parseFloat(document.getElementById('estStoneRatePerGram').value) || 0;
+            const totalBox = document.getElementById('estStoneTotalCostInput');
+
+            if (stoneWeightGrams > 0 && stoneRatePerGram > 0) {
+                totalBox.value = (stoneWeightGrams * stoneRatePerGram).toFixed(2);
+            } else if (document.getElementById('estStoneRatePerGram').value !== '') {
+                totalBox.value = (stoneWeightGrams * stoneRatePerGram).toFixed(2);
+            }
+            calculateJewelleryEstimate();
+        }
+
+        function onDirectStoneTotalInput() {
+            // Clear per-gram stone rate if user manually enters a direct total stone price
+            document.getElementById('estStoneRatePerGram').value = '';
+            calculateJewelleryEstimate();
+        }
+
         function calculateJewelleryEstimate() {
             const purity = document.getElementById('estPuritySelect').value;
-            const weightGrams = parseFloat(document.getElementById('estWeightGrams').value) || 0;
+            const goldWeightGrams = parseFloat(document.getElementById('estWeightGrams').value) || 0;
+            const stoneWeightGrams = parseFloat(document.getElementById('estStoneWeightGrams').value) || 0;
+            const stoneRatePerGram = parseFloat(document.getElementById('estStoneRatePerGram').value) || 0;
+            const directStoneTotal = parseFloat(document.getElementById('estStoneTotalCostInput').value) || 0;
             const makingPct = parseFloat(document.getElementById('estMakingPct').value) || 0;
             const gstPct = parseFloat(document.getElementById('estGstPct').value) || 0;
+            const discountType = document.getElementById('estDiscountType').value;
+            const discountVal = parseFloat(document.getElementById('estDiscountVal').value) || 0;
 
             let ratePerGram = goldRate22k;
             if (purity === '24K') ratePerGram = goldRate24k;
             else if (purity === '18K') ratePerGram = goldRate18k;
 
-            const rawGoldCost = weightGrams * ratePerGram;
+            // Keep Gold Weight and Stone Weight strictly separate (no clubbing or deduction)
+            const rawGoldCost = goldWeightGrams * ratePerGram;
+            const stoneCost = directStoneTotal > 0 ? directStoneTotal : (stoneWeightGrams * stoneRatePerGram);
             const makingCost = rawGoldCost * (makingPct / 100);
-            const subtotal = rawGoldCost + makingCost;
-            const gstCost = subtotal * (gstPct / 100);
-            const estimatedTotal = subtotal + gstCost;
+            const preDiscountSubtotal = rawGoldCost + stoneCost + makingCost;
+
+            let discountAmount = 0;
+            if (discountVal > 0) {
+                if (discountType === 'PCT') {
+                    discountAmount = preDiscountSubtotal * (discountVal / 100);
+                } else {
+                    discountAmount = discountVal;
+                }
+                discountAmount = Math.min(preDiscountSubtotal, discountAmount);
+            }
+
+            const taxableSubtotal = Math.max(0, preDiscountSubtotal - discountAmount);
+            const gstCost = taxableSubtotal * (gstPct / 100);
+            const estimatedTotal = taxableSubtotal + gstCost;
+
+            const netWeightRow = document.getElementById('estNetGoldWeightRow');
+            if (stoneWeightGrams > 0) {
+                netWeightRow.classList.remove('hidden');
+                netWeightRow.querySelector('span:first-child').innerText = 'Separate Weights (Gold / Stone):';
+                document.getElementById('estNetGoldWeightDisplay').innerText = `${goldWeightGrams.toFixed(3)} g / ${stoneWeightGrams.toFixed(3)} g`;
+            } else {
+                netWeightRow.classList.add('hidden');
+            }
+
+            const stoneCostRow = document.getElementById('estStoneCostRow');
+            stoneCostRow.classList.remove('hidden');
+            document.getElementById('estStoneCostDisplay').innerText = formatINR(stoneCost);
+
+            const discountRow = document.getElementById('estDiscountRow');
+            if (discountAmount > 0) {
+                discountRow.classList.remove('hidden');
+                document.getElementById('estDiscountCostDisplay').innerText = `-${formatINR(discountAmount)}`;
+            } else {
+                discountRow.classList.add('hidden');
+            }
 
             document.getElementById('estRawGoldCostDisplay').innerText = formatINR(rawGoldCost);
             document.getElementById('estMakingCostDisplay').innerText = formatINR(makingCost);
+            document.getElementById('estPreGstTotalDisplay').innerText = formatINR(taxableSubtotal);
             document.getElementById('estGstCostDisplay').innerText = formatINR(gstCost);
             document.getElementById('estTotalDisplay').innerText = formatINR(estimatedTotal);
 
-            return { purity, weightGrams, ratePerGram, rawGoldCost, makingPct, makingCost, gstPct, gstCost, estimatedTotal };
+            return {
+                purity,
+                goldWeightGrams,
+                stoneWeightGrams,
+                stoneRatePerGram,
+                stoneCost,
+                ratePerGram,
+                rawGoldCost,
+                makingPct,
+                makingCost,
+                discountType,
+                discountVal,
+                discountAmount,
+                taxableSubtotal,
+                gstPct,
+                gstCost,
+                estimatedTotal
+            };
         }
 
         function shareGoldEstimateWhatsApp() {
@@ -1584,10 +1719,19 @@
             msg += `*Date:* ${formatDateDDMMYYYY(new Date())}\n`;
             msg += `*Gold Purity Grade:* ${est.purity}\n`;
             msg += `*Live Rate / Gram:* ${formatINR(est.ratePerGram)}\n`;
-            msg += `*Net Weight:* ${est.weightGrams} Grams\n`;
+            msg += `*Gold Weight:* ${est.goldWeightGrams} Grams\n`;
+            if (est.stoneWeightGrams > 0) {
+                msg += `*Stone Weight:* ${est.stoneWeightGrams} Grams${est.stoneRatePerGram > 0 ? ` @ ${formatINR(est.stoneRatePerGram)}/g` : ''}\n`;
+            }
             msg += `------------------------------------\n`;
             msg += `*Raw Gold Cost:* ${formatINR(est.rawGoldCost)}\n`;
+            msg += `*Total Stone Cost:* ${formatINR(est.stoneCost)}\n`;
             msg += `*Making Charges (${est.makingPct}%):* ${formatINR(est.makingCost)}\n`;
+            if (est.discountAmount > 0) {
+                const discLabel = est.discountType === 'PCT' ? `${est.discountVal}%` : formatINR(est.discountVal);
+                msg += `*Discount (${discLabel}):* -${formatINR(est.discountAmount)}\n`;
+            }
+            msg += `*Total Before GST:* ${formatINR(est.taxableSubtotal)}\n`;
             msg += `*GST Tax (${est.gstPct}%):* ${formatINR(est.gstCost)}\n`;
             msg += `------------------------------------\n`;
             msg += `*ESTIMATED TOTAL COST:* ${formatINR(est.estimatedTotal)}\n`;
@@ -1607,10 +1751,31 @@
             document.getElementById('goldPrintDate').innerText = todayStr;
             document.getElementById('goldPrintRef').innerText = randomRef;
             document.getElementById('goldPrintPurity').innerText = est.purity;
-            document.getElementById('goldPrintWeight').innerText = `${est.weightGrams} g`;
+
+            document.getElementById('goldPrintWeight').innerText = `${est.goldWeightGrams} g`;
+            if (est.stoneWeightGrams > 0) {
+                document.getElementById('goldPrintStoneBox').classList.remove('hidden');
+                document.getElementById('goldPrintStoneWeight').innerText = `${est.stoneWeightGrams} g` + (est.stoneRatePerGram > 0 ? ` @ ${formatINR(est.stoneRatePerGram)}/g` : '');
+            } else {
+                document.getElementById('goldPrintStoneBox').classList.add('hidden');
+            }
+
+            document.getElementById('goldPrintStoneCostBox').classList.remove('hidden');
+            document.getElementById('goldPrintStoneCost').innerText = formatINR(est.stoneCost);
+
             document.getElementById('goldPrintRate').innerText = `${formatINR(est.ratePerGram)} / g`;
             document.getElementById('goldPrintRawCost').innerText = formatINR(est.rawGoldCost);
             document.getElementById('goldPrintMaking').innerText = `${formatINR(est.makingCost)} (${est.makingPct}%)`;
+
+            if (est.discountAmount > 0) {
+                const discLabel = est.discountType === 'PCT' ? `${est.discountVal}%` : 'Flat';
+                document.getElementById('goldPrintDiscountBox').classList.remove('hidden');
+                document.getElementById('goldPrintDiscount').innerText = `-${formatINR(est.discountAmount)} (${discLabel})`;
+            } else {
+                document.getElementById('goldPrintDiscountBox').classList.add('hidden');
+            }
+
+            document.getElementById('goldPrintPreGstTotal').innerText = formatINR(est.taxableSubtotal);
             document.getElementById('goldPrintGst').innerText = `${formatINR(est.gstCost)} (${est.gstPct}%)`;
             document.getElementById('goldPrintTotal').innerText = formatINR(est.estimatedTotal);
 
