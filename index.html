@@ -349,6 +349,7 @@
                             <div>
                                 <h3 class="font-black text-sm uppercase tracking-wider text-amber-400">Today's Gold Rate</h3>
                                 <p class="text-[10px] text-slate-300" id="dashGoldRateDateLabel">24K, 22K & 18K Gold Rates</p>
+                                <p class="text-[9px] text-amber-300/90 font-semibold mt-0.5" id="dashGoldRateLastUpdatedLabel"><i class="fa-solid fa-clock text-amber-400 mr-1"></i>Updated: --</p>
                             </div>
                         </div>
                         <button onclick="openGoldRateModal()" class="bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-[9px] font-black px-2.5 py-1.5 rounded-lg uppercase tracking-wider flex items-center gap-1 transition" title="Update Gold Rate">
@@ -1643,15 +1644,21 @@
             const dash18k = document.getElementById('dashGoldRate18kDisplay');
             const dashDateLbl = document.getElementById('dashGoldRateDateLabel');
 
+            const dashLastUpdatedLbl = document.getElementById('dashGoldRateLastUpdatedLabel');
+            const syncedTimestamp = lastGoldRateUpdateTimestamp || formatSystemDateTime(new Date());
+
             if (dash24k) dash24k.innerText = `${formatINR(goldRate24k)} / g`;
             if (dash22k) dash22k.innerText = `${formatINR(goldRate22k)} / g`;
             if (dash18k) dash18k.innerText = `${formatINR(goldRate18k)} / g`;
-            if (dashDateLbl) dashDateLbl.innerText = `Today (${formatDateDDMMYYYY(new Date())}) • ${goldRateSourceType || 'Manual Entry'}`;
+            if (dashDateLbl) dashDateLbl.innerText = `System: ${formatSystemDateTime(new Date())} • ${goldRateSourceType || 'Manual Entry'}`;
+            if (dashLastUpdatedLbl) {
+                dashLastUpdatedLbl.innerHTML = `<i class="fa-solid fa-clock text-amber-400 mr-1"></i>Rate Updated: ${syncedTimestamp}`;
+            }
             
-            if (modalDateLbl) modalDateLbl.innerText = `Today (${formatDateDDMMYYYY(new Date())}) Rate / Gram`;
+            if (modalDateLbl) modalDateLbl.innerText = `System Date & Time: ${formatSystemDateTime(new Date())}`;
             
             if (modalLastUpdatedLbl) {
-                modalLastUpdatedLbl.innerHTML = `<i class="fa-solid fa-clock text-amber-400/70 mr-1"></i>Updated: ${lastGoldRateUpdateTimestamp || formatDateDDMMYYYY(new Date())}`;
+                modalLastUpdatedLbl.innerHTML = `<i class="fa-solid fa-clock text-amber-400/70 mr-1"></i>Rate Updated: ${syncedTimestamp}`;
             }
             if (modalSourceLbl) {
                 modalSourceLbl.innerText = `Source: ${goldRateSourceType || 'Manual Entry'}`;
@@ -1867,16 +1874,17 @@
                 return;
             }
 
+            const systemNow = new Date();
             goldRate24k = val24;
             goldRate22k = val22;
             goldRate18k = val18;
             goldRateSourceType = "Manual Entry";
-            lastGoldRateUpdateTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ', ' + formatDateDDMMYYYY(new Date());
+            lastGoldRateUpdateTimestamp = formatSystemDateTime(systemNow);
             
             saveStorage();
             renderGoldRates();
             closeModal('goldRateModal');
-            showToast("Gold rates updated manually!", "fa-coins");
+            showToast(`Gold rate updated (${lastGoldRateUpdateTimestamp})`, "fa-coins");
         }
 
         function triggerProfilePhotoUpload() {
@@ -2044,6 +2052,28 @@
             return `${day}-${month}-${d.getFullYear()}`;
         }
 
+        function formatSystemDateTime(dateInput) {
+            const d = dateInput ? new Date(dateInput) : new Date();
+            if (isNaN(d.getTime())) return formatDateDDMMYYYY(new Date());
+            const datePart = formatDateDDMMYYYY(d);
+            const timePart = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+            return `${datePart}, ${timePart}`;
+        }
+
+        function syncGoldRateSystemClock() {
+            const now = new Date();
+            const systemNowFormatted = formatSystemDateTime(now);
+            const dashDateLbl = document.getElementById('dashGoldRateDateLabel');
+            const modalDateLbl = document.getElementById('modalGoldRateDateLabel');
+
+            if (dashDateLbl) {
+                dashDateLbl.innerText = `System: ${systemNowFormatted} • ${goldRateSourceType || 'Manual Entry'}`;
+            }
+            if (modalDateLbl) {
+                modalDateLbl.innerText = `System Date & Time: ${systemNowFormatted}`;
+            }
+        }
+
         function generateUpiQrUrl(upiId, name = '', amount = '') {
             if (!upiId) return '';
             const cleanedUpi = upiId.trim();
@@ -2090,6 +2120,7 @@
             renderCashList();
             updateStats();
             renderGoldRates();
+            setInterval(syncGoldRateSystemClock, 1000);
             setupPWAManifest();
             registerServiceWorker();
             updateDashboardGreetings();
@@ -2284,10 +2315,12 @@
                     goldRate24k = HTML_GOLD_RATE_24K;
                     goldRate22k = HTML_GOLD_RATE_22K;
                     goldRate18k = HTML_GOLD_RATE_18K;
+                    lastGoldRateUpdateTimestamp = formatSystemDateTime(new Date());
                     localStorage.setItem('sfinsys_gold_html_sig', currentHtmlSig);
                     localStorage.setItem('sfinsys_gold_24k', goldRate24k.toString());
                     localStorage.setItem('sfinsys_gold_22k', goldRate22k.toString());
                     localStorage.setItem('sfinsys_gold_18k', goldRate18k.toString());
+                    localStorage.setItem('sfinsys_gold_last_update', lastGoldRateUpdateTimestamp);
                 } else {
                     // Load saved manual updates if HTML code values haven't changed
                     if (localStorage.getItem('sfinsys_gold_24k')) goldRate24k = parseFloat(localStorage.getItem('sfinsys_gold_24k'));
