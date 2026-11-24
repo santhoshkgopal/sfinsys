@@ -60,6 +60,9 @@
 
     <!-- SheetJS (XLSX) CDN for Excel Item Catalog Import & Sample Template -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <!-- Chart.js for Health Analysis Trends -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
 
     <!-- Dynamic Print Page Size Style Target -->
     <style id="dynamicPrintPageStyle"></style>
@@ -581,6 +584,16 @@
                                 <span class="text-[9px] font-bold bg-white/15 px-2 py-0.5 rounded-full border border-white/20">Sfinsys</span>
                             </div>
                             <div class="p-1.5 space-y-1 text-xs font-extrabold">
+                                <button type="button" onclick="selectTopMenuAction('health')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-emerald-50 text-slate-800 transition text-left">
+                                    <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                                        <i class="fa-solid fa-heart-pulse text-sm"></i>
+                                    </span>
+                                    <div>
+                                        <span class="block text-xs font-black text-slate-900">Health Analysis</span>
+                                        <span class="block text-[9px] font-semibold text-slate-500">Glucose, BP, Lipids & Vitals</span>
+                                    </div>
+                                    <span class="ml-auto text-[9px] font-black bg-emerald-500 text-white px-1.5 py-0.5 rounded">NEW</span>
+                                </button>
                                 <button type="button" onclick="selectTopMenuAction('whole_statement')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-indigo-50 text-slate-800 transition text-left">
                                     <span class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
                                         <i class="fa-solid fa-file-lines text-sm"></i>
@@ -642,15 +655,6 @@
                                     <div>
                                         <span class="block text-xs font-black text-slate-900">Backup & Sync</span>
                                         <span class="block text-[9px] font-semibold text-slate-500">Cross-Device Sync & JSON Backup</span>
-                                    </div>
-                                </button>
-                                <button type="button" onclick="selectTopMenuAction('about')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-amber-50 text-slate-800 transition text-left">
-                                    <span class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
-                                        <i class="fa-solid fa-circle-info text-sm"></i>
-                                    </span>
-                                    <div>
-                                        <span class="block text-xs font-black text-slate-900">About Us</span>
-                                        <span class="block text-[9px] font-semibold text-slate-500">About Sfinsys & Features</span>
                                     </div>
                                 </button>
                             </div>
@@ -843,9 +847,7 @@
                                 <p class="text-[10px] text-slate-300" id="dashGoldRateDateLabel">24K, 22K & 18K Gold Rates</p>
                             </div>
                         </div>
-                        <button onclick="openGoldRateModal()" class="bg-white/15 hover:bg-white/25 text-white border border-white/30 text-[9px] font-black px-2.5 py-1.5 rounded-lg uppercase tracking-wider flex items-center gap-1 transition" title="Update Gold Rate">
-                            <i class="fa-solid fa-pen text-[9px]"></i> Update Rate
-                        </button>
+
                     </div>
 
                     <!-- Live Gold Rate Display Cards on Main Dashboard -->
@@ -1782,13 +1784,170 @@
             </section>
 
 
-            <!-- DESIGNED & DEVELOPED FOOTER CREDITS FOR MAIN WINDOW -->
-            <div class="mt-8 text-center pt-4 border-t border-brandNavy-200 text-[11px] text-brandNavy-700 no-print space-y-1.5">
-                <div>
-                    <button type="button" onclick="openModal('aboutUsModal')" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brandNavy-100 hover:bg-brandNavy-200 text-brandNavy-800 font-extrabold text-[10px] transition">
-                        <i class="fa-solid fa-circle-info text-brandMagenta-600"></i> About Sfinsys
+        
+            <!-- TAB: HEALTH ANALYSIS SYSTEM (NEW) -->
+            <section id="tab-health" class="space-y-4 hidden">
+                <!-- Health Header Banner -->
+                <div class="bg-gradient-to-r from-emerald-600 via-emerald-700 to-brandNavy-700 text-white p-3.5 rounded-2xl shadow-md border border-emerald-300/40">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-heart-pulse text-xl"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h2 class="text-sm font-black tracking-wide">Clinical Health Analysis</h2>
+                                <p class="text-[10px] text-emerald-100 font-semibold">Glucose • BP • Lipids • BMI &amp; Wellness</p>
+                            </div>
+                        </div>
+                        <span class="text-[9px] font-black bg-amber-400 text-emerald-950 px-2 py-0.5 rounded-full shrink-0">NEW</span>
+                    </div>
+                    <div class="flex flex-wrap gap-1.5 mt-3">
+                        <button type="button" onclick="openAddHealthModal()" class="px-2.5 py-1.5 rounded-xl bg-white text-emerald-800 font-black text-[10px] shadow flex items-center gap-1">
+                            <i class="fa-solid fa-plus"></i> New Record
+                        </button>
+                        <button type="button" onclick="exportHealthCSV()" class="px-2.5 py-1.5 rounded-xl bg-white/15 border border-white/30 text-white font-bold text-[10px] flex items-center gap-1">
+                            <i class="fa-solid fa-file-csv"></i> CSV
+                        </button>
+                        <button type="button" onclick="openPrintHealthReportModal()" class="px-2.5 py-1.5 rounded-xl bg-white/15 border border-white/30 text-white font-bold text-[10px] flex items-center gap-1">
+                            <i class="fa-solid fa-print"></i> Doctor Report
+                        </button>
+                        <button type="button" onclick="openHealthGuideModal()" class="px-2.5 py-1.5 rounded-xl bg-white/15 border border-white/30 text-white font-bold text-[10px] flex items-center gap-1">
+                            <i class="fa-solid fa-circle-info"></i> Ref Ranges
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Family member selector -->
+                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex items-center gap-2">
+                    <div class="flex-1 min-w-0">
+                        <label for="healthMemberFilter" class="block text-[10px] font-black text-slate-600 mb-1">Family Member / Patient</label>
+                        <select id="healthMemberFilter" onchange="setHealthMemberFilter(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2 text-xs font-bold">
+                            <option value="All">All Members</option>
+                        </select>
+                    </div>
+                    <button type="button" onclick="addHealthFamilyMember()" class="mt-4 px-3 py-2 rounded-lg bg-emerald-600 text-white text-[10px] font-black whitespace-nowrap">
+                        <i class="fa-solid fa-user-plus mr-1"></i>Add Member
                     </button>
                 </div>
+
+                <!-- Period Filter -->
+                <div class="bg-white p-2 rounded-xl border border-slate-200 flex flex-wrap items-center gap-1.5 shadow-sm">
+                    <button type="button" onclick="setHealthPeriod('7days')" class="health-period-btn px-2.5 py-1.5 rounded-lg text-[10px] font-black bg-emerald-600 text-white" data-period="7days">7 Days</button>
+                    <button type="button" onclick="setHealthPeriod('30days')" class="health-period-btn px-2.5 py-1.5 rounded-lg text-[10px] font-bold text-slate-600 bg-slate-100" data-period="30days">30 Days</button>
+                    <button type="button" onclick="setHealthPeriod('90days')" class="health-period-btn px-2.5 py-1.5 rounded-lg text-[10px] font-bold text-slate-600 bg-slate-100" data-period="90days">90 Days</button>
+                    <button type="button" onclick="setHealthPeriod('all')" class="health-period-btn px-2.5 py-1.5 rounded-lg text-[10px] font-bold text-slate-600 bg-slate-100" data-period="all">All Time</button>
+                </div>
+
+                <!-- Summary Averages Grid -->
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                        <span class="text-[9px] font-black text-slate-500 uppercase">Fasting Sugar Avg</span>
+                        <div class="mt-1 flex items-baseline justify-between">
+                            <span id="avg-fbs" class="text-lg font-black text-slate-900">--</span>
+                            <span class="text-[9px] text-slate-400">mg/dL</span>
+                        </div>
+                        <div id="badge-fbs" class="mt-1 text-[9px] px-1.5 py-0.5 rounded font-black inline-block bg-slate-100 text-slate-500">--</div>
+                    </div>
+                    <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                        <span class="text-[9px] font-black text-slate-500 uppercase">PP / Random Sugar</span>
+                        <div class="mt-1 flex items-baseline justify-between">
+                            <span id="avg-ppbs" class="text-lg font-black text-slate-900">--</span>
+                            <span class="text-[9px] text-slate-400">mg/dL</span>
+                        </div>
+                        <div id="badge-ppbs" class="mt-1 text-[9px] px-1.5 py-0.5 rounded font-black inline-block bg-slate-100 text-slate-500">--</div>
+                    </div>
+                    <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                        <span class="text-[9px] font-black text-slate-500 uppercase">Blood Pressure Avg</span>
+                        <div class="mt-1 flex items-baseline justify-between">
+                            <span id="avg-bp" class="text-lg font-black text-slate-900">--/--</span>
+                            <span class="text-[9px] text-slate-400">mmHg</span>
+                        </div>
+                        <div id="badge-bp" class="mt-1 text-[9px] px-1.5 py-0.5 rounded font-black inline-block bg-slate-100 text-slate-500">--</div>
+                    </div>
+                    <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                        <span class="text-[9px] font-black text-slate-500 uppercase">Total Cholesterol</span>
+                        <div class="mt-1 flex items-baseline justify-between">
+                            <span id="avg-chol" class="text-lg font-black text-slate-900">--</span>
+                            <span class="text-[9px] text-slate-400">mg/dL</span>
+                        </div>
+                        <div id="badge-chol" class="mt-1 text-[9px] px-1.5 py-0.5 rounded font-black inline-block bg-slate-100 text-slate-500">--</div>
+                    </div>
+                    <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                        <span class="text-[9px] font-black text-slate-500 uppercase">LDL / HDL Avg</span>
+                        <div class="mt-1 flex items-baseline justify-between">
+                            <span id="avg-ldl-hdl" class="text-base font-black text-slate-900">-- / --</span>
+                            <span class="text-[9px] text-slate-400">mg/dL</span>
+                        </div>
+                        <div id="badge-ldl" class="mt-1 text-[9px] px-1.5 py-0.5 rounded font-black inline-block bg-slate-100 text-slate-500">--</div>
+                    </div>
+                    <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                        <span class="text-[9px] font-black text-slate-500 uppercase">Average BMI</span>
+                        <div class="mt-1 flex items-baseline justify-between">
+                            <span id="avg-bmi" class="text-lg font-black text-slate-900">--</span>
+                            <span class="text-[9px] text-slate-400">kg/m²</span>
+                        </div>
+                        <div id="badge-bmi" class="mt-1 text-[9px] px-1.5 py-0.5 rounded font-black inline-block bg-slate-100 text-slate-500">--</div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                    <div class="flex flex-col gap-2">
+                        <div class="flex items-center gap-2 text-xs font-black text-slate-800">
+                            <i class="fa-solid fa-chart-line text-emerald-600"></i>
+                            <span>Health Trend Charts</span>
+                        </div>
+                        <div class="flex flex-wrap gap-1 bg-slate-100 p-1 rounded-xl">
+                            <button type="button" onclick="switchHealthChartTab('sugar')" class="health-chart-tab px-2.5 py-1 rounded-lg text-[10px] font-black bg-emerald-600 text-white" data-tab="sugar">Blood Sugar</button>
+                            <button type="button" onclick="switchHealthChartTab('bp')" class="health-chart-tab px-2.5 py-1 rounded-lg text-[10px] font-bold text-slate-600" data-tab="bp">Blood Pressure</button>
+                            <button type="button" onclick="switchHealthChartTab('lipid')" class="health-chart-tab px-2.5 py-1 rounded-lg text-[10px] font-bold text-slate-600" data-tab="lipid">Lipid Panel</button>
+                            <button type="button" onclick="switchHealthChartTab('vitals')" class="health-chart-tab px-2.5 py-1 rounded-lg text-[10px] font-bold text-slate-600" data-tab="vitals">Weight &amp; BMI</button>
+                        </div>
+                    </div>
+                    <div class="relative w-full h-56 sm:h-64">
+                        <canvas id="healthTrendChart"></canvas>
+                    </div>
+                    <div class="text-[9px] text-slate-500 flex flex-wrap gap-3 pt-1 border-t border-slate-100">
+                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Optimal</span>
+                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500"></span> Borderline</span>
+                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-500"></span> High / Action</span>
+                    </div>
+                </div>
+
+                <!-- Selected Health / Lab Record (shown only after selecting a chart point) -->
+                <div id="healthRecordsPanel" class="hidden bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div>
+                            <h3 class="text-xs font-black text-slate-900 flex items-center gap-1.5">
+                                <i class="fa-solid fa-database text-brandNavy-600"></i> Selected Health &amp; Lab Record
+                            </h3>
+                            <p class="text-[10px] text-slate-500 font-semibold">Tap a point on the trend chart to view its record</p>
+                        </div>
+                        <div class="relative w-full sm:w-48">
+                            <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2 text-[10px] text-slate-400"></i>
+                            <input type="text" id="healthSearchInput" oninput="renderHealthTable()" placeholder="Search notes, values..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-7 pr-2 py-1.5 text-[11px] font-bold">
+                        </div>
+                    </div>
+                    <div id="healthRecordsList" class="space-y-2 max-h-[420px] overflow-y-auto no-scrollbar">
+                        <!-- Rendered dynamically -->
+                    </div>
+                </div>
+
+                <!-- Disclaimer -->
+                <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-[10px] flex items-start gap-2">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-500 mt-0.5"></i>
+                    <div>
+                        <span class="font-black">Clinical Disclaimer:</span>
+                        Personal wellness tracking only. Reference values are educational and do not replace professional medical diagnosis or treatment.
+                    </div>
+                </div>
+            </section>
+
+            <!-- ABOUT & DEVELOPER CREDITS AT THE BOTTOM -->
+            <div class="mt-8 mb-4 text-center pt-4 border-t border-brandNavy-200 text-[11px] text-brandNavy-700 no-print space-y-1.5">
+                <button type="button" onclick="openModal('aboutUsModal')" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brandNavy-100 hover:bg-brandNavy-200 text-brandNavy-800 font-extrabold text-[10px] transition">
+                    <i class="fa-solid fa-circle-info text-brandMagenta-600"></i> About Sfinsys
+                </button>
                 <p class="font-bold tracking-wide">Designed and developed by <span class="text-brandMagenta-600 font-extrabold">Santhoshgopal</span></p>
             </div>
 
@@ -2833,17 +2992,22 @@
                             </button>
                         </div>
                         <div class="relative">
-                            <input type="tel" id="partyPhone" placeholder="+91 xxxxxxxxxx" class="w-full border border-slate-200 rounded-xl p-3 font-bold pr-9">
-                            <button type="button" onclick="pickContactForParty()" class="absolute right-2.5 top-2.5 text-slate-500 hover:text-amber-600 p-1" title="Pick from contacts">
+                            <input type="password" id="partyPhone" inputmode="tel" autocomplete="off" placeholder="••••••••••" class="w-full border border-slate-200 rounded-xl p-3 font-bold pr-16 tracking-widest">
+                            <button type="button" onclick="togglePartyPhoneMask()" id="partyPhoneMaskToggle" class="absolute right-9 top-2.5 text-slate-500 hover:text-brandNavy-700 p-1" title="Show / Hide number">
+                                <i class="fa-solid fa-eye text-sm" id="partyPhoneMaskIcon"></i>
+                            </button>
+                            <button type="button" onclick="pickContactForParty()" class="absolute right-2 top-2.5 text-slate-500 hover:text-amber-600 p-1" title="Pick from contacts">
                                 <i class="fa-solid fa-user-plus text-sm"></i>
                             </button>
                         </div>
+                        <p class="text-[9px] text-slate-500 font-semibold mt-1">Number is masked for privacy. Tap eye to show/hide.</p>
                     </div>
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">ID Ref (Aadhaar / PAN)</label>
                         <input type="text" id="partyRef" placeholder="e.g. ID Ref: XXXX-1234" class="w-full border border-slate-200 rounded-xl p-3 font-bold">
                     </div>
                 </div>
+
 
                 <!-- Banking & UPI QR Integration Section -->
                 <div class="p-3.5 bg-emerald-50/60 border border-emerald-200 rounded-2xl space-y-3">
@@ -4090,7 +4254,21 @@ window.addEventListener('DOMContentLoaded', () => {
             return prefix + maskedMid + suffix;
         }
 
+        function togglePartyPhoneMask() {
+            const inp = document.getElementById('partyPhone');
+            const icon = document.getElementById('partyPhoneMaskIcon');
+            if (!inp) return;
+            if (inp.type === 'password') {
+                inp.type = 'tel';
+                if (icon) { icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); }
+            } else {
+                inp.type = 'password';
+                if (icon) { icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); }
+            }
+        }
+
         function normalizeMobile(mob) {
+
             if (!mob) return '';
             const digits = mob.replace(/\D/g, '');
             return digits.length > 10 ? digits.slice(-10) : digits;
@@ -4408,7 +4586,11 @@ window.addEventListener('DOMContentLoaded', () => {
                 btn.setAttribute('aria-expanded', 'false');
             }
 
-            if (action === 'whole_statement') {
+            if (action === 'health') {
+                switchTab('health');
+                document.getElementById('topBarSubtitle').innerText = 'Clinical Health Analysis';
+                renderHealthModule();
+            } else if (action === 'whole_statement') {
                 openWholeStatementModal();
             } else if (action === 'entries') {
                 switchTab('entries');
@@ -4453,7 +4635,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
 
         function switchTab(tabName) {
-            ['dashboard', 'entries', 'parties', 'cash', 'gst', 'personal'].forEach(t => {
+            ['dashboard', 'entries', 'parties', 'cash', 'gst', 'personal', 'health'].forEach(t => {
                 document.getElementById(`tab-${t}`)?.classList.add('hidden');
                 document.getElementById(`nav-${t}`)?.classList.remove('text-brandMagenta-300');
                 document.getElementById(`nav-${t}`)?.classList.add('hover:text-white');
@@ -4465,6 +4647,9 @@ window.addEventListener('DOMContentLoaded', () => {
                 populateGstPartySelector();
             } else if (tabName === 'personal') {
                 renderPersonalFinanceList();
+            } else if (tabName === 'health') {
+                document.getElementById('topBarSubtitle').innerText = 'Clinical Health Analysis';
+                renderHealthModule();
             } else if (tabName === 'dashboard' || tabName === 'entries' || tabName === 'parties') {
                 const pid = document.getElementById('partyFilterSelect')?.value;
                 const party = parties.find(p => p.id === pid);
@@ -4509,6 +4694,9 @@ window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('partyEditId').value = party.id;
             document.getElementById('partyName').value = party.name;
             document.getElementById('partyPhone').value = party.phone || '';
+            document.getElementById('partyPhone').type = 'password';
+            const maskIcon = document.getElementById('partyPhoneMaskIcon');
+            if (maskIcon) { maskIcon.classList.remove('fa-eye-slash'); maskIcon.classList.add('fa-eye'); }
             document.getElementById('partyRef').value = party.ref || '';
             document.getElementById('partyBankAcc').value = party.bankAcc || '';
             document.getElementById('partyUpiId').value = party.upiId || '';
@@ -4522,6 +4710,7 @@ window.addEventListener('DOMContentLoaded', () => {
             updatePartyModalQrPreview();
             openModal('partyModal');
         }
+
 
         function saveParty(e) {
             e.preventDefault();
@@ -6289,7 +6478,12 @@ window.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('partyEditId').value = '';
                 document.getElementById('partyModalTitle').innerText = "Add Party Account";
                 document.getElementById('modalQrPreviewBox').classList.add('hidden');
+                const pp = document.getElementById('partyPhone');
+                if (pp) { pp.type = 'password'; pp.value = ''; }
+                const mi = document.getElementById('partyPhoneMaskIcon');
+                if (mi) { mi.classList.remove('fa-eye-slash'); mi.classList.add('fa-eye'); }
             }
+
             if (id === 'cashEntryModal') {
                 const cEdit = document.getElementById('cashTxnEditId');
                 const cTitle = document.getElementById('cashModalTitle');
@@ -8382,6 +8576,8 @@ window.addEventListener('DOMContentLoaded', () => {
         let globalSearchCategory = 'ALL';
 
         const APP_ALL_OPTIONS_REGISTRY = [
+            { id: 'opt_health', title: 'Health Analysis System', desc: 'Glucose, BP, Lipids, BMI tracking', keywords: 'health sugar bp cholesterol bmi vitals glucose fasting', icon: 'fa-heart-pulse', color: 'bg-emerald-100 text-emerald-700', action: () => selectTopMenuAction('health') },
+
             { id: 'opt_dashboard', title: 'Dashboard & Financial Metrics', desc: 'Net principal, total given, interest, total payable & active party overview', keywords: 'dashboard metrics overview home balance payable principal interest summary', icon: 'fa-chart-pie', color: 'bg-brandNavy-100 text-brandNavy-700', action: () => { closeModal('globalQuickSearchModal'); switchTab('dashboard'); } },
             { id: 'opt_add_entry', title: 'Add Ledger Entry (Credit / Received / Int. Paid)', desc: 'Record money given, principal received, interest paid, or round off', keywords: 'add entry transaction credit given received interest paid round off payment receipt', icon: 'fa-circle-plus', color: 'bg-brandMagenta-100 text-brandMagenta-700', action: () => { closeModal('globalQuickSearchModal'); openModal('transactionModal'); } },
             { id: 'opt_new_party', title: 'Add New Party / Borrower Account', desc: 'Create customer/borrower profile with UPI QR, bank & interest rate', keywords: 'new party add party borrower customer account upi qr bank rate', icon: 'fa-user-plus', color: 'bg-emerald-100 text-emerald-700', action: () => { closeModal('globalQuickSearchModal'); openModal('partyModal'); } },
@@ -9265,9 +9461,776 @@ window.addEventListener('DOMContentLoaded', () => {
             a.click();
         }
 
+        
+        // ==================== HEALTH ANALYSIS SYSTEM ENGINE ====================
+        let healthRecords = [];
+        let healthCurrentPeriod = '30days';
+        let healthActiveChartTab = 'sugar';
+        let healthChartInstance = null;
+        let healthFamilyMembers = [];
+        let healthSelectedMember = 'All';
+        let selectedHealthRecordId = null;
+
+        function healthEscapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, ch => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[ch]));
+        }
+
+        function healthEscapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, ch => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[ch]));
+        }
+
+        function loadHealthFamilyMembers() {
+            try {
+                const saved = JSON.parse(localStorage.getItem('sfinsys_health_family_members_v1') || '[]');
+                healthFamilyMembers = Array.isArray(saved) ? saved.filter(Boolean) : [];
+            } catch (e) { healthFamilyMembers = []; }
+            if (!healthFamilyMembers.includes('Self')) healthFamilyMembers.unshift('Self');
+            // Preserve names already present in older records.
+            (healthRecords || []).forEach(r => {
+                const name = (r.memberName || 'Self').trim();
+                if (name && !healthFamilyMembers.includes(name)) healthFamilyMembers.push(name);
+            });
+            try { localStorage.setItem('sfinsys_health_family_members_v1', JSON.stringify(healthFamilyMembers)); } catch(e) {}
+        }
+
+        function saveHealthFamilyMembers() {
+            try { localStorage.setItem('sfinsys_health_family_members_v1', JSON.stringify(healthFamilyMembers)); } catch(e) {}
+        }
+
+        function refreshHealthMemberOptions() {
+            const filter = document.getElementById('healthMemberFilter');
+            const entry = document.getElementById('hMemberName');
+            const fill = (select, includeAll) => {
+                if (!select) return;
+                const current = select.value;
+                select.innerHTML = (includeAll ? '<option value="All">All Members</option>' : '') +
+                    healthFamilyMembers.map(n => `<option value="${healthEscapeHtml(n)}">${healthEscapeHtml(n)}</option>`).join('');
+                if ([...select.options].some(o => o.value === current)) select.value = current;
+                else if (includeAll) select.value = healthSelectedMember;
+                else select.value = healthSelectedMember === 'All' ? 'Self' : healthSelectedMember;
+            };
+            fill(filter, true);
+            fill(entry, false);
+        }
+
+        function addHealthFamilyMember(fromEntry = false) {
+            const name = prompt('Enter family member / patient name:');
+            if (!name || !name.trim()) return;
+            const clean = name.trim().replace(/\\s+/g, ' ');
+            const existing = healthFamilyMembers.find(n => n.toLowerCase() === clean.toLowerCase());
+            if (!existing) healthFamilyMembers.push(clean);
+            saveHealthFamilyMembers();
+            refreshHealthMemberOptions();
+            if (fromEntry) document.getElementById('hMemberName').value = existing || clean;
+            else {
+                healthSelectedMember = existing || clean;
+                const filter = document.getElementById('healthMemberFilter');
+                if (filter) filter.value = healthSelectedMember;
+                renderHealthModule();
+            }
+            showToast('Family member added');
+        }
+
+        function setHealthMemberFilter(name) {
+            healthSelectedMember = name || 'All';
+            selectedHealthRecordId = null;
+            const panel = document.getElementById('healthRecordsPanel');
+            if (panel) panel.classList.add('hidden');
+            renderHealthModule();
+        }
+
+        function loadHealthFromStorage() {
+            try {
+                const raw = localStorage.getItem('sfinsys_health_records_v1');
+                if (raw) healthRecords = JSON.parse(raw) || [];
+            } catch (e) { healthRecords = []; }
+            if (!Array.isArray(healthRecords)) healthRecords = [];
+        }
+
+        function saveHealthToStorage() {
+            try {
+                localStorage.setItem('sfinsys_health_records_v1', JSON.stringify(healthRecords));
+            } catch (e) { console.warn('Health save failed', e); }
+        }
+
+        function setHealthPeriod(period) {
+            healthCurrentPeriod = period;
+            selectedHealthRecordId = null;
+            document.getElementById('healthRecordsPanel')?.classList.add('hidden');
+            document.querySelectorAll('.health-period-btn').forEach(btn => {
+                if (btn.dataset.period === period) {
+                    btn.className = 'health-period-btn px-2.5 py-1.5 rounded-lg text-[10px] font-black bg-emerald-600 text-white';
+                } else {
+                    btn.className = 'health-period-btn px-2.5 py-1.5 rounded-lg text-[10px] font-bold text-slate-600 bg-slate-100';
+                }
+            });
+            renderHealthModule();
+        }
+
+        function getFilteredHealthRecords() {
+            const now = new Date();
+            let records = [...(healthRecords || [])];
+            if (healthSelectedMember !== 'All') {
+                records = records.filter(r => (r.memberName || 'Self') === healthSelectedMember);
+            }
+            records.sort((a, b) => new Date(b.datetime) - new Date(a.datetime));
+            if (healthCurrentPeriod === '7days') {
+                const limit = new Date(now.getTime() - 7 * 86400000);
+                return records.filter(r => new Date(r.datetime) >= limit);
+            } else if (healthCurrentPeriod === '30days') {
+                const limit = new Date(now.getTime() - 30 * 86400000);
+                return records.filter(r => new Date(r.datetime) >= limit);
+            } else if (healthCurrentPeriod === '90days') {
+                const limit = new Date(now.getTime() - 90 * 86400000);
+                return records.filter(r => new Date(r.datetime) >= limit);
+            }
+            return records;
+        }
+
+        function renderHealthModule() {
+            loadHealthFromStorage();
+            loadHealthFamilyMembers();
+            refreshHealthMemberOptions();
+            const records = getFilteredHealthRecords();
+            computeAndDisplayHealthAverages(records);
+            renderHealthTrendChart(records);
+            renderHealthTable();
+        }
+
+        function setBadge(elId, text, kind) {
+            const el = document.getElementById(elId);
+            if (!el) return;
+            el.innerText = text;
+            const base = 'mt-1 text-[9px] px-1.5 py-0.5 rounded font-black inline-block ';
+            if (kind === 'good') el.className = base + 'bg-emerald-100 text-emerald-800';
+            else if (kind === 'warn') el.className = base + 'bg-amber-100 text-amber-800';
+            else if (kind === 'bad') el.className = base + 'bg-rose-100 text-rose-800';
+            else el.className = base + 'bg-slate-100 text-slate-500';
+        }
+
+        function computeAndDisplayHealthAverages(records) {
+            if (!records || records.length === 0) {
+                ['avg-fbs','avg-ppbs','avg-chol','avg-bmi'].forEach(id => { const e=document.getElementById(id); if(e) e.innerText='--'; });
+                const bp = document.getElementById('avg-bp'); if (bp) bp.innerText = '--/--';
+                const lh = document.getElementById('avg-ldl-hdl'); if (lh) lh.innerText = '-- / --';
+                ['badge-fbs','badge-ppbs','badge-bp','badge-chol','badge-ldl','badge-bmi'].forEach(id => setBadge(id, '--', 'neutral'));
+                return;
+            }
+            let fbsSum=0,fbsCnt=0,ppbsSum=0,ppbsCnt=0,sysSum=0,diaSum=0,bpCnt=0,cholSum=0,cholCnt=0,ldlSum=0,hdlSum=0,ldlCnt=0,bmiSum=0,bmiCnt=0;
+            records.forEach(r => {
+                if (r.fbs) { fbsSum += parseFloat(r.fbs); fbsCnt++; }
+                if (r.ppbs) { ppbsSum += parseFloat(r.ppbs); ppbsCnt++; }
+                if (r.sys && r.dia) { sysSum += parseFloat(r.sys); diaSum += parseFloat(r.dia); bpCnt++; }
+                if (r.chol) { cholSum += parseFloat(r.chol); cholCnt++; }
+                if (r.ldl && r.hdl) { ldlSum += parseFloat(r.ldl); hdlSum += parseFloat(r.hdl); ldlCnt++; }
+                if (r.bmi) { bmiSum += parseFloat(r.bmi); bmiCnt++; }
+            });
+            if (fbsCnt > 0) {
+                const avg = (fbsSum / fbsCnt).toFixed(1);
+                document.getElementById('avg-fbs').innerText = avg;
+                setBadge('badge-fbs', avg < 100 ? 'OPTIMAL' : (avg <= 125 ? 'PRE-DIABETIC' : 'HIGH RISK'), avg < 100 ? 'good' : (avg <= 125 ? 'warn' : 'bad'));
+            } else { document.getElementById('avg-fbs').innerText = '--'; setBadge('badge-fbs','--','neutral'); }
+            if (ppbsCnt > 0) {
+                const avg = (ppbsSum / ppbsCnt).toFixed(1);
+                document.getElementById('avg-ppbs').innerText = avg;
+                setBadge('badge-ppbs', avg < 140 ? 'NORMAL' : 'ELEVATED', avg < 140 ? 'good' : 'warn');
+            } else { document.getElementById('avg-ppbs').innerText = '--'; setBadge('badge-ppbs','--','neutral'); }
+            if (bpCnt > 0) {
+                const avgSys = Math.round(sysSum / bpCnt), avgDia = Math.round(diaSum / bpCnt);
+                document.getElementById('avg-bp').innerText = avgSys + '/' + avgDia;
+                setBadge('badge-bp', (avgSys < 120 && avgDia < 80) ? 'OPTIMAL' : (avgSys < 130 && avgDia < 80 ? 'ELEVATED' : 'STAGE 1+ HIGH'), (avgSys < 120 && avgDia < 80) ? 'good' : (avgSys < 130 ? 'warn' : 'bad'));
+            } else { document.getElementById('avg-bp').innerText = '--/--'; setBadge('badge-bp','--','neutral'); }
+            if (cholCnt > 0) {
+                const avg = Math.round(cholSum / cholCnt);
+                document.getElementById('avg-chol').innerText = avg;
+                setBadge('badge-chol', avg < 200 ? 'DESIRABLE' : 'HIGH', avg < 200 ? 'good' : 'bad');
+            } else { document.getElementById('avg-chol').innerText = '--'; setBadge('badge-chol','--','neutral'); }
+            if (ldlCnt > 0) {
+                document.getElementById('avg-ldl-hdl').innerText = Math.round(ldlSum/ldlCnt) + ' / ' + Math.round(hdlSum/ldlCnt);
+                setBadge('badge-ldl', 'TRACKED', 'good');
+            }
+            if (bmiCnt > 0) {
+                const avg = (bmiSum / bmiCnt).toFixed(1);
+                document.getElementById('avg-bmi').innerText = avg;
+                const kind = (avg >= 18.5 && avg <= 24.9) ? 'good' : (avg >= 25 && avg <= 29.9 ? 'warn' : 'bad');
+                setBadge('badge-bmi', kind === 'good' ? 'NORMAL' : (kind === 'warn' ? 'OVERWEIGHT' : 'OBESE'), kind);
+            }
+        }
+
+        function switchHealthChartTab(tab) {
+            healthActiveChartTab = tab;
+            document.querySelectorAll('.health-chart-tab').forEach(btn => {
+                if (btn.dataset.tab === tab) {
+                    btn.className = 'health-chart-tab px-2.5 py-1 rounded-lg text-[10px] font-black bg-emerald-600 text-white';
+                } else {
+                    btn.className = 'health-chart-tab px-2.5 py-1 rounded-lg text-[10px] font-bold text-slate-600';
+                }
+            });
+            renderHealthTrendChart(getFilteredHealthRecords());
+        }
+
+        function renderHealthTrendChart(records) {
+            const canvas = document.getElementById('healthTrendChart');
+            if (!canvas || typeof Chart === 'undefined') return;
+            const ctx = canvas.getContext('2d');
+            if (healthChartInstance) { try { healthChartInstance.destroy(); } catch(e){} }
+            const sorted = [...records].sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
+            const labels = sorted.map(r => {
+                try { return new Date(r.datetime).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }); } catch(e) { return ''; }
+            });
+            let datasets = [];
+            if (healthActiveChartTab === 'sugar') {
+                datasets = [
+                    { label: 'Fasting (FBS)', data: sorted.map(r => r.fbs ? parseFloat(r.fbs) : null), borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.12)', borderWidth: 2.5, tension: 0.3, fill: true },
+                    { label: 'PPBS', data: sorted.map(r => r.ppbs ? parseFloat(r.ppbs) : null), borderColor: '#0891b2', borderWidth: 2, borderDash: [4,4], tension: 0.3 }
+                ];
+            } else if (healthActiveChartTab === 'bp') {
+                datasets = [
+                    { label: 'Systolic', data: sorted.map(r => r.sys ? parseFloat(r.sys) : null), borderColor: '#ef4444', borderWidth: 2.5, tension: 0.3 },
+                    { label: 'Diastolic', data: sorted.map(r => r.dia ? parseFloat(r.dia) : null), borderColor: '#f59e0b', borderWidth: 2, tension: 0.3 },
+                    { label: 'Pulse', data: sorted.map(r => r.pulse ? parseFloat(r.pulse) : null), borderColor: '#8b5cf6', borderWidth: 1.5, borderDash: [3,3] }
+                ];
+            } else if (healthActiveChartTab === 'lipid') {
+                datasets = [
+                    { label: 'Total Chol', data: sorted.map(r => r.chol ? parseFloat(r.chol) : null), borderColor: '#f59e0b', borderWidth: 2, tension: 0.3 },
+                    { label: 'LDL', data: sorted.map(r => r.ldl ? parseFloat(r.ldl) : null), borderColor: '#ef4444', borderWidth: 2 },
+                    { label: 'HDL', data: sorted.map(r => r.hdl ? parseFloat(r.hdl) : null), borderColor: '#10b981', borderWidth: 2 },
+                    { label: 'Trig', data: sorted.map(r => r.trig ? parseFloat(r.trig) : null), borderColor: '#3b82f6', borderWidth: 1.5, borderDash: [2,2] }
+                ];
+            } else {
+                datasets = [
+                    { label: 'Weight (kg)', data: sorted.map(r => r.weight ? parseFloat(r.weight) : null), borderColor: '#0891b2', backgroundColor: 'rgba(8,145,178,0.15)', borderWidth: 2.5, fill: true },
+                    { label: 'BMI', data: sorted.map(r => r.bmi ? parseFloat(r.bmi) : null), borderColor: '#a855f7', borderWidth: 2 }
+                ];
+            }
+            healthChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    onClick: (event, elements) => {
+                        if (!elements || !elements.length) return;
+                        const pointIndex = elements[0].index;
+                        const record = sorted[pointIndex];
+                        if (record) showHealthRecordFromChart(record.id);
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#475569', font: { family: 'Inter', size: 10 } } },
+                        tooltip: { mode: 'index', intersect: false }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { color: '#64748b', font: { size: 9 } } },
+                        y: { grid: { color: 'rgba(0,0,0,0.06)' }, ticks: { color: '#64748b', font: { size: 9 } } }
+                    }
+                }
+            });
+        }
+
+        function showHealthRecordFromChart(recordId) {
+            selectedHealthRecordId = recordId;
+            const panel = document.getElementById('healthRecordsPanel');
+            if (panel) {
+                panel.classList.remove('hidden');
+                panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+            renderHealthTable();
+        }
+
+        function renderHealthTable() {
+            const container = document.getElementById('healthRecordsList');
+            if (!container) return;
+            const search = (document.getElementById('healthSearchInput')?.value || '').toLowerCase();
+            const records = getFilteredHealthRecords();
+            const selected = selectedHealthRecordId ? records.filter(r => r.id === selectedHealthRecordId) : [];
+            const filtered = selected.filter(r => {
+                const txt = [r.memberName, r.notes, r.tag, r.fbs, r.ppbs, r.sys, r.dia, r.chol].join(' ').toLowerCase();
+                return !search || txt.includes(search);
+            });
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="p-5 text-center text-xs text-slate-400 font-semibold bg-slate-50 rounded-xl border border-slate-100">No health records for this period. Tap <strong>+ New Record</strong> to log vitals.</div>';
+                return;
+            }
+            container.innerHTML = filtered.map(r => {
+                let dateStr = r.datetime || '';
+                try { dateStr = new Date(r.datetime).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); } catch(e){}
+                const sugar = [r.fbs ? 'FBS: '+r.fbs : '', r.ppbs ? 'PP: '+r.ppbs : '', r.hba1c ? 'HbA1c: '+r.hba1c+'%' : ''].filter(Boolean).join(' • ');
+                const bp = (r.sys && r.dia) ? (r.sys+'/'+r.dia+' mmHg') : '';
+                const lipid = [r.chol ? 'TC: '+r.chol : '', r.ldl ? 'LDL: '+r.ldl : '', r.hdl ? 'HDL: '+r.hdl : ''].filter(Boolean).join(' • ');
+                const body = [r.weight ? r.weight+' kg' : '', r.bmi ? 'BMI '+r.bmi : ''].filter(Boolean).join(' • ');
+                return `<div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-[11px]">
+                    <div class="flex justify-between items-start gap-2">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex flex-wrap items-center gap-1.5 mb-1">
+                                <span class="font-black text-slate-900">${dateStr}</span>
+                                <span class="px-1.5 py-0.5 rounded text-[9px] font-black bg-emerald-100 text-emerald-800">${r.tag || 'Log'}</span>
+                                <span class="px-1.5 py-0.5 rounded text-[9px] font-black bg-sky-100 text-sky-800">${healthEscapeHtml(r.memberName || 'Self')}</span>
+                            </div>
+                            ${sugar ? `<p class="font-bold text-emerald-700">${sugar}</p>` : ''}
+                            ${bp ? `<p class="font-bold text-rose-700">${bp}${r.pulse ? ' • '+r.pulse+' bpm' : ''}</p>` : ''}
+                            ${lipid ? `<p class="font-semibold text-amber-800">${lipid}</p>` : ''}
+                            ${body ? `<p class="font-semibold text-sky-800">${body}</p>` : ''}
+                            ${r.notes ? `<p class="text-slate-500 mt-0.5 truncate">${r.notes}</p>` : ''}
+                        </div>
+                        <div class="flex flex-col gap-1 shrink-0">
+                            <button type="button" onclick="editHealthRecord('${r.id}')" class="text-blue-600 bg-blue-50 px-2 py-1 rounded-lg text-[10px] font-bold"><i class="fa-solid fa-pen"></i></button>
+                            <button type="button" onclick="deleteHealthRecord('${r.id}')" class="text-rose-600 bg-rose-50 px-2 py-1 rounded-lg text-[10px] font-bold"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function openAddHealthModal() {
+            const form = document.getElementById('healthForm');
+            if (form) form.reset();
+            document.getElementById('hRecordId').value = '';
+            loadHealthFamilyMembers();
+            refreshHealthMemberOptions();
+            document.getElementById('hMemberName').value = healthSelectedMember === 'All' ? 'Self' : healthSelectedMember;
+            document.getElementById('hDateTime').value = new Date().toISOString().slice(0, 16);
+            document.getElementById('healthModalTitle').innerHTML = '<i class="fa-solid fa-heart-pulse"></i> Log Health Vitals &amp; Lab';
+            document.getElementById('autoBmiVal').innerText = '--';
+            openModal('healthEntryModal');
+        }
+
+        function calcHealthBMI() {
+            const w = parseFloat(document.getElementById('hWeight')?.value);
+            const h = parseFloat(document.getElementById('hHeight')?.value);
+            if (w && h) {
+                document.getElementById('autoBmiVal').innerText = (w / ((h/100)*(h/100))).toFixed(1);
+            } else {
+                document.getElementById('autoBmiVal').innerText = '--';
+            }
+        }
+
+        function handleSaveHealthRecord(e) {
+            e.preventDefault();
+            loadHealthFromStorage();
+            const id = document.getElementById('hRecordId').value || ('hrec_' + Date.now());
+            const w = parseFloat(document.getElementById('hWeight').value);
+            const h = parseFloat(document.getElementById('hHeight').value);
+            let bmiVal = null;
+            if (w && h) bmiVal = (w / ((h/100)*(h/100))).toFixed(1);
+            const record = {
+                id,
+                memberName: document.getElementById('hMemberName').value || 'Self',
+                datetime: document.getElementById('hDateTime').value,
+                tag: document.getElementById('hTag').value,
+                fbs: document.getElementById('hFbs').value,
+                ppbs: document.getElementById('hPpbs').value,
+                hba1c: document.getElementById('hHba1c').value,
+                sys: document.getElementById('hSys').value,
+                dia: document.getElementById('hDia').value,
+                pulse: document.getElementById('hPulse').value,
+                chol: document.getElementById('hChol').value,
+                ldl: document.getElementById('hLdl').value,
+                hdl: document.getElementById('hHdl').value,
+                trig: document.getElementById('hTrig').value,
+                weight: document.getElementById('hWeight').value,
+                height: document.getElementById('hHeight').value,
+                bmi: bmiVal,
+                spo2: document.getElementById('hSpo2').value,
+                sleep: document.getElementById('hSleep').value,
+                notes: document.getElementById('hNotes').value
+            };
+            const idx = healthRecords.findIndex(r => r.id === id);
+            if (idx >= 0) healthRecords[idx] = record;
+            else healthRecords.push(record);
+            if (record.memberName && !healthFamilyMembers.includes(record.memberName)) {
+                healthFamilyMembers.push(record.memberName);
+                saveHealthFamilyMembers();
+            }
+            saveHealthToStorage();
+            selectedHealthRecordId = null;
+            document.getElementById('healthRecordsPanel')?.classList.add('hidden');
+            closeModal('healthEntryModal');
+            renderHealthModule();
+            showToast(idx >= 0 ? 'Health record updated!' : 'Health record saved!');
+        }
+
+        function editHealthRecord(id) {
+            loadHealthFromStorage();
+            const r = healthRecords.find(item => item.id === id);
+            if (!r) return;
+            document.getElementById('hRecordId').value = r.id;
+            loadHealthFamilyMembers();
+            refreshHealthMemberOptions();
+            document.getElementById('hMemberName').value = r.memberName || 'Self';
+            document.getElementById('hDateTime').value = r.datetime || '';
+            document.getElementById('hTag').value = r.tag || 'Routine Checkup';
+            document.getElementById('hFbs').value = r.fbs || '';
+            document.getElementById('hPpbs').value = r.ppbs || '';
+            document.getElementById('hHba1c').value = r.hba1c || '';
+            document.getElementById('hSys').value = r.sys || '';
+            document.getElementById('hDia').value = r.dia || '';
+            document.getElementById('hPulse').value = r.pulse || '';
+            document.getElementById('hChol').value = r.chol || '';
+            document.getElementById('hLdl').value = r.ldl || '';
+            document.getElementById('hHdl').value = r.hdl || '';
+            document.getElementById('hTrig').value = r.trig || '';
+            document.getElementById('hWeight').value = r.weight || '';
+            document.getElementById('hHeight').value = r.height || '';
+            document.getElementById('hSpo2').value = r.spo2 || '';
+            document.getElementById('hSleep').value = r.sleep || '';
+            document.getElementById('hNotes').value = r.notes || '';
+            calcHealthBMI();
+            document.getElementById('healthModalTitle').innerHTML = '<i class="fa-solid fa-heart-pulse"></i> Edit Health Record';
+            openModal('healthEntryModal');
+        }
+
+        function deleteHealthRecord(id) {
+            if (!confirm('Delete this health record?')) return;
+            loadHealthFromStorage();
+            healthRecords = healthRecords.filter(r => r.id !== id);
+            saveHealthToStorage();
+            renderHealthModule();
+            showToast('Health record deleted', 'fa-trash-can');
+        }
+
+        function exportHealthCSV() {
+            loadHealthFromStorage();
+            if (!healthRecords.length) { showToast('No health records to export', 'fa-circle-exclamation'); return; }
+            let csv = 'ID,Member,DateTime,Tag,FastingSugar,PPSugar,HbA1c,Systolic,Diastolic,Pulse,TotalCholesterol,LDL,HDL,Triglycerides,Weight,Height,BMI,SpO2,Sleep,Notes\n';
+            healthRecords.forEach(r => {
+                csv += `"${r.id}","${(r.memberName||'Self').replace(/"/g,'""')}","${r.datetime||''}","${r.tag||''}","${r.fbs||''}","${r.ppbs||''}","${r.hba1c||''}","${r.sys||''}","${r.dia||''}","${r.pulse||''}","${r.chol||''}","${r.ldl||''}","${r.hdl||''}","${r.trig||''}","${r.weight||''}","${r.height||''}","${r.bmi||''}","${r.spo2||''}","${r.sleep||''}","${(r.notes||'').replace(/"/g,'""')}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'Sfinsys_Health_' + new Date().toISOString().slice(0,10) + '.csv';
+            a.click();
+            showToast('Health CSV exported!');
+        }
+
+        function openPrintHealthReportModal() {
+            const records = getFilteredHealthRecords();
+            document.getElementById('reportGenDate').innerText = new Date().toLocaleString('en-IN');
+            document.getElementById('reportPeriodText').innerText = healthCurrentPeriod.toUpperCase();
+            const patientLabel = document.getElementById('healthReportPatientName');
+            if (patientLabel) patientLabel.innerText = healthSelectedMember === 'All' ? 'All Members' : healthSelectedMember;
+            document.getElementById('reportTotalLogs').innerText = records.length + ' Records';
+            document.getElementById('rep-fbs').innerText = document.getElementById('avg-fbs')?.innerText || '--';
+            document.getElementById('rep-ppbs').innerText = document.getElementById('avg-ppbs')?.innerText || '--';
+            document.getElementById('rep-bp').innerText = document.getElementById('avg-bp')?.innerText || '--/--';
+            document.getElementById('rep-chol').innerText = document.getElementById('avg-chol')?.innerText || '--';
+            // Copy the currently selected Health Trend Chart into the printable report.
+            const reportChartImage = document.getElementById('healthReportTrendChartImage');
+            const sourceChartCanvas = document.getElementById('healthTrendChart');
+            if (reportChartImage && sourceChartCanvas) {
+                try {
+                    reportChartImage.src = sourceChartCanvas.toDataURL('image/png');
+                    reportChartImage.style.display = 'block';
+                } catch (e) {
+                    reportChartImage.removeAttribute('src');
+                    reportChartImage.style.display = 'none';
+                }
+            }
+            const tbody = document.getElementById('reportTableBody');
+            tbody.innerHTML = records.slice(0, 20).map(r => {
+                let ds = r.datetime || '';
+                try { ds = new Date(r.datetime).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }); } catch(e){}
+                return `<div class="border border-slate-200 rounded-lg p-2 grid grid-cols-2 gap-1">
+                    <span class="font-bold">${ds}</span>
+                    <span>FBS:${r.fbs||'--'} | PP:${r.ppbs||'--'}</span>
+                    <span>BP: ${(r.sys&&r.dia)?(r.sys+'/'+r.dia):'--'}</span>
+                    <span>TC:${r.chol||'--'} BMI:${r.bmi||'--'}</span>
+                    <span class="col-span-2 text-slate-500 truncate">${r.notes||'-'}</span>
+                </div>`;
+            }).join('') || '<p class="text-slate-400">No records</p>';
+            openModal('healthPrintReportModal');
+        }
+
+        function printHealthReport() {
+            const area = document.getElementById('healthPrintableReportArea');
+            if (!area) return;
+            const w = window.open('', '_blank');
+            w.document.write('<html><head><title>Sfinsys Health Report</title><style>body{font-family:Inter,Arial,sans-serif;padding:16px;color:#0f172a;font-size:12px} .grid{display:grid} .grid-cols-2{grid-template-columns:1fr 1fr;gap:8px} img{max-width:100%;height:auto;max-height:260px;object-fit:contain;display:block} h4{break-after:avoid} </style></head><body>' + area.innerHTML + '</body></html>');
+            w.document.close();
+            w.focus();
+            setTimeout(() => { w.print(); }, 300);
+        }
+
+        function openHealthGuideModal() {
+            openModal('healthGuideModal');
+        }
+
+        function loadSampleHealthData() {
+            const base = new Date();
+            healthRecords = [
+                { id: 'hrec_1', datetime: new Date(base.getTime()-2*86400000).toISOString().slice(0,16), tag:'Fasting Sugar Test', fbs:'92', ppbs:'128', hba1c:'5.5', sys:'118', dia:'76', pulse:'70', chol:'175', ldl:'98', hdl:'55', trig:'120', weight:'68.5', height:'172', bmi:'23.2', spo2:'99', sleep:'8', notes:'Morning checkup, optimal diet' },
+                { id: 'hrec_2', datetime: new Date(base.getTime()-7*86400000).toISOString().slice(0,16), tag:'Routine Checkup', fbs:'98', ppbs:'135', hba1c:'5.6', sys:'122', dia:'80', pulse:'74', chol:'185', ldl:'105', hdl:'52', trig:'138', weight:'69.0', height:'172', bmi:'23.3', spo2:'98', sleep:'7', notes:'Slightly elevated BP after coffee' },
+                { id: 'hrec_3', datetime: new Date(base.getTime()-15*86400000).toISOString().slice(0,16), tag:'Complete Lipid Panel', fbs:'104', ppbs:'142', hba1c:'5.7', sys:'125', dia:'82', pulse:'76', chol:'198', ldl:'115', hdl:'49', trig:'155', weight:'69.5', height:'172', bmi:'23.5', spo2:'97', sleep:'6.5', notes:'Post dinner walk completed' },
+                { id: 'hrec_4', datetime: new Date(base.getTime()-25*86400000).toISOString().slice(0,16), tag:'BP Monitoring', fbs:'89', ppbs:'122', hba1c:'5.4', sys:'115', dia:'74', pulse:'68', chol:'170', ldl:'92', hdl:'58', trig:'110', weight:'68.0', height:'172', bmi:'23.0', spo2:'99', sleep:'8', notes:'Fasting 10 hrs, resting state' }
+            ];
+            saveHealthToStorage();
+            renderHealthModule();
+            showToast('Sample health data loaded!');
+        }
+
+        // Init health on DOM ready (alongside existing)
+        document.addEventListener('DOMContentLoaded', function() {
+            loadHealthFromStorage();
+            loadHealthFamilyMembers();
+            refreshHealthMemberOptions();
+            if (healthRecords.length === 0) {
+                // silent sample optional — user can load via menu later
+            }
+        });
+
+
         window.addEventListener('DOMContentLoaded', () => {
             initGstBillModule();
         });
     </script>
+
+    <!-- ================= HEALTH: ADD / EDIT RECORD MODAL ================= -->
+    <div id="healthEntryModal" class="fixed inset-0 bg-black/60 z-[80] hidden flex items-end sm:items-center justify-center p-0 sm:p-4 no-print">
+        <div class="bg-white w-full max-w-lg max-h-[92vh] overflow-y-auto rounded-t-3xl sm:rounded-2xl shadow-2xl sheet-up">
+            <div class="sticky top-0 bg-gradient-to-r from-emerald-600 to-brandNavy-700 text-white px-4 py-3 flex items-center justify-between rounded-t-3xl sm:rounded-t-2xl z-10">
+                <h3 id="healthModalTitle" class="text-sm font-black flex items-center gap-2">
+                    <i class="fa-solid fa-heart-pulse"></i> Log Health Vitals &amp; Lab
+                </h3>
+                <button type="button" onclick="closeModal('healthEntryModal')" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="healthForm" onsubmit="handleSaveHealthRecord(event)" class="p-4 space-y-3 text-xs">
+                <input type="hidden" id="hRecordId">
+                <div>
+                    <label class="block text-[10px] font-black text-slate-600 mb-1">Family Member / Patient Name</label>
+                    <div class="flex gap-2">
+                        <select id="hMemberName" class="flex-1 min-w-0 bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 font-bold"></select>
+                        <button type="button" onclick="addHealthFamilyMember(true)" class="px-3 rounded-xl bg-emerald-100 text-emerald-800 font-black text-[10px] whitespace-nowrap"><i class="fa-solid fa-user-plus mr-1"></i>Add</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-600 mb-1">Date &amp; Time *</label>
+                        <input type="datetime-local" id="hDateTime" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-600 mb-1">Record Tag</label>
+                        <select id="hTag" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 font-bold">
+                            <option value="Routine Checkup">Routine Checkup</option>
+                            <option value="Fasting Sugar Test">Fasting Sugar Test</option>
+                            <option value="Post-Prandial Test">Post-Prandial (PP) Test</option>
+                            <option value="Complete Lipid Panel">Complete Lipid Panel</option>
+                            <option value="BP Monitoring">BP Monitoring</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 space-y-2">
+                    <span class="font-black text-emerald-800 text-[10px]"><i class="fa-solid fa-cubes-stacked mr-1"></i> Blood Sugar / Glucose</span>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-500 mb-0.5">FBS (mg/dL)</label>
+                            <input type="number" step="0.1" id="hFbs" placeholder="95" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 font-black text-center">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-500 mb-0.5">PPBS (mg/dL)</label>
+                            <input type="number" step="0.1" id="hPpbs" placeholder="135" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 font-black text-center">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-500 mb-0.5">HbA1c (%)</label>
+                            <input type="number" step="0.1" id="hHba1c" placeholder="5.6" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 font-black text-center">
+                        </div>
+                    </div>
+                </div>
+                <div class="p-2.5 rounded-xl bg-rose-50 border border-rose-200 space-y-2">
+                    <span class="font-black text-rose-800 text-[10px]"><i class="fa-solid fa-heart-pulse mr-1"></i> Blood Pressure &amp; Pulse</span>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-500 mb-0.5">Systolic</label>
+                            <input type="number" id="hSys" placeholder="118" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 font-black text-center">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-500 mb-0.5">Diastolic</label>
+                            <input type="number" id="hDia" placeholder="78" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 font-black text-center">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-500 mb-0.5">Pulse (bpm)</label>
+                            <input type="number" id="hPulse" placeholder="72" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 font-black text-center">
+                        </div>
+                    </div>
+                </div>
+                <div class="p-2.5 rounded-xl bg-amber-50 border border-amber-200 space-y-2">
+                    <span class="font-black text-amber-800 text-[10px]"><i class="fa-solid fa-vial mr-1"></i> Cholesterol &amp; Lipids</span>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-500 mb-0.5">Total Chol.</label>
+                            <input type="number" id="hChol" placeholder="185" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 font-black text-center">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-500 mb-0.5">LDL</label>
+                            <input type="number" id="hLdl" placeholder="105" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 font-black text-center">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-500 mb-0.5">HDL</label>
+                            <input type="number" id="hHdl" placeholder="52" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 font-black text-center">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-500 mb-0.5">Triglycerides</label>
+                            <input type="number" id="hTrig" placeholder="140" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 font-black text-center">
+                        </div>
+                    </div>
+                </div>
+                <div class="p-2.5 rounded-xl bg-sky-50 border border-sky-200 space-y-2">
+                    <span class="font-black text-sky-800 text-[10px]"><i class="fa-solid fa-weight-scale mr-1"></i> Body &amp; Other Vitals</span>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-500 mb-0.5">Weight (kg)</label>
+                            <input type="number" step="0.1" id="hWeight" oninput="calcHealthBMI()" placeholder="68.5" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 font-black text-center">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-500 mb-0.5">Height (cm)</label>
+                            <input type="number" step="0.5" id="hHeight" oninput="calcHealthBMI()" placeholder="172" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 font-black text-center">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-500 mb-0.5">SpO2 (%)</label>
+                            <input type="number" id="hSpo2" placeholder="99" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 font-black text-center">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-500 mb-0.5">Sleep (hrs)</label>
+                            <input type="number" step="0.5" id="hSleep" placeholder="7.5" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 font-black text-center">
+                        </div>
+                    </div>
+                    <p class="text-[10px] font-bold text-slate-600">Auto BMI: <span id="autoBmiVal" class="text-brandNavy-800">--</span></p>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-600 mb-1">Notes / Symptoms / Remarks</label>
+                    <textarea id="hNotes" rows="2" placeholder="e.g. Fasting 10 hrs, after morning walk" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-bold"></textarea>
+                </div>
+                <div class="flex gap-2 pt-1 pb-2">
+                    <button type="button" onclick="closeModal('healthEntryModal')" class="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-black text-xs">Cancel</button>
+                    <button type="submit" class="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white font-black text-xs shadow">Save Record</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= HEALTH: PRINT REPORT MODAL ================= -->
+    <div id="healthPrintReportModal" class="fixed inset-0 bg-black/60 z-[80] hidden flex items-end sm:items-center justify-center p-0 sm:p-4 no-print">
+        <div class="bg-white w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-t-3xl sm:rounded-2xl shadow-2xl sheet-up">
+            <div class="sticky top-0 bg-gradient-to-r from-purple-600 to-brandNavy-700 text-white px-4 py-3 flex items-center justify-between rounded-t-3xl sm:rounded-t-2xl z-10 no-print">
+                <h3 class="text-sm font-black flex items-center gap-2">
+                    <i class="fa-solid fa-file-medical"></i> Clinical Health Report
+                </h3>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="printHealthReport()" class="px-3 py-1.5 rounded-lg bg-white text-purple-800 font-black text-[10px]">
+                        <i class="fa-solid fa-print mr-1"></i> Print / PDF
+                    </button>
+                    <button type="button" onclick="closeModal('healthPrintReportModal')" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="healthPrintableReportArea" class="p-4 bg-white text-slate-900 text-xs space-y-4">
+                <div class="flex justify-between items-start border-b border-slate-200 pb-3">
+                    <div>
+                        <h2 class="text-base font-black tracking-wide">SFINSYS CLINICAL HEALTH REPORT</h2>
+                        <p class="text-[10px] text-slate-500 font-semibold">Patient Health Analytics &amp; Vitals Summary</p>
+                    </div>
+                    <div class="text-right text-[10px] text-slate-600">
+                        <p><span class="font-bold">Generated:</span> <span id="reportGenDate">--</span></p>
+                        <p><span class="font-bold">Period:</span> <span id="reportPeriodText">All Time</span></p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200 font-bold text-[10px]">
+                    <div><span class="text-slate-500">Patient:</span> <span class="text-slate-900" id="healthReportPatientName">User</span></div>
+                    <div><span class="text-slate-500">Logs:</span> <span class="text-slate-900" id="reportTotalLogs">0 Records</span></div>
+                </div>
+                <div>
+                    <h4 class="font-black text-slate-800 border-b border-slate-200 pb-1 mb-2 uppercase text-[10px]">Period Averages</h4>
+                    <div class="grid grid-cols-2 gap-2 text-center">
+                        <div class="p-2 border rounded-lg bg-slate-50">
+                            <span class="text-slate-500 text-[9px] block">FASTING SUGAR</span>
+                            <span id="rep-fbs" class="font-black text-sm">--</span> mg/dL
+                        </div>
+                        <div class="p-2 border rounded-lg bg-slate-50">
+                            <span class="text-slate-500 text-[9px] block">PP SUGAR</span>
+                            <span id="rep-ppbs" class="font-black text-sm">--</span> mg/dL
+                        </div>
+                        <div class="p-2 border rounded-lg bg-slate-50">
+                            <span class="text-slate-500 text-[9px] block">BLOOD PRESSURE</span>
+                            <span id="rep-bp" class="font-black text-sm">--/--</span> mmHg
+                        </div>
+                        <div class="p-2 border rounded-lg bg-slate-50">
+                            <span class="text-slate-500 text-[9px] block">TOTAL CHOLESTEROL</span>
+                            <span id="rep-chol" class="font-black text-sm">--</span> mg/dL
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-black text-slate-800 border-b border-slate-200 pb-1 mb-2 uppercase text-[10px]">Health Trend Chart</h4>
+                    <div class="border border-slate-200 rounded-lg p-2 bg-white">
+                        <img id="healthReportTrendChartImage" alt="Health trend chart" style="display:none;width:100%;max-height:260px;object-fit:contain;" />
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-black text-slate-800 border-b border-slate-200 pb-1 mb-2 uppercase text-[10px]">Recent Vitals Log</h4>
+                    <div id="reportTableBody" class="space-y-1.5 text-[10px]">
+                        <!-- filled by JS -->
+                    </div>
+                </div>
+                <div class="border-t border-slate-200 pt-2 text-[9px] text-slate-500 flex justify-between">
+                    <p class="font-bold text-slate-700">Sfinsys Health System</p>
+                    <p>Personal tracking record — not a clinical diagnosis.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= HEALTH: REFERENCE GUIDE MODAL ================= -->
+    <div id="healthGuideModal" class="fixed inset-0 bg-black/60 z-[80] hidden flex items-end sm:items-center justify-center p-0 sm:p-4 no-print">
+        <div class="bg-white w-full max-w-md max-h-[88vh] overflow-y-auto rounded-t-3xl sm:rounded-2xl shadow-2xl sheet-up">
+            <div class="sticky top-0 bg-gradient-to-r from-amber-500 to-brandNavy-700 text-white px-4 py-3 flex items-center justify-between rounded-t-3xl sm:rounded-t-2xl z-10">
+                <h3 class="text-sm font-black flex items-center gap-2">
+                    <i class="fa-solid fa-book-medical"></i> Clinical Reference Ranges
+                </h3>
+                <button type="button" onclick="closeModal('healthGuideModal')" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-4 space-y-3 text-xs text-slate-700">
+                <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200">
+                    <h4 class="font-black text-emerald-800 mb-1">Blood Sugar (ADA)</h4>
+                    <ul class="space-y-1 text-[10px] font-semibold">
+                        <li>• <strong>Fasting:</strong> Normal 70–99 | Pre-diabetes 100–125 | Diabetes ≥126 mg/dL</li>
+                        <li>• <strong>Post-Prandial (2h):</strong> Normal &lt;140 | Pre-diabetes 140–199 | Diabetes ≥200</li>
+                        <li>• <strong>HbA1c:</strong> Normal &lt;5.7% | Pre-diabetes 5.7–6.4% | Diabetes ≥6.5%</li>
+                    </ul>
+                </div>
+                <div class="p-3 rounded-xl bg-rose-50 border border-rose-200">
+                    <h4 class="font-black text-rose-800 mb-1">Blood Pressure (AHA)</h4>
+                    <ul class="space-y-1 text-[10px] font-semibold">
+                        <li>• <strong class="text-emerald-700">Normal:</strong> Sys &lt;120 AND Dia &lt;80</li>
+                        <li>• <strong class="text-amber-700">Elevated:</strong> Sys 120–129 AND Dia &lt;80</li>
+                        <li>• <strong class="text-rose-700">Stage 1:</strong> Sys 130–139 OR Dia 80–89</li>
+                        <li>• <strong class="text-rose-800">Stage 2:</strong> Sys ≥140 OR Dia ≥90</li>
+                    </ul>
+                </div>
+                <div class="p-3 rounded-xl bg-amber-50 border border-amber-200">
+                    <h4 class="font-black text-amber-800 mb-1">Lipid Panel</h4>
+                    <ul class="space-y-1 text-[10px] font-semibold">
+                        <li>• <strong>Total Cholesterol:</strong> Desirable &lt;200 | High ≥240 mg/dL</li>
+                        <li>• <strong>LDL:</strong> Optimal &lt;100 | High 160–189</li>
+                        <li>• <strong>HDL:</strong> Protective ≥60 | Low risk flag &lt;40</li>
+                        <li>• <strong>Triglycerides:</strong> Normal &lt;150 | High 200–499</li>
+                    </ul>
+                </div>
+                <div class="p-3 rounded-xl bg-sky-50 border border-sky-200">
+                    <h4 class="font-black text-sky-800 mb-1">BMI (WHO)</h4>
+                    <p class="text-[10px] font-semibold">Underweight &lt;18.5 | Normal 18.5–24.9 | Overweight 25–29.9 | Obese ≥30</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </body>
 </html>
