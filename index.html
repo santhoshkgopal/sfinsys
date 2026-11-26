@@ -903,61 +903,143 @@
 
             </section>
 
-            <!-- TAB 2: TRANSACTION LEDGER ENTRIES -->
+            <!-- TAB 2: TRANSACTION LEDGER ENTRIES (CUSTOMER DIRECTORY -> CLICK TO VIEW INDIVIDUAL TRANSACTIONS) -->
             <section id="tab-entries" class="space-y-3 hidden">
-                <!-- Search & Filters Bar -->
-                <div class="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-2">
-                    <div class="relative flex-grow">
-                        <input type="text" id="searchInput" oninput="toggleLedgerSearchClear(); renderLedgerTable();" placeholder="Search party, note, mode, amount..." class="w-full pl-8 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black focus:outline-none focus:ring-2 focus:ring-brandMagenta-500">
-                        <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-brandMagenta-600 text-xs"></i>
-                        <button onclick="clearLedgerSearch()" id="clearLedgerSearchBtn" class="hidden absolute right-2.5 top-2 text-slate-400 hover:text-slate-700 p-0.5">
-                            <i class="fa-solid fa-xmark text-xs"></i>
-                        </button>
-                    </div>
-                    <select id="typeFilter" onchange="renderLedgerTable()" class="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 text-xs font-black focus:outline-none">
-                        <option value="ALL">All Types</option>
-                        <option value="GIVEN">Given</option>
-                        <option value="RECEIVED">Received</option>
-                        <option value="INTEREST_PAID">Int. Paid</option>
-                        <option value="ROUND_OFF">Round Off</option>
-                    </select>
-                </div>
-
-                <!-- Export Bar & Date Range Statement Download -->
-                <div class="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
-                    <div class="flex items-center justify-between text-xs font-bold text-slate-700">
-                        <span><i class="fa-solid fa-calendar-days text-brandMagenta-600 mr-1"></i> Statement Date-wise Filter</span>
-                        <button onclick="resetLedgerDateFilter()" class="text-[10px] text-rose-600 hover:underline">Reset Dates</button>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2 text-xs">
+                <!-- VIEW A: INDIVIDUAL CUSTOMER DIRECTORY LIST (DEFAULT 5 PARTIES WITH 10, 20, 50, 100... PAGINATION) -->
+                <div id="ledgerDirectoryView" class="space-y-3">
+                    <div class="flex justify-between items-center px-1">
                         <div>
-                            <label class="block text-[10px] text-slate-500 font-bold mb-0.5">From Date</label>
-                            <input type="date" id="ledgerStartDate" onchange="renderLedgerTable()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-black text-xs">
+                            <h3 class="font-extrabold text-xs text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fa-solid fa-book-open text-brandMagenta-600"></i> Customer Ledger Directory
+                            </h3>
+                            <p class="text-[10px] text-slate-500 font-semibold">Tap any customer name to view all their transactions</p>
                         </div>
-                        <div>
-                            <label class="block text-[10px] text-slate-500 font-bold mb-0.5">To Date</label>
-                            <input type="date" id="ledgerEndDate" onchange="renderLedgerTable()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-black text-xs">
+                        <button type="button" onclick="openPartyPrintModal()" class="bg-brandNavy-700 text-white px-2.5 py-1.5 rounded-xl text-[11px] font-bold flex items-center gap-1 shadow">
+                            <i class="fa-solid fa-print text-amber-400"></i> Statement
+                        </button>
+                    </div>
+
+                    <!-- Search & Increasing Page Limit Selector (5, 10, 20, 50, 100...) -->
+                    <div class="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-2">
+                        <div class="relative flex-grow">
+                            <input type="text" id="ledgerPartySearchInput" oninput="toggleLedgerPartySearchClear(); renderLedgerTable();" placeholder="Search customer name, mobile, ref..." class="w-full pl-8 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black focus:outline-none focus:ring-2 focus:ring-brandMagenta-500">
+                            <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-brandMagenta-600 text-xs"></i>
+                            <button type="button" onclick="clearLedgerPartySearch()" id="clearLedgerPartySearchBtn" class="hidden absolute right-2.5 top-2 text-slate-400 hover:text-slate-700 p-0.5">
+                                <i class="fa-solid fa-xmark text-xs"></i>
+                            </button>
+                        </div>
+                        <div class="shrink-0">
+                            <select id="ledgerPartyPageLimitSelect" onchange="renderLedgerTable()" class="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 text-xs font-black focus:outline-none focus:ring-2 focus:ring-brandMagenta-500" title="Number of customers to display">
+                                <option value="5" selected>Show 5</option>
+                                <option value="10">Show 10</option>
+                                <option value="20">Show 20</option>
+                                <option value="50">Show 50</option>
+                                <option value="100">Show 100</option>
+                                <option value="ALL">Show All</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="flex justify-between items-center pt-1 border-t border-slate-100 text-xs">
-                        <button onclick="exportToCSV()" class="text-emerald-700 font-bold hover:underline flex items-center gap-1.5">
-                            <i class="fa-solid fa-file-excel"></i> Export Filtered CSV
+
+                    <!-- Summary Count & Quick View More Step Button -->
+                    <div id="ledgerDirectorySummaryBar" class="hidden flex items-center justify-between px-1 text-[11px] font-bold text-slate-600">
+                        <span id="ledgerDirectoryCountLabel">Showing 0 of 0 customers</span>
+                        <button type="button" id="ledgerDirectoryShowMoreBtn" onclick="expandLedgerPartyLimit()" class="hidden text-brandMagenta-600 hover:text-brandMagenta-800 font-extrabold underline">
+                            View 10
                         </button>
-                        <button onclick="openPartyPrintModal()" class="text-slate-800 font-extrabold hover:underline flex items-center gap-1.5">
-                            <i class="fa-solid fa-print text-amber-500"></i> Statement Print / Preview
-                        </button>
+                    </div>
+
+                    <!-- Customer Cards List -->
+                    <div id="ledgerCustomerDirectoryList" class="space-y-2.5">
+                        <!-- Dynamic Individual Customer Cards -->
                     </div>
                 </div>
 
-                <!-- Entries List -->
-                <div id="mobileLedgerList" class="space-y-2.5">
-                    <!-- Dynamic Entry Cards -->
-                </div>
+                <!-- VIEW B: SELECTED INDIVIDUAL CUSTOMER'S TRANSACTIONS -->
+                <div id="ledgerCustomerDetailView" class="space-y-3 hidden">
+                    <!-- Back to Customers Header & Customer Summary -->
+                    <div class="bg-gradient-to-r from-brandNavy-800 via-brandNavy-700 to-brandMagenta-800 text-white p-3.5 rounded-2xl shadow-md border border-brandMagenta-400/40 space-y-2.5">
+                        <div class="flex items-center justify-between gap-2">
+                            <button type="button" onclick="backToLedgerCustomerList()" class="bg-white/15 hover:bg-white/25 active:scale-95 text-white px-3 py-1.5 rounded-xl text-xs font-extrabold flex items-center gap-1.5 border border-white/25 transition shrink-0">
+                                <i class="fa-solid fa-arrow-left"></i> All Customers
+                            </button>
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <button type="button" id="ledgerDetailAddTxnBtn" onclick="openAddTxnForSelectedLedgerCustomer()" class="bg-emerald-500 hover:bg-emerald-400 text-brandNavy-950 px-2.5 py-1.5 rounded-xl text-[11px] font-black flex items-center gap-1 shadow transition">
+                                    <i class="fa-solid fa-plus"></i> Add Entry
+                                </button>
+                                <button type="button" id="ledgerDetailPrintBtn" onclick="printSelectedLedgerCustomer()" class="bg-amber-400 hover:bg-amber-300 text-brandNavy-950 px-2.5 py-1.5 rounded-xl text-[11px] font-black flex items-center gap-1 shadow transition" title="Statement Preview & Print">
+                                    <i class="fa-solid fa-print"></i>
+                                </button>
+                            </div>
+                        </div>
 
-                <!-- Empty State -->
-                <div id="emptyState" class="p-8 text-center text-slate-400 bg-white rounded-2xl border border-slate-200 hidden">
-                    <div class="w-12 h-12 bg-brandMagenta-100 text-brandMagenta-600 rounded-2xl flex items-center justify-center text-xl font-black mx-auto mb-2">S</div>
-                    <p class="font-bold text-xs text-slate-600">No transaction records found.</p>
+                        <div class="flex items-center justify-between gap-2 pt-1 border-t border-white/15">
+                            <div class="min-w-0">
+                                <span class="text-[9px] font-black uppercase tracking-wider text-amber-300 block">Individual Customer Ledger</span>
+                                <h4 id="ledgerDetailCustomerName" class="text-base font-black text-white truncate">-</h4>
+                                <p id="ledgerDetailCustomerMeta" class="text-[10px] text-slate-200 font-semibold truncate">-</p>
+                            </div>
+                            <div class="text-right shrink-0 bg-brandNavy-950/60 px-3 py-2 rounded-xl border border-white/15">
+                                <span class="text-[9px] font-bold text-slate-300 uppercase block">Total Payable</span>
+                                <span id="ledgerDetailTotalPayable" class="text-sm font-black text-emerald-400">₹0.00</span>
+                                <span id="ledgerDetailPrincipal" class="text-[9px] text-amber-200 block">Principal: ₹0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Search & Filters Bar for Individual Customer Transactions -->
+                    <div class="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-2">
+                        <div class="relative flex-grow">
+                            <input type="text" id="searchInput" oninput="toggleLedgerSearchClear(); renderLedgerTable();" placeholder="Search note, mode, amount..." class="w-full pl-8 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black focus:outline-none focus:ring-2 focus:ring-brandMagenta-500">
+                            <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-brandMagenta-600 text-xs"></i>
+                            <button type="button" onclick="clearLedgerSearch()" id="clearLedgerSearchBtn" class="hidden absolute right-2.5 top-2 text-slate-400 hover:text-slate-700 p-0.5">
+                                <i class="fa-solid fa-xmark text-xs"></i>
+                            </button>
+                        </div>
+                        <select id="typeFilter" onchange="renderLedgerTable()" class="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 text-xs font-black focus:outline-none">
+                            <option value="ALL">All Types</option>
+                            <option value="GIVEN">Given</option>
+                            <option value="RECEIVED">Received</option>
+                            <option value="INTEREST_PAID">Int. Paid</option>
+                            <option value="ROUND_OFF">Round Off</option>
+                        </select>
+                    </div>
+
+                    <!-- Export Bar & Date Range Statement Download -->
+                    <div class="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
+                        <div class="flex items-center justify-between text-xs font-bold text-slate-700">
+                            <span><i class="fa-solid fa-calendar-days text-brandMagenta-600 mr-1"></i> Statement Date-wise Filter</span>
+                            <button type="button" onclick="resetLedgerDateFilter()" class="text-[10px] text-rose-600 hover:underline">Reset Dates</button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div>
+                                <label class="block text-[10px] text-slate-500 font-bold mb-0.5">From Date</label>
+                                <input type="date" id="ledgerStartDate" onchange="renderLedgerTable()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-black text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-500 font-bold mb-0.5">To Date</label>
+                                <input type="date" id="ledgerEndDate" onchange="renderLedgerTable()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-black text-xs">
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center pt-1 border-t border-slate-100 text-xs">
+                            <button type="button" onclick="exportToCSV()" class="text-emerald-700 font-bold hover:underline flex items-center gap-1.5">
+                                <i class="fa-solid fa-file-excel"></i> Export Filtered CSV
+                            </button>
+                            <button type="button" onclick="openPartyPrintModal()" class="text-slate-800 font-extrabold hover:underline flex items-center gap-1.5">
+                                <i class="fa-solid fa-print text-amber-500"></i> Statement Print / Preview
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Entries List -->
+                    <div id="mobileLedgerList" class="space-y-2.5">
+                        <!-- Dynamic Entry Cards -->
+                    </div>
+
+                    <!-- Empty State -->
+                    <div id="emptyState" class="p-8 text-center text-slate-400 bg-white rounded-2xl border border-slate-200 hidden">
+                        <div class="w-12 h-12 bg-brandMagenta-100 text-brandMagenta-600 rounded-2xl flex items-center justify-center text-xl font-black mx-auto mb-2">S</div>
+                        <p class="font-bold text-xs text-slate-600">No transaction records found for this customer.</p>
+                    </div>
                 </div>
             </section>
 
@@ -978,7 +1060,7 @@
                     </div>
                 </div>
 
-                <!-- Dedicated Search Input for Parties Tab -->
+                <!-- Dedicated Search Input & Page Limit Selector for Parties Tab -->
                 <div class="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-2">
                     <div class="relative flex-grow">
                         <input type="text" id="partySearchInput" oninput="togglePartySearchClear(); renderPartiesList();" placeholder="Search name, phone, ref, bank, UPI..." class="w-full pl-8 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black focus:outline-none focus:ring-2 focus:ring-brandMagenta-500">
@@ -987,6 +1069,23 @@
                             <i class="fa-solid fa-xmark text-xs"></i>
                         </button>
                     </div>
+                    <div class="shrink-0">
+                        <select id="partyPageLimitSelect" onchange="renderPartiesList()" class="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 text-xs font-black focus:outline-none focus:ring-2 focus:ring-brandMagenta-500" title="Number of parties to display">
+                            <option value="5" selected>Show 5</option>
+                            <option value="10">Show 10</option>
+                            <option value="20">Show 20</option>
+                            <option value="50">Show 50</option>
+                            <option value="100">Show 100</option>
+                            <option value="ALL">Show All</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="partiesListSummaryBar" class="hidden flex items-center justify-between px-1 text-[11px] font-bold text-slate-600">
+                    <span id="partiesListCountLabel">Showing 0 of 0 parties</span>
+                    <button type="button" id="partiesShowMoreBtn" onclick="expandPartiesLimit()" class="hidden text-brandMagenta-600 hover:text-brandMagenta-800 font-extrabold underline">
+                        View More
+                    </button>
                 </div>
 
                 <div id="partiesList" class="space-y-2.5">
@@ -1458,7 +1557,7 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-4 gap-1.5">
+                        <div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
                             <div>
                                 <label class="block text-[9px] font-bold text-slate-600 mb-0.5">Nos / Qty</label>
                                 <input type="number" id="gstEntryQty" step="0.01" min="0" value="1" oninput="onGstEntryInputChange('qty')" class="w-full bg-slate-50 focus:bg-white border border-slate-300 rounded-xl p-2 font-black text-center">
@@ -1466,6 +1565,14 @@
                             <div>
                                 <label class="block text-[9px] font-bold text-slate-700 mb-0.5">Base Rate (₹)</label>
                                 <input type="number" id="gstEntryRate" step="0.01" min="0" placeholder="0.00" oninput="onGstEntryInputChange('rate')" class="w-full bg-slate-50 focus:bg-white border border-slate-300 rounded-xl p-2 font-black text-center">
+                            </div>
+                            <div>
+                                <label class="block text-[9px] font-bold text-amber-700 mb-0.5">Disc %</label>
+                                <input type="number" id="gstEntryDiscPct" step="0.01" min="0" max="100" placeholder="0%" oninput="onGstEntryInputChange('discPct')" class="w-full bg-amber-50/70 focus:bg-white border border-amber-300 rounded-xl p-2 font-black text-center">
+                            </div>
+                            <div>
+                                <label class="block text-[9px] font-bold text-amber-700 mb-0.5">Disc (₹)</label>
+                                <input type="number" id="gstEntryDiscAmt" step="0.01" min="0" placeholder="0.00" oninput="onGstEntryInputChange('discAmt')" class="w-full bg-amber-50/70 focus:bg-white border border-amber-300 rounded-xl p-2 font-black text-center">
                             </div>
                             <div>
                                 <label class="block text-[9px] font-bold text-brandMagenta-700 mb-0.5">GST %</label>
@@ -1515,7 +1622,8 @@
                                         <th class="p-1.5 text-left">Item</th>
                                         <th class="p-1.5 text-right">Nos</th>
                                         <th class="p-1.5 text-right">Rate</th>
-                                        <th class="p-1.5 text-right">Nos×Rate</th>
+                                        <th class="p-1.5 text-right">Disc</th>
+                                        <th class="p-1.5 text-right">Taxable</th>
                                         <th class="p-1.5 text-center">GST</th>
                                         <th class="p-1.5 text-right">Total</th>
                                         <th class="p-1.5 text-center">Action</th>
@@ -1531,6 +1639,28 @@
 
                 <!-- 5. Invoice Summary & Print / Share Actions -->
                 <div class="bg-gradient-to-br from-brandNavy-900 via-brandNavy-800 to-brandMagenta-900 text-white p-4 rounded-2xl border border-brandMagenta-400/40 shadow-md space-y-2.5">
+                    <!-- Overall Bill Discount Control -->
+                    <div class="bg-brandNavy-950/60 border border-amber-400/35 rounded-xl p-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
+                        <span class="text-amber-300 font-black uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+                            <i class="fa-solid fa-tag"></i> Overall Bill Discount (Optional):
+                        </span>
+                        <div class="flex items-center gap-1.5">
+                            <select id="gstOverallDiscType" onchange="onGstOverallDiscountChange()" class="rounded-lg px-2 py-1 text-xs font-black border border-amber-300">
+                                <option value="FLAT">Flat (₹)</option>
+                                <option value="PCT">Percent (%)</option>
+                            </select>
+                            <input type="number" id="gstOverallDiscVal" step="0.01" min="0" placeholder="0" oninput="onGstOverallDiscountChange()" class="w-24 rounded-lg px-2 py-1 text-xs font-black text-right border border-amber-300">
+                        </div>
+                    </div>
+
+                    <div id="gstSummaryGrossRow" class="hidden flex justify-between text-xs border-b border-white/15 pb-1.5">
+                        <span class="text-slate-300 font-bold">Gross Subtotal (Before Discount):</span>
+                        <span id="gstSummaryGross" class="font-black text-slate-200">₹0.00</span>
+                    </div>
+                    <div id="gstSummaryDiscountRow" class="hidden flex justify-between text-xs border-b border-white/15 pb-1.5">
+                        <span class="text-amber-300 font-bold">Total Discount Saved:</span>
+                        <span id="gstSummaryDiscount" class="font-black text-amber-300">- ₹0.00</span>
+                    </div>
                     <div class="flex justify-between text-xs border-b border-white/15 pb-1.5">
                         <span class="text-slate-300 font-bold">Total Taxable Value (Excl. GST):</span>
                         <span id="gstSummaryTaxable" class="font-black text-white">₹0.00</span>
@@ -3047,7 +3177,7 @@
                         <div>
                             <label class="block text-[10px] font-bold text-slate-600">Calculation Method</label>
                             <select id="partyCalcSystem" onchange="onPartyModalSystemChange()" class="w-full border border-slate-300 rounded-lg p-2 font-black">
-                                <option value="zero_interest">Zero Interest / Free (0%)</option>
+                                <option value="zero_interest">Zero Interest / Fixed Interest</option>
                                 <option value="rupee_monthly" selected>₹ / ₹100 / Month</option>
                                 <option value="simple_pa">Simple % p.a.</option>
                                 <option value="compound_pa">Compound % p.a</option>
@@ -3604,17 +3734,17 @@
             const now = new Date();
             const sysDateStr = formatDateDDMMYYYY(now);
             const sysTimeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
-            const effectiveUpdatedStr = lastGoldRateUpdateTimestamp || `${sysDateStr}, ${sysTimeStr}`;
+            const liveDateTimeStr = `${sysDateStr}, ${sysTimeStr}`;
 
             if (dash24k) dash24k.innerText = `${formatINR(goldRate24k)} / g`;
             if (dash22k) dash22k.innerText = `${formatINR(goldRate22k)} / g`;
             if (dash18k) dash18k.innerText = `${formatINR(goldRate18k)} / g`;
-            if (dashDateLbl) dashDateLbl.innerText = `System: ${sysDateStr} • Updated: ${effectiveUpdatedStr}`;
+            if (dashDateLbl) dashDateLbl.innerText = `Updated: ${liveDateTimeStr}`;
             
             if (modalDateLbl) modalDateLbl.innerText = `System Date: ${sysDateStr} (${sysTimeStr})`;
             
             if (modalLastUpdatedLbl) {
-                modalLastUpdatedLbl.innerHTML = `<i class="fa-solid fa-clock text-amber-400/70 mr-1"></i>Rate Updated: ${effectiveUpdatedStr}`;
+                modalLastUpdatedLbl.innerHTML = `<i class="fa-solid fa-clock text-amber-400/70 mr-1"></i>Rate Updated: ${liveDateTimeStr}`;
             }
             if (modalSourceLbl) {
                 modalSourceLbl.innerText = `Source: ${goldRateSourceType || 'Manual Entry'}`;
@@ -4090,14 +4220,13 @@ window.addEventListener('DOMContentLoaded', () => {
                 const liveNow = new Date();
                 const liveDate = formatDateDDMMYYYY(liveNow);
                 const liveTime = liveNow.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+                const liveDateTimeStr = `${liveDate}, ${liveTime}`;
                 const modalDateLbl = document.getElementById('modalGoldRateDateLabel');
+                const dashDateLbl = document.getElementById('dashGoldRateDateLabel');
+                const modalLastUpdatedLbl = document.getElementById('modalGoldRateLastUpdatedLabel');
                 if (modalDateLbl) modalDateLbl.innerText = `System Date: ${liveDate} (${liveTime})`;
-                if (!lastGoldRateUpdateTimestamp) {
-                    const dashDateLbl = document.getElementById('dashGoldRateDateLabel');
-                    const modalLastUpdatedLbl = document.getElementById('modalGoldRateLastUpdatedLabel');
-                    if (dashDateLbl) dashDateLbl.innerText = `System: ${liveDate} • Updated: ${liveDate}, ${liveTime}`;
-                    if (modalLastUpdatedLbl) modalLastUpdatedLbl.innerHTML = `<i class="fa-solid fa-clock text-amber-400/70 mr-1"></i>Rate Updated: ${liveDate}, ${liveTime}`;
-                }
+                if (dashDateLbl) dashDateLbl.innerText = `Updated: ${liveDateTimeStr}`;
+                if (modalLastUpdatedLbl) modalLastUpdatedLbl.innerHTML = `<i class="fa-solid fa-clock text-amber-400/70 mr-1"></i>Rate Updated: ${liveDateTimeStr}`;
             }, 1000);
 
             document.addEventListener('click', (e) => {
@@ -4593,7 +4722,9 @@ window.addEventListener('DOMContentLoaded', () => {
             } else if (action === 'whole_statement') {
                 openWholeStatementModal();
             } else if (action === 'entries') {
+                selectedLedgerCustomerId = document.getElementById('partyFilterSelect')?.value || '';
                 switchTab('entries');
+                renderLedgerTable();
             } else if (action === 'cash') {
                 switchTab('cash');
                 document.getElementById('topBarSubtitle').innerText = 'Cash Vault / Cash on Hand';
@@ -4651,9 +4782,18 @@ window.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('topBarSubtitle').innerText = 'Clinical Health Analysis';
                 renderHealthModule();
             } else if (tabName === 'dashboard' || tabName === 'entries' || tabName === 'parties') {
-                const pid = document.getElementById('partyFilterSelect')?.value;
+                if (tabName === 'entries') {
+                    const globalPid = document.getElementById('partyFilterSelect')?.value || '';
+                    if (globalPid && !selectedLedgerCustomerId) {
+                        selectedLedgerCustomerId = globalPid;
+                    }
+                    renderLedgerTable();
+                }
+                const pid = (tabName === 'entries' && selectedLedgerCustomerId)
+                    ? selectedLedgerCustomerId
+                    : document.getElementById('partyFilterSelect')?.value;
                 const party = parties.find(p => p.id === pid);
-                document.getElementById('topBarSubtitle').innerText = party ? party.name : 'Master Combined Ledger';
+                document.getElementById('topBarSubtitle').innerText = party ? party.name : (tabName === 'entries' ? 'Customer Ledger Directory' : 'Master Combined Ledger');
             }
         }
 
@@ -4904,6 +5044,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 qrCard.classList.add('hidden');
             }
 
+            selectedLedgerCustomerId = pid || '';
             renderLedgerTable();
             updateStats();
         }
@@ -4917,10 +5058,45 @@ window.addEventListener('DOMContentLoaded', () => {
             return `${rate}%`;
         }
 
+        function updatePartyLimitDropdownOptions(totalCount) {
+            const select = document.getElementById('partyPageLimitSelect');
+            if (!select) return;
+            const currentVal = select.value || '5';
+            const baseSteps = [5, 10, 20, 50, 100, 200, 500];
+            const optionsToShow = [5];
+            for (let i = 1; i < baseSteps.length; i++) {
+                if (totalCount > baseSteps[i - 1]) {
+                    optionsToShow.push(baseSteps[i]);
+                }
+            }
+            const parsedCur = parseInt(currentVal, 10);
+            if (currentVal !== 'ALL' && !isNaN(parsedCur) && !optionsToShow.includes(parsedCur)) {
+                optionsToShow.push(parsedCur);
+                optionsToShow.sort((a, b) => a - b);
+            }
+            let optsHtml = optionsToShow.map(n => `<option value="${n}">Show ${n}</option>`).join('');
+            optsHtml += `<option value="ALL">Show All (${totalCount})</option>`;
+            select.innerHTML = optsHtml;
+            select.value = currentVal;
+        }
+
+        function expandPartiesLimit() {
+            const select = document.getElementById('partyPageLimitSelect');
+            if (!select) return;
+            const idx = select.selectedIndex;
+            if (idx >= 0 && idx < select.options.length - 1) {
+                select.selectedIndex = idx + 1;
+                renderPartiesList();
+            }
+        }
+
         function renderPartiesList() {
             const container = document.getElementById('partiesList');
             const searchInput = document.getElementById('partySearchInput');
             const searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const summaryBar = document.getElementById('partiesListSummaryBar');
+            const countLabel = document.getElementById('partiesListCountLabel');
+            const showMoreBtn = document.getElementById('partiesShowMoreBtn');
 
             let filteredParties = parties.filter(p => {
                 if (!searchQuery) return true;
@@ -4934,14 +5110,44 @@ window.addEventListener('DOMContentLoaded', () => {
                 );
             });
 
+            updatePartyLimitDropdownOptions(filteredParties.length);
+
             if (filteredParties.length === 0) {
+                if (summaryBar) summaryBar.classList.add('hidden');
                 container.innerHTML = `<div class="text-center text-xs text-slate-400 py-6">No matching party/borrower records found.</div>`;
                 return;
             }
 
+            const limitSelect = document.getElementById('partyPageLimitSelect');
+            const limitVal = limitSelect ? limitSelect.value : '5';
+            const totalFiltered = filteredParties.length;
+            let visibleParties = filteredParties;
+
+            if (limitVal !== 'ALL') {
+                const limitNum = parseInt(limitVal, 10) || 5;
+                visibleParties = filteredParties.slice(0, limitNum);
+            }
+
+            if (summaryBar && countLabel) {
+                summaryBar.classList.remove('hidden');
+                countLabel.textContent = `Showing ${visibleParties.length} of ${totalFiltered} ${totalFiltered === 1 ? 'party' : 'parties'}`;
+                if (showMoreBtn) {
+                    if (visibleParties.length < totalFiltered) {
+                        showMoreBtn.classList.remove('hidden');
+                        const nextIdx = limitSelect ? limitSelect.selectedIndex + 1 : -1;
+                        const nextLabel = (limitSelect && nextIdx >= 0 && nextIdx < limitSelect.options.length)
+                            ? limitSelect.options[nextIdx].text
+                            : 'View More';
+                        showMoreBtn.textContent = nextLabel;
+                    } else {
+                        showMoreBtn.classList.add('hidden');
+                    }
+                }
+            }
+
             const asOfDateStr = new Date().toISOString().split('T')[0];
 
-            container.innerHTML = filteredParties.map(p => {
+            container.innerHTML = visibleParties.map(p => {
                 const metrics = calculatePartyMetrics(p.id, asOfDateStr);
                 const hasQr = Boolean(p.upiId);
                 const qrUrl = hasQr ? generateUpiQrUrl(p.upiId, p.name, metrics.totalPayable) : '';
@@ -5495,21 +5701,268 @@ window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('statTotalPayable').innerText = formatINR(totalPayable);
         }
 
+        let selectedLedgerCustomerId = '';
+
+        function toggleLedgerPartySearchClear() {
+            const inp = document.getElementById('ledgerPartySearchInput');
+            const btn = document.getElementById('clearLedgerPartySearchBtn');
+            if (!inp || !btn) return;
+            if (inp.value.trim().length > 0) btn.classList.remove('hidden');
+            else btn.classList.add('hidden');
+        }
+
+        function clearLedgerPartySearch() {
+            const inp = document.getElementById('ledgerPartySearchInput');
+            if (inp) inp.value = '';
+            toggleLedgerPartySearchClear();
+            renderLedgerTable();
+        }
+
+        function updateLedgerPartyLimitDropdownOptions(totalCount) {
+            const select = document.getElementById('ledgerPartyPageLimitSelect');
+            if (!select) return;
+            const currentVal = select.value || '5';
+            const baseSteps = [5, 10, 20, 50, 100, 200, 500, 1000];
+            const optionsToShow = [5];
+            for (let i = 1; i < baseSteps.length; i++) {
+                if (totalCount > baseSteps[i - 1]) {
+                    optionsToShow.push(baseSteps[i]);
+                }
+            }
+            const parsedCur = parseInt(currentVal, 10);
+            if (currentVal !== 'ALL' && !isNaN(parsedCur) && !optionsToShow.includes(parsedCur)) {
+                optionsToShow.push(parsedCur);
+                optionsToShow.sort((a, b) => a - b);
+            }
+            let optsHtml = optionsToShow.map(n => `<option value="${n}">Show ${n}</option>`).join('');
+            optsHtml += `<option value="ALL">Show All (${totalCount})</option>`;
+            select.innerHTML = optsHtml;
+            select.value = currentVal;
+        }
+
+        function expandLedgerPartyLimit() {
+            const select = document.getElementById('ledgerPartyPageLimitSelect');
+            if (!select) return;
+            const idx = select.selectedIndex;
+            if (idx >= 0 && idx < select.options.length - 1) {
+                select.selectedIndex = idx + 1;
+                renderLedgerTable();
+            }
+        }
+
+        function openLedgerCustomerDetail(partyId) {
+            selectedLedgerCustomerId = partyId || '';
+            const partyFilter = document.getElementById('partyFilterSelect');
+            if (partyFilter && partyFilter.value !== selectedLedgerCustomerId) {
+                partyFilter.value = selectedLedgerCustomerId;
+                const party = parties.find(p => p.id === selectedLedgerCustomerId);
+                const sub = document.getElementById('topBarSubtitle');
+                if (sub) sub.innerText = party ? party.name : 'Customer Ledger Directory';
+                const qrCard = document.getElementById('mainViewUpiQrCard');
+                if (qrCard) {
+                    if (party && party.upiId) {
+                        document.getElementById('qrCardPartyName').innerText = party.name;
+                        document.getElementById('qrCardUpiId').innerText = `UPI ID: ${party.upiId}`;
+                        document.getElementById('qrCardPayee').innerText = `Payee: ${party.name}`;
+                        document.getElementById('qrCardBank').innerText = party.bankAcc ? `Account: ${party.bankAcc}` : 'Bank: Not specified';
+                        const metrics = calculatePartyMetrics(party.id, new Date().toISOString().split('T')[0]);
+                        document.getElementById('mainPartyQrCodeImg').src = generateUpiQrUrl(party.upiId, party.name, metrics.totalPayable);
+                        qrCard.classList.remove('hidden');
+                    } else {
+                        qrCard.classList.add('hidden');
+                    }
+                }
+                updateStats();
+            }
+            renderLedgerTable();
+        }
+
+        function backToLedgerCustomerList() {
+            selectedLedgerCustomerId = '';
+            const partyFilter = document.getElementById('partyFilterSelect');
+            if (partyFilter && partyFilter.value !== '') {
+                partyFilter.value = '';
+                const sub = document.getElementById('topBarSubtitle');
+                if (sub) sub.innerText = 'Customer Ledger Directory';
+                const qrCard = document.getElementById('mainViewUpiQrCard');
+                if (qrCard) qrCard.classList.add('hidden');
+                updateStats();
+            }
+            const sInp = document.getElementById('searchInput');
+            if (sInp) sInp.value = '';
+            toggleLedgerSearchClear();
+            renderLedgerTable();
+        }
+
+        function openAddTxnForSelectedLedgerCustomer() {
+            const pid = selectedLedgerCustomerId || document.getElementById('partyFilterSelect')?.value || '';
+            openModal('transactionModal');
+            if (pid) {
+                const party = parties.find(p => p.id === pid);
+                if (party && typeof selectTxnParty === 'function') {
+                    selectTxnParty(party.id, party.name);
+                }
+            }
+        }
+
+        function printSelectedLedgerCustomer() {
+            const pid = selectedLedgerCustomerId || document.getElementById('partyFilterSelect')?.value || '';
+            if (pid && typeof printSingleParty === 'function') {
+                printSingleParty(pid);
+            } else {
+                openPartyPrintModal();
+            }
+        }
+
         function renderLedgerTable() {
+            const dirView = document.getElementById('ledgerDirectoryView');
+            const detailView = document.getElementById('ledgerCustomerDetailView');
+            const activePartyId = selectedLedgerCustomerId || document.getElementById('partyFilterSelect')?.value || '';
+
+            // If a valid customer is selected, show ONLY that individual customer's transactions
+            const selectedParty = activePartyId ? parties.find(p => p.id === activePartyId) : null;
+
+            if (!selectedParty) {
+                if (dirView) dirView.classList.remove('hidden');
+                if (detailView) detailView.classList.add('hidden');
+
+                const dirContainer = document.getElementById('ledgerCustomerDirectoryList');
+                const summaryBar = document.getElementById('ledgerDirectorySummaryBar');
+                const countLabel = document.getElementById('ledgerDirectoryCountLabel');
+                const showMoreBtn = document.getElementById('ledgerDirectoryShowMoreBtn');
+                const searchInput = document.getElementById('ledgerPartySearchInput');
+                const searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+                if (!dirContainer) return;
+
+                let sortedParties = [...parties].sort((a, b) => a.name.localeCompare(b.name));
+                let filteredParties = sortedParties.filter(p => {
+                    if (!searchQuery) return true;
+                    return (
+                        p.name.toLowerCase().includes(searchQuery) ||
+                        (p.phone && p.phone.toLowerCase().includes(searchQuery)) ||
+                        (p.ref && p.ref.toLowerCase().includes(searchQuery)) ||
+                        (p.bankAcc && p.bankAcc.toLowerCase().includes(searchQuery)) ||
+                        (p.upiId && p.upiId.toLowerCase().includes(searchQuery))
+                    );
+                });
+
+                updateLedgerPartyLimitDropdownOptions(filteredParties.length);
+
+                if (filteredParties.length === 0) {
+                    if (summaryBar) summaryBar.classList.add('hidden');
+                    dirContainer.innerHTML = `
+                        <div class="p-8 text-center text-slate-400 bg-white rounded-2xl border border-slate-200">
+                            <div class="w-12 h-12 bg-brandMagenta-100 text-brandMagenta-600 rounded-2xl flex items-center justify-center text-xl font-black mx-auto mb-2">S</div>
+                            <p class="font-bold text-xs text-slate-600">No customer accounts found.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const limitSelect = document.getElementById('ledgerPartyPageLimitSelect');
+                const limitVal = limitSelect ? limitSelect.value : '5';
+                const totalFiltered = filteredParties.length;
+                let visibleParties = filteredParties;
+
+                if (limitVal !== 'ALL') {
+                    const limitNum = parseInt(limitVal, 10) || 5;
+                    visibleParties = filteredParties.slice(0, limitNum);
+                }
+
+                if (summaryBar && countLabel) {
+                    summaryBar.classList.remove('hidden');
+                    countLabel.textContent = `Showing ${visibleParties.length} of ${totalFiltered} ${totalFiltered === 1 ? 'customer' : 'customers'}`;
+                    if (showMoreBtn) {
+                        if (visibleParties.length < totalFiltered) {
+                            showMoreBtn.classList.remove('hidden');
+                            const nextIdx = limitSelect ? limitSelect.selectedIndex + 1 : -1;
+                            const nextLabel = (limitSelect && nextIdx >= 0 && nextIdx < limitSelect.options.length)
+                                ? limitSelect.options[nextIdx].text.replace('Show', 'View')
+                                : 'View More';
+                            showMoreBtn.textContent = nextLabel;
+                        } else {
+                            showMoreBtn.classList.add('hidden');
+                        }
+                    }
+                }
+
+                const todayStr = new Date().toISOString().split('T')[0];
+
+                dirContainer.innerHTML = visibleParties.map((p, idx) => {
+                    const partyTxns = transactions.filter(t => t.partyId === p.id);
+                    const txnCount = partyTxns.length;
+                    const metrics = calculatePartyMetrics(p.id, todayStr);
+                    const lastTxnDate = txnCount > 0
+                        ? partyTxns.map(t => t.date).sort().reverse()[0]
+                        : '';
+
+                    return `
+                        <div onclick="openLedgerCustomerDetail('${p.id}')" class="cursor-pointer bg-white hover:bg-brandMagenta-50/40 active:scale-[0.99] p-3.5 rounded-2xl border border-slate-200/90 hover:border-brandMagenta-300 shadow-sm flex items-center justify-between gap-3 transition">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brandNavy-700 to-brandMagenta-600 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-sm">
+                                    ${idx + 1}
+                                </div>
+                                <div class="min-w-0">
+                                    <h4 class="font-extrabold text-sm text-slate-900 truncate flex items-center gap-1.5">
+                                        <span>${p.name}</span>
+                                    </h4>
+                                    <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] text-slate-500 font-bold mt-0.5">
+                                        <span class="bg-brandNavy-50 text-brandNavy-800 px-1.5 py-0.5 rounded font-extrabold">${txnCount} ${txnCount === 1 ? 'Entry' : 'Entries'}</span>
+                                        ${p.phone ? `<span><i class="fa-solid fa-phone text-[9px] mr-0.5"></i>${p.phone}</span>` : ''}
+                                        ${lastTxnDate ? `<span>• Last: ${formatDateDDMMYYYY(lastTxnDate)}</span>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-2.5 shrink-0">
+                                <div class="text-right">
+                                    <span class="text-[8px] font-bold text-slate-400 uppercase block">Payable</span>
+                                    <span class="text-xs font-black text-emerald-600 block">${formatINR(metrics.totalPayable)}</span>
+                                    <span class="text-[9px] text-slate-500 font-semibold block">Prin: ${formatINR(metrics.netBalance)}</span>
+                                </div>
+                                <div class="w-7 h-7 rounded-full bg-slate-100 text-brandMagenta-600 flex items-center justify-center text-xs">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                return;
+            }
+
+            // VIEW B: Individual Customer Selected -> Show Header + Only That Customer's Transactions
+            if (dirView) dirView.classList.add('hidden');
+            if (detailView) detailView.classList.remove('hidden');
+
+            const todayStr = new Date().toISOString().split('T')[0];
+            const partyMetrics = calculatePartyMetrics(selectedParty.id, todayStr);
+            const nameEl = document.getElementById('ledgerDetailCustomerName');
+            const metaEl = document.getElementById('ledgerDetailCustomerMeta');
+            const payableEl = document.getElementById('ledgerDetailTotalPayable');
+            const prinEl = document.getElementById('ledgerDetailPrincipal');
+
+            if (nameEl) nameEl.innerText = selectedParty.name;
+            if (metaEl) {
+                const parts = [];
+                if (selectedParty.phone) parts.push(`📞 ${selectedParty.phone}`);
+                parts.push(getSystemDisplayLabel(selectedParty.calcSystem, selectedParty.calcRate));
+                metaEl.innerText = parts.join(' • ');
+            }
+            if (payableEl) payableEl.innerText = formatINR(partyMetrics.totalPayable);
+            if (prinEl) prinEl.innerText = `Principal: ${formatINR(partyMetrics.netBalance)}`;
+
             const container = document.getElementById('mobileLedgerList');
             const emptyState = document.getElementById('emptyState');
-            const activePartyId = document.getElementById('partyFilterSelect').value;
             const searchQuery = document.getElementById('searchInput').value.toLowerCase();
             const typeFilter = document.getElementById('typeFilter').value;
             const startDate = document.getElementById('ledgerStartDate').value;
             const endDate = document.getElementById('ledgerEndDate').value;
 
             let filtered = transactions.filter(t => {
-                const party = parties.find(p => p.id === t.partyId);
-                const partyName = party ? party.name.toLowerCase() : '';
-                const matchParty = !activePartyId || t.partyId === activePartyId;
+                const matchParty = t.partyId === selectedParty.id;
                 const matchType = typeFilter === 'ALL' || t.type === typeFilter;
-                const matchSearch = !searchQuery || partyName.includes(searchQuery) || (t.note || '').toLowerCase().includes(searchQuery) || (t.mode || '').toLowerCase().includes(searchQuery) || t.amount.toString().includes(searchQuery);
+                const matchSearch = !searchQuery || selectedParty.name.toLowerCase().includes(searchQuery) || (t.note || '').toLowerCase().includes(searchQuery) || (t.mode || '').toLowerCase().includes(searchQuery) || t.amount.toString().includes(searchQuery);
 
                 let matchDate = true;
                 if (startDate && t.date < startDate) matchDate = false;
@@ -5528,9 +5981,6 @@ window.addEventListener('DOMContentLoaded', () => {
             emptyState.classList.add('hidden');
 
             container.innerHTML = filtered.map(t => {
-                const party = parties.find(p => p.id === t.partyId);
-                const partyName = party ? party.name : 'Unknown';
-
                 let badgeStyle = 'bg-rose-100 text-rose-800';
                 let typeLabel = 'GIVEN';
                 let amountColor = 'text-rose-600';
@@ -5560,7 +6010,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                 <span class="px-2 py-0.5 rounded-full text-[8px] font-black uppercase shrink-0 ${badgeStyle}">${typeLabel}</span>
                                 <span class="text-[10px] text-slate-400 font-bold shrink-0">${formatDateDDMMYYYY(t.date)}</span>
                             </div>
-                            <h4 class="font-extrabold text-xs text-slate-900 truncate">${partyName}</h4>
+                            <h4 class="font-extrabold text-xs text-slate-900 truncate">${selectedParty.name}</h4>
                             <p class="text-[10px] text-slate-500 font-medium truncate">${t.note || t.mode}</p>
                         </div>
 
@@ -6842,6 +7292,8 @@ window.addEventListener('DOMContentLoaded', () => {
                     if (d.billDescription && document.getElementById('gstBillDescription')) document.getElementById('gstBillDescription').value = d.billDescription;
                     if (d.quoteValidUntil && document.getElementById('gstQuoteValidUntil')) document.getElementById('gstQuoteValidUntil').value = d.quoteValidUntil;
                     if (d.quoteNotes && document.getElementById('gstQuoteNotes')) document.getElementById('gstQuoteNotes').value = d.quoteNotes;
+                    if (d.overallDiscType && document.getElementById('gstOverallDiscType')) document.getElementById('gstOverallDiscType').value = d.overallDiscType;
+                    if (d.overallDiscVal !== undefined && document.getElementById('gstOverallDiscVal')) document.getElementById('gstOverallDiscVal').value = d.overallDiscVal;
                     if (Array.isArray(d.items)) {
                         gstBillItems = d.items;
                     }
@@ -7512,6 +7964,8 @@ window.addEventListener('DOMContentLoaded', () => {
                     billDescription: document.getElementById('gstBillDescription')?.value || '',
                     quoteValidUntil: document.getElementById('gstQuoteValidUntil')?.value || '',
                     quoteNotes: document.getElementById('gstQuoteNotes')?.value || '',
+                    overallDiscType: document.getElementById('gstOverallDiscType')?.value || 'FLAT',
+                    overallDiscVal: document.getElementById('gstOverallDiscVal')?.value || '',
                     items: gstBillItems
                 };
                 localStorage.setItem('sfinsys_gst_draft', JSON.stringify(draft));
@@ -7574,10 +8028,12 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Single Reusable Item Entry Box: Live Nos * Rate + GST Calculation
+        // Single Reusable Item Entry Box: Live Nos * Rate - Discount + GST Calculation
         function onGstEntryInputChange(changedField) {
             const qtyEl = document.getElementById('gstEntryQty');
             const rateEl = document.getElementById('gstEntryRate');
+            const discPctEl = document.getElementById('gstEntryDiscPct');
+            const discAmtEl = document.getElementById('gstEntryDiscAmt');
             const gstPctEl = document.getElementById('gstEntryGstRate');
             const inclEl = document.getElementById('gstEntryTotalIncl');
             const breakdownEl = document.getElementById('gstEntryLiveBreakdown');
@@ -7585,24 +8041,66 @@ window.addEventListener('DOMContentLoaded', () => {
             const qty = Math.max(0, parseFloat(qtyEl?.value) || 0);
             const gstPct = parseFloat(gstPctEl?.value) || 0;
             let rate = Math.max(0, parseFloat(rateEl?.value) || 0);
+            let discPct = Math.min(100, Math.max(0, parseFloat(discPctEl?.value) || 0));
+            let discAmt = Math.max(0, parseFloat(discAmtEl?.value) || 0);
             let unitIncl = Math.max(0, parseFloat(inclEl?.value) || 0);
 
             if (changedField === 'totalIncl') {
-                // Reverse calculate unit base rate from Rate Incl. GST, then multiply by Nos
-                rate = unitIncl / (1 + (gstPct / 100));
+                // Reverse calculate effective discounted unit rate from Rate Incl. GST, then derive Base Rate
+                const effectiveUnitRate = unitIncl / (1 + (gstPct / 100));
+                if (discPct > 0 && discPct < 100) {
+                    rate = effectiveUnitRate / (1 - (discPct / 100));
+                    discAmt = (qty * rate) * (discPct / 100);
+                } else {
+                    const perUnitDisc = qty > 0 ? (discAmt / qty) : 0;
+                    rate = effectiveUnitRate + perUnitDisc;
+                    discPct = (qty * rate) > 0 ? (discAmt / (qty * rate)) * 100 : 0;
+                }
                 if (rateEl) rateEl.value = unitIncl > 0 ? rate.toFixed(2) : '';
+                if (discAmtEl && discPct > 0) discAmtEl.value = discAmt > 0 ? discAmt.toFixed(2) : '';
+                if (discPctEl && discAmt > 0) discPctEl.value = discPct > 0 ? discPct.toFixed(2) : '';
+            } else if (changedField === 'discPct') {
+                const gross = qty * rate;
+                discAmt = gross * (discPct / 100);
+                if (discAmtEl) discAmtEl.value = discAmt > 0 ? discAmt.toFixed(2) : '';
+                const netUnitRate = qty > 0 ? Math.max(0, (gross - discAmt) / qty) : rate * (1 - discPct / 100);
+                unitIncl = netUnitRate * (1 + (gstPct / 100));
+                if (inclEl) inclEl.value = rate > 0 ? unitIncl.toFixed(2) : '';
+            } else if (changedField === 'discAmt') {
+                const gross = qty * rate;
+                if (discAmt > gross && gross > 0) {
+                    discAmt = gross;
+                    if (discAmtEl) discAmtEl.value = discAmt.toFixed(2);
+                }
+                discPct = gross > 0 ? (discAmt / gross) * 100 : 0;
+                if (discPctEl) discPctEl.value = discPct > 0 ? discPct.toFixed(2) : '';
+                const netUnitRate = qty > 0 ? Math.max(0, (gross - discAmt) / qty) : rate;
+                unitIncl = netUnitRate * (1 + (gstPct / 100));
+                if (inclEl) inclEl.value = rate > 0 ? unitIncl.toFixed(2) : '';
             } else {
-                // Forward calculate unit Rate Incl. GST from Base Rate
-                unitIncl = rate * (1 + (gstPct / 100));
+                // qty, rate, or gstRate changed: preserve discPct if set, otherwise clamp discAmt
+                const gross = qty * rate;
+                if (discPct > 0) {
+                    discAmt = gross * (discPct / 100);
+                    if (discAmtEl) discAmtEl.value = discAmt > 0 ? discAmt.toFixed(2) : '';
+                } else if (discAmt > gross && gross > 0) {
+                    discAmt = gross;
+                    if (discAmtEl) discAmtEl.value = discAmt.toFixed(2);
+                }
+                const netUnitRate = qty > 0 ? Math.max(0, (gross - discAmt) / qty) : rate;
+                unitIncl = netUnitRate * (1 + (gstPct / 100));
                 if (inclEl) inclEl.value = rate > 0 ? unitIncl.toFixed(2) : '';
             }
 
-            const taxable = qty * rate;
+            const grossAmount = qty * rate;
+            const finalDisc = Math.min(grossAmount, Math.max(0, discAmt));
+            const taxable = Math.max(0, grossAmount - finalDisc);
             const taxAmt = taxable * (gstPct / 100);
             const lineTotal = taxable + taxAmt;
 
             if (breakdownEl) {
-                breakdownEl.innerHTML = `Nos × Rate: <strong>${qty} × ${formatINR(rate)} = ${formatINR(taxable)}</strong> | GST (${gstPct}%): <strong class="text-brandMagenta-700">${formatINR(taxAmt)}</strong> | Line Total: <strong class="text-emerald-700">${formatINR(lineTotal)}</strong>`;
+                const discText = finalDisc > 0 ? ` | Disc: <strong class="text-amber-700">-${formatINR(finalDisc)}</strong>` : '';
+                breakdownEl.innerHTML = `Gross: <strong>${qty} × ${formatINR(rate)} = ${formatINR(grossAmount)}</strong>${discText} | Taxable: <strong>${formatINR(taxable)}</strong> | GST (${gstPct}%): <strong class="text-brandMagenta-700">${formatINR(taxAmt)}</strong> | Line Total: <strong class="text-emerald-700">${formatINR(lineTotal)}</strong>`;
             }
         }
 
@@ -7621,6 +8119,8 @@ window.addEventListener('DOMContentLoaded', () => {
             if (document.getElementById('gstEntryHsn')) document.getElementById('gstEntryHsn').value = '';
             if (document.getElementById('gstEntryQty')) document.getElementById('gstEntryQty').value = '1';
             if (document.getElementById('gstEntryRate')) document.getElementById('gstEntryRate').value = '';
+            if (document.getElementById('gstEntryDiscPct')) document.getElementById('gstEntryDiscPct').value = '';
+            if (document.getElementById('gstEntryDiscAmt')) document.getElementById('gstEntryDiscAmt').value = '';
             if (document.getElementById('gstEntryGstRate')) document.getElementById('gstEntryGstRate').value = '18';
             if (document.getElementById('gstEntryTotalIncl')) document.getElementById('gstEntryTotalIncl').value = '';
             onGstEntryInputChange('qty');
@@ -7631,6 +8131,8 @@ window.addEventListener('DOMContentLoaded', () => {
             const hsn = document.getElementById('gstEntryHsn')?.value.trim() || '';
             const qty = Math.max(0, parseFloat(document.getElementById('gstEntryQty')?.value) || 0);
             const rate = Math.max(0, parseFloat(document.getElementById('gstEntryRate')?.value) || 0);
+            const discPct = Math.min(100, Math.max(0, parseFloat(document.getElementById('gstEntryDiscPct')?.value) || 0));
+            const rawDiscAmt = Math.max(0, parseFloat(document.getElementById('gstEntryDiscAmt')?.value) || 0);
             const gstRate = parseFloat(document.getElementById('gstEntryGstRate')?.value) || 0;
 
             if (allowBlankIfEmpty && !name && rate === 0) {
@@ -7642,7 +8144,10 @@ window.addEventListener('DOMContentLoaded', () => {
             }
 
             const effectiveQty = qty > 0 ? qty : 1;
-            const taxable = effectiveQty * rate;
+            const grossAmount = effectiveQty * rate;
+            const discountAmt = Math.min(grossAmount, rawDiscAmt > 0 ? rawDiscAmt : (grossAmount * (discPct / 100)));
+            const discountPct = grossAmount > 0 ? (discountAmt / grossAmount) * 100 : discPct;
+            const taxable = Math.max(0, grossAmount - discountAmt);
             const taxAmt = taxable * (gstRate / 100);
             const totalIncl = taxable + taxAmt;
 
@@ -7651,6 +8156,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 hsn,
                 qty: effectiveQty,
                 rate,
+                discountPct,
+                discountAmt,
                 gstRate,
                 taxable,
                 taxAmt,
@@ -7721,13 +8228,22 @@ window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('gstCancelEditItemBtn')?.classList.remove('hidden');
             document.getElementById('gstAddItemBtn').innerHTML = `<i class="fa-solid fa-check"></i> Update Item`;
 
+            const qty = Math.max(0, parseFloat(item.qty) || 1);
+            const rate = Math.max(0, parseFloat(item.rate) || 0);
+            const gross = qty * rate;
+            const discAmt = Math.max(0, parseFloat(item.discountAmt) || 0);
+            const discPct = item.discountPct !== undefined ? parseFloat(item.discountPct) : (gross > 0 ? (discAmt / gross) * 100 : 0);
+
             document.getElementById('gstEntryName').value = item.name || '';
             document.getElementById('gstEntryHsn').value = item.hsn || '';
-            document.getElementById('gstEntryQty').value = item.qty || 1;
-            document.getElementById('gstEntryRate').value = item.rate ? item.rate.toFixed(2) : '';
+            document.getElementById('gstEntryQty').value = qty;
+            document.getElementById('gstEntryRate').value = rate > 0 ? rate.toFixed(2) : '';
+            document.getElementById('gstEntryDiscPct').value = discPct > 0 ? discPct.toFixed(2) : '';
+            document.getElementById('gstEntryDiscAmt').value = discAmt > 0 ? discAmt.toFixed(2) : '';
             document.getElementById('gstEntryGstRate').value = item.gstRate !== undefined ? item.gstRate : 18;
-            const unitIncl = (item.rate || 0) * (1 + ((item.gstRate || 0) / 100));
-            document.getElementById('gstEntryTotalIncl').value = item.rate > 0 ? unitIncl.toFixed(2) : '';
+            const netUnitRate = qty > 0 ? Math.max(0, (gross - discAmt) / qty) : rate;
+            const unitIncl = netUnitRate * (1 + ((item.gstRate || 0) / 100));
+            document.getElementById('gstEntryTotalIncl').value = rate > 0 ? unitIncl.toFixed(2) : '';
             onGstEntryInputChange('qty');
 
             document.getElementById('gstSingleItemEntryBox')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -7754,23 +8270,31 @@ window.addEventListener('DOMContentLoaded', () => {
             updateGstLiveSummary();
         }
 
+        function onGstOverallDiscountChange() {
+            updateGstLiveSummary();
+            saveCurrentGstBillState();
+        }
+
         function renderGstFinalBillPreview() {
             const previewBody = document.getElementById('gstFinalBillPreviewBody');
             if (!previewBody) return;
 
             if (gstBillItems.length === 0) {
-                previewBody.innerHTML = `<tr><td colspan="8" class="p-3 text-center text-slate-400 italic">No items in Main Bill yet. Enter item details above and click "Add Items".</td></tr>`;
+                previewBody.innerHTML = `<tr><td colspan="9" class="p-3 text-center text-slate-400 italic">No items in Main Bill yet. Enter item details above and click "Add Items".</td></tr>`;
                 return;
             }
 
             previewBody.innerHTML = gstBillItems.map((item, idx) => {
                 const qty = Math.max(0, parseFloat(item.qty) || 0);
                 const rate = Math.max(0, parseFloat(item.rate) || 0);
-                const taxable = qty * rate;
+                const gross = qty * rate;
+                const discAmt = Math.min(gross, Math.max(0, parseFloat(item.discountAmt) || 0));
+                const taxable = Math.max(0, gross - discAmt);
                 const gstPct = parseFloat(item.gstRate) || 0;
                 const lineTotal = taxable + (taxable * (gstPct / 100));
                 const desc = (item.name && item.name.trim()) ? item.name.trim() : `Item #${idx + 1}`;
                 const hsnTag = item.hsn ? ` <span class="text-[9px] text-slate-400 font-normal">(${item.hsn})</span>` : '';
+                const discLabel = discAmt > 0 ? `-${formatINR(discAmt)}` : '₹0.00';
 
                 return `
                     <tr class="border-b border-slate-100 last:border-0 hover:bg-slate-50/70">
@@ -7778,6 +8302,7 @@ window.addEventListener('DOMContentLoaded', () => {
                         <td class="p-1.5 font-extrabold text-slate-900">${desc}${hsnTag}</td>
                         <td class="p-1.5 text-right font-bold text-slate-700">${qty}</td>
                         <td class="p-1.5 text-right font-bold text-slate-700">${formatINR(rate)}</td>
+                        <td class="p-1.5 text-right font-bold ${discAmt > 0 ? 'text-amber-700' : 'text-slate-400'}">${discLabel}</td>
                         <td class="p-1.5 text-right font-extrabold text-brandNavy-800">${formatINR(taxable)}</td>
                         <td class="p-1.5 text-center font-bold text-brandMagenta-700">${gstPct}%</td>
                         <td class="p-1.5 text-right font-black text-emerald-700">${formatINR(lineTotal)}</td>
@@ -7797,21 +8322,22 @@ window.addEventListener('DOMContentLoaded', () => {
 
         function computeGstBillTotals() {
             const taxType = document.getElementById('gstTaxType')?.value || 'CGST_SGST';
-            let totalTaxable = 0;
-            let totalGst = 0;
-            let grandTotal = 0;
+            let grossSubtotal = 0;
+            let totalItemDiscount = 0;
+            let baseTaxableSubtotal = 0;
 
-            const computedItems = gstBillItems.map((item, index) => {
+            const rawComputed = gstBillItems.map((item, index) => {
                 const qty = Math.max(0, parseFloat(item.qty) || 0);
                 const rate = Math.max(0, parseFloat(item.rate) || 0);
+                const gross = qty * rate;
+                const discountAmt = Math.min(gross, Math.max(0, parseFloat(item.discountAmt) || 0));
+                const discountPct = gross > 0 ? (discountAmt / gross) * 100 : (parseFloat(item.discountPct) || 0);
                 const gstRate = parseFloat(item.gstRate) || 0;
-                const taxable = qty * rate;
-                const taxAmt = taxable * (gstRate / 100);
-                const lineTotal = taxable + taxAmt;
+                const taxableAfterItemDisc = Math.max(0, gross - discountAmt);
 
-                totalTaxable += taxable;
-                totalGst += taxAmt;
-                grandTotal += lineTotal;
+                grossSubtotal += gross;
+                totalItemDiscount += discountAmt;
+                baseTaxableSubtotal += taxableAfterItemDisc;
 
                 return {
                     srNo: index + 1,
@@ -7819,8 +8345,53 @@ window.addEventListener('DOMContentLoaded', () => {
                     hsn: item.hsn || '-',
                     qty,
                     rate,
+                    gross,
+                    discountPct,
+                    discountAmt,
                     gstRate,
-                    taxable,
+                    taxableAfterItemDisc
+                };
+            });
+
+            // Optional overall bill discount applied proportionally on taxable subtotal (GST compliant)
+            const overallDiscType = document.getElementById('gstOverallDiscType')?.value || 'FLAT';
+            const overallDiscInput = Math.max(0, parseFloat(document.getElementById('gstOverallDiscVal')?.value) || 0);
+            let overallDiscountAmt = 0;
+            if (baseTaxableSubtotal > 0 && overallDiscInput > 0) {
+                if (overallDiscType === 'PCT') {
+                    overallDiscountAmt = baseTaxableSubtotal * (Math.min(100, overallDiscInput) / 100);
+                } else {
+                    overallDiscountAmt = Math.min(baseTaxableSubtotal, overallDiscInput);
+                }
+            }
+
+            const totalDiscount = totalItemDiscount + overallDiscountAmt;
+            let totalTaxable = 0;
+            let totalGst = 0;
+            let grandTotal = 0;
+
+            const computedItems = rawComputed.map(it => {
+                const overallShare = baseTaxableSubtotal > 0 ? (it.taxableAfterItemDisc / baseTaxableSubtotal) * overallDiscountAmt : 0;
+                const finalTaxable = Math.max(0, it.taxableAfterItemDisc - overallShare);
+                const taxAmt = finalTaxable * (it.gstRate / 100);
+                const lineTotal = finalTaxable + taxAmt;
+
+                totalTaxable += finalTaxable;
+                totalGst += taxAmt;
+                grandTotal += lineTotal;
+
+                return {
+                    srNo: it.srNo,
+                    name: it.name,
+                    hsn: it.hsn,
+                    qty: it.qty,
+                    rate: it.rate,
+                    gross: it.gross,
+                    discountPct: it.discountPct,
+                    discountAmt: it.discountAmt,
+                    gstRate: it.gstRate,
+                    taxable: finalTaxable,
+                    itemTaxable: it.taxableAfterItemDisc,
                     taxAmt,
                     cgstAmt: taxType === 'CGST_SGST' ? taxAmt / 2 : 0,
                     sgstAmt: taxType === 'CGST_SGST' ? taxAmt / 2 : 0,
@@ -7836,6 +8407,11 @@ window.addEventListener('DOMContentLoaded', () => {
             return {
                 taxType,
                 items: computedItems,
+                grossSubtotal,
+                totalItemDiscount,
+                overallDiscountAmt,
+                totalDiscount,
+                hasDiscount: totalDiscount > 0.004,
                 totalTaxable,
                 cgstTotal,
                 sgstTotal,
@@ -7847,6 +8423,19 @@ window.addEventListener('DOMContentLoaded', () => {
 
         function updateGstLiveSummary() {
             const summary = computeGstBillTotals();
+            const grossRow = document.getElementById('gstSummaryGrossRow');
+            const discRow = document.getElementById('gstSummaryDiscountRow');
+
+            if (summary.hasDiscount) {
+                grossRow?.classList.remove('hidden');
+                discRow?.classList.remove('hidden');
+                document.getElementById('gstSummaryGross').innerText = formatINR(summary.grossSubtotal);
+                document.getElementById('gstSummaryDiscount').innerText = `- ${formatINR(summary.totalDiscount)}`;
+            } else {
+                grossRow?.classList.add('hidden');
+                discRow?.classList.add('hidden');
+            }
+
             document.getElementById('gstSummaryTaxable').innerText = formatINR(summary.totalTaxable);
             document.getElementById('gstSummaryTotalTax').innerText = formatINR(summary.totalGst);
             document.getElementById('gstSummaryGrandTotal').innerText = formatINR(summary.grandTotal);
@@ -7909,6 +8498,8 @@ window.addEventListener('DOMContentLoaded', () => {
             if (document.getElementById('gstBillDescription')) document.getElementById('gstBillDescription').value = '';
             if (document.getElementById('gstQuoteValidUntil')) document.getElementById('gstQuoteValidUntil').value = '';
             if (document.getElementById('gstQuoteNotes')) document.getElementById('gstQuoteNotes').value = '';
+            if (document.getElementById('gstOverallDiscType')) document.getElementById('gstOverallDiscType').value = 'FLAT';
+            if (document.getElementById('gstOverallDiscVal')) document.getElementById('gstOverallDiscVal').value = '';
             gstBillItems = [];
             resetGstEntryBox();
             renderGstItems();
@@ -7937,6 +8528,8 @@ window.addEventListener('DOMContentLoaded', () => {
             if (document.getElementById('quickGstBaseInput')) document.getElementById('quickGstBaseInput').value = '';
             if (document.getElementById('quickGstTaxInput')) document.getElementById('quickGstTaxInput').value = '';
             if (document.getElementById('quickGstTotalInput')) document.getElementById('quickGstTotalInput').value = '';
+            if (document.getElementById('gstOverallDiscType')) document.getElementById('gstOverallDiscType').value = 'FLAT';
+            if (document.getElementById('gstOverallDiscVal')) document.getElementById('gstOverallDiscVal').value = '';
 
             gstBillItems = [];
             resetGstEntryBox();
@@ -7969,9 +8562,14 @@ window.addEventListener('DOMContentLoaded', () => {
             if (isQuote && quoteNotesVal) msg += `*Note:* ${quoteNotesVal}\n`;
             msg += `------------------------------------\n`;
             summary.items.forEach(it => {
-                msg += `${it.srNo}. ${it.name} (${it.qty} x ${formatINR(it.rate)} + ${it.gstRate}% GST) = *${formatINR(it.lineTotal)}*\n`;
+                const discStr = it.discountAmt > 0 ? ` - Disc ${formatINR(it.discountAmt)}` : '';
+                msg += `${it.srNo}. ${it.name} (${it.qty} x ${formatINR(it.rate)}${discStr} + ${it.gstRate}% GST) = *${formatINR(it.lineTotal)}*\n`;
             });
             msg += `------------------------------------\n`;
+            if (summary.hasDiscount) {
+                msg += `*Gross Subtotal:* ${formatINR(summary.grossSubtotal)}\n`;
+                msg += `*Discount Saved:* -${formatINR(summary.totalDiscount)}\n`;
+            }
             msg += `*Taxable Value:* ${formatINR(summary.totalTaxable)}\n`;
             if (summary.taxType === 'IGST') {
                 msg += `*IGST:* ${formatINR(summary.igstTotal)}\n`;
@@ -8090,7 +8688,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                     <tr style="border-bottom: 1px dotted #94a3b8;">
                                         <td style="padding: 2.5px 1px; font-weight: 700; word-break: break-word;">
                                             ${it.name}
-                                            <div style="font-size: 8px; font-weight: 600; color: #334155;">${it.hsn !== '-' ? `HSN:${it.hsn} ` : ''}GST:${it.gstRate}%</div>
+                                            <div style="font-size: 8px; font-weight: 600; color: #334155;">${it.hsn !== '-' ? `HSN:${it.hsn} ` : ''}${it.discountAmt > 0 ? `Disc:-${Number(it.discountAmt).toFixed(2)} ` : ''}GST:${it.gstRate}%</div>
                                         </td>
                                         <td style="padding: 2.5px 1px; text-align: right; vertical-align: top;">${it.qty}</td>
                                         <td style="padding: 2.5px 1px; text-align: right; vertical-align: top;">${Number(it.rate).toFixed(2)}</td>
@@ -8101,6 +8699,16 @@ window.addEventListener('DOMContentLoaded', () => {
                         </table>
 
                         <div style="border-top: 1px dashed #000000; padding-top: 4px; font-size: 9.5px;">
+                            ${summary.hasDiscount ? `
+                                <div style="display: flex; justify-content: space-between; padding: 1px 0;">
+                                    <span>Gross Subtotal:</span>
+                                    <strong>${formatINR(summary.grossSubtotal)}</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 1px 0;">
+                                    <span>Discount:</span>
+                                    <strong>-${formatINR(summary.totalDiscount)}</strong>
+                                </div>
+                            ` : ''}
                             <div style="display: flex; justify-content: space-between; padding: 1px 0;">
                                 <span>Taxable Value:</span>
                                 <strong>${formatINR(summary.totalTaxable)}</strong>
@@ -8178,6 +8786,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                         <th class="p-2 border-r text-center" style="border-color: ${t.borderHex};">HSN</th>
                                         <th class="p-2 border-r text-right" style="border-color: ${t.borderHex};">Qty</th>
                                         <th class="p-2 border-r text-right" style="border-color: ${t.borderHex};">Rate</th>
+                                        ${summary.hasDiscount ? `<th class="p-2 border-r text-right" style="border-color: ${t.borderHex};">Disc</th>` : ''}
                                         <th class="p-2 border-r text-right" style="border-color: ${t.borderHex};">Taxable</th>
                                         <th class="p-2 border-r text-center" style="border-color: ${t.borderHex};">GST %</th>
                                         <th class="p-2 text-right">Total</th>
@@ -8191,6 +8800,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                             <td class="p-2 border-r border-slate-200 text-center">${it.hsn}</td>
                                             <td class="p-2 border-r border-slate-200 text-right">${it.qty}</td>
                                             <td class="p-2 border-r border-slate-200 text-right">${formatINR(it.rate)}</td>
+                                            ${summary.hasDiscount ? `<td class="p-2 border-r border-slate-200 text-right text-amber-700 font-semibold">${it.discountAmt > 0 ? '-' + formatINR(it.discountAmt) : '-'}</td>` : ''}
                                             <td class="p-2 border-r border-slate-200 text-right font-semibold">${formatINR(it.taxable)}</td>
                                             <td class="p-2 border-r border-slate-200 text-center">${it.gstRate}%</td>
                                             <td class="p-2 text-right font-black">${formatINR(it.lineTotal)}</td>
@@ -8209,6 +8819,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                 ${paymentFooterHtml}
                             </div>
                             <div class="border rounded-lg p-3 bg-white space-y-1" style="border-color: ${t.borderHex};">
+                                ${summary.hasDiscount ? `<div class="flex justify-between py-1"><span>Gross Subtotal:</span><strong>${formatINR(summary.grossSubtotal)}</strong></div><div class="flex justify-between py-1 text-amber-700"><span>Discount Saved:</span><strong>-${formatINR(summary.totalDiscount)}</strong></div>` : ''}
                                 <div class="flex justify-between py-1"><span>Total Taxable Value:</span><strong>${formatINR(summary.totalTaxable)}</strong></div>
                                 ${taxBreakdownBlock}
                                 <div class="flex justify-between py-1 border-t border-slate-200"><span>Total GST Tax:</span><strong>${formatINR(summary.totalGst)}</strong></div>
@@ -8262,6 +8873,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                             <th class="p-2 text-left">Item & HSN</th>
                                             <th class="p-2 text-right">Qty</th>
                                             <th class="p-2 text-right">Unit Rate</th>
+                                            ${summary.hasDiscount ? `<th class="p-2 text-right">Disc</th>` : ''}
                                             <th class="p-2 text-right">Taxable</th>
                                             <th class="p-2 text-right">GST</th>
                                             <th class="p-2 rounded-tr-lg text-right">Amount</th>
@@ -8274,6 +8886,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                                 <td class="p-2 font-bold">${it.name} <span class="text-[10px] text-slate-500">(HSN: ${it.hsn})</span></td>
                                                 <td class="p-2 text-right">${it.qty}</td>
                                                 <td class="p-2 text-right">${formatINR(it.rate)}</td>
+                                                ${summary.hasDiscount ? `<td class="p-2 text-right text-amber-700 font-semibold">${it.discountAmt > 0 ? '-' + formatINR(it.discountAmt) : '-'}</td>` : ''}
                                                 <td class="p-2 text-right">${formatINR(it.taxable)}</td>
                                                 <td class="p-2 text-right font-semibold" style="color: ${t.accentTextHex};">${formatINR(it.taxAmt)} (${it.gstRate}%)</td>
                                                 <td class="p-2 text-right font-black">${formatINR(it.lineTotal)}</td>
@@ -8291,6 +8904,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                 ${paymentFooterHtml}
                             </div>
                             <div class="w-64 p-3 rounded-xl border space-y-1" style="background-color: ${t.lightBgHex}; border-color: ${t.borderHex};">
+                                ${summary.hasDiscount ? `<div class="flex justify-between"><span>Gross Subtotal:</span><strong>${formatINR(summary.grossSubtotal)}</strong></div><div class="flex justify-between text-amber-700"><span>Discount:</span><strong>-${formatINR(summary.totalDiscount)}</strong></div>` : ''}
                                 <div class="flex justify-between"><span>Taxable Subtotal:</span><strong>${formatINR(summary.totalTaxable)}</strong></div>
                                 ${taxBreakdownBlock}
                                 <div class="flex justify-between pt-2 border-t text-sm font-black" style="border-color: ${t.borderHex}; color: ${t.accentTextHex};">
@@ -8341,6 +8955,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                         <th class="py-2 px-2 text-center">HSN</th>
                                         <th class="py-2 px-2 text-right">Qty</th>
                                         <th class="py-2 px-2 text-right">Rate</th>
+                                        ${summary.hasDiscount ? `<th class="py-2 px-2 text-right">Disc</th>` : ''}
                                         <th class="py-2 px-2 text-right">Tax %</th>
                                         <th class="py-2 px-2 text-right">Total</th>
                                     </tr>
@@ -8352,6 +8967,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                             <td class="py-2 px-2 text-center text-slate-600">${it.hsn}</td>
                                             <td class="py-2 px-2 text-right">${it.qty}</td>
                                             <td class="py-2 px-2 text-right">${formatINR(it.rate)}</td>
+                                            ${summary.hasDiscount ? `<td class="py-2 px-2 text-right text-amber-700 font-semibold">${it.discountAmt > 0 ? '-' + formatINR(it.discountAmt) : '-'}</td>` : ''}
                                             <td class="py-2 px-2 text-right">${it.gstRate}%</td>
                                             <td class="py-2 px-2 text-right font-black">${formatINR(it.lineTotal)}</td>
                                         </tr>
@@ -8363,6 +8979,7 @@ window.addEventListener('DOMContentLoaded', () => {
                         <div>
                             <div class="flex justify-end">
                                 <div class="w-64 text-xs space-y-1 p-3 rounded-lg border" style="background-color: ${t.lightBgHex}; border-color: ${t.borderHex};">
+                                    ${summary.hasDiscount ? `<div class="flex justify-between"><span>Gross Subtotal:</span><span>${formatINR(summary.grossSubtotal)}</span></div><div class="flex justify-between text-amber-700"><span>Discount:</span><span>-${formatINR(summary.totalDiscount)}</span></div>` : ''}
                                     <div class="flex justify-between"><span>Taxable Amount:</span><span>${formatINR(summary.totalTaxable)}</span></div>
                                     ${taxBreakdownBlock}
                                     <div class="flex justify-between font-black text-sm pt-2 border-t-2" style="border-color: ${t.secondaryHex}; color: ${t.headerTextHex};">
@@ -8411,6 +9028,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                         <th class="py-1.5 px-2 text-left">Item</th>
                                         <th class="py-1.5 px-2 text-right">Qty</th>
                                         <th class="py-1.5 px-2 text-right">Rate</th>
+                                        ${summary.hasDiscount ? `<th class="py-1.5 px-2 text-right">Disc</th>` : ''}
                                         <th class="py-1.5 px-2 text-right">GST</th>
                                         <th class="py-1.5 px-2 text-right">Net</th>
                                     </tr>
@@ -8421,6 +9039,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                             <td class="py-1.5 px-2 font-bold">${it.name}</td>
                                             <td class="py-1.5 px-2 text-right">${it.qty}</td>
                                             <td class="py-1.5 px-2 text-right">${formatINR(it.rate)}</td>
+                                            ${summary.hasDiscount ? `<td class="py-1.5 px-2 text-right text-amber-700 font-semibold">${it.discountAmt > 0 ? '-' + formatINR(it.discountAmt) : '-'}</td>` : ''}
                                             <td class="py-1.5 px-2 text-right">${it.gstRate}%</td>
                                             <td class="py-1.5 px-2 text-right font-black">${formatINR(it.lineTotal)}</td>
                                         </tr>
@@ -8431,6 +9050,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
                         <div>
                             <div class="space-y-1 text-[11px] border-t border-dashed pt-2" style="border-color: ${t.secondaryHex};">
+                                ${summary.hasDiscount ? `<div class="flex justify-between"><span>Gross Subtotal:</span><strong>${formatINR(summary.grossSubtotal)}</strong></div><div class="flex justify-between text-amber-700"><span>Discount:</span><strong>-${formatINR(summary.totalDiscount)}</strong></div>` : ''}
                                 <div class="flex justify-between"><span>Taxable Total:</span><strong>${formatINR(summary.totalTaxable)}</strong></div>
                                 ${taxBreakdownBlock}
                                 <div class="flex justify-between text-sm font-black px-2.5 py-1.5 rounded mt-1 border" style="background-color: ${t.primaryHex}; border-color: ${t.secondaryHex}; color: ${t.headerTextHex};">
@@ -8485,6 +9105,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                     <th class="p-1.5 border" style="border-color: ${t.borderHex};">HSN</th>
                                     <th class="p-1.5 border text-right" style="border-color: ${t.borderHex};">Qty</th>
                                     <th class="p-1.5 border text-right" style="border-color: ${t.borderHex};">Rate</th>
+                                    ${summary.hasDiscount ? `<th class="p-1.5 border text-right" style="border-color: ${t.borderHex};">Disc</th>` : ''}
                                     <th class="p-1.5 border text-right" style="border-color: ${t.borderHex};">Taxable</th>
                                     ${summary.taxType === 'IGST'
                                         ? `<th class="p-1.5 border text-right" style="border-color: ${t.borderHex};">IGST %</th><th class="p-1.5 border text-right" style="border-color: ${t.borderHex};">IGST Amt</th>`
@@ -8501,6 +9122,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                         <td class="p-1.5 border-r border-slate-300 text-center">${it.hsn}</td>
                                         <td class="p-1.5 border-r border-slate-300 text-right">${it.qty}</td>
                                         <td class="p-1.5 border-r border-slate-300 text-right">${formatINR(it.rate)}</td>
+                                        ${summary.hasDiscount ? `<td class="p-1.5 border-r border-slate-300 text-right text-amber-700 font-semibold">${it.discountAmt > 0 ? '-' + formatINR(it.discountAmt) : '-'}</td>` : ''}
                                         <td class="p-1.5 border-r border-slate-300 text-right font-semibold">${formatINR(it.taxable)}</td>
                                         ${summary.taxType === 'IGST'
                                             ? `<td class="p-1.5 border-r border-slate-300 text-right">${it.gstRate}%</td><td class="p-1.5 border-r border-slate-300 text-right">${formatINR(it.igstAmt)}</td>`
@@ -8520,6 +9142,7 @@ window.addEventListener('DOMContentLoaded', () => {
                             ${paymentFooterHtml}
                         </div>
                         <div class="bg-white p-3 rounded-lg border space-y-1" style="border-color: ${t.borderHex};">
+                            ${summary.hasDiscount ? `<div class="flex justify-between"><span>Gross Subtotal:</span><strong>${formatINR(summary.grossSubtotal)}</strong></div><div class="flex justify-between text-amber-700"><span>Discount:</span><strong>-${formatINR(summary.totalDiscount)}</strong></div>` : ''}
                             <div class="flex justify-between"><span>Taxable Value:</span><strong>${formatINR(summary.totalTaxable)}</strong></div>
                             ${taxBreakdownBlock}
                             <div class="flex justify-between font-black text-sm px-2.5 py-1.5 rounded mt-1 border" style="background-color: ${t.primaryHex}; border-color: ${t.secondaryHex}; color: ${t.headerTextHex};">
@@ -8981,6 +9604,7 @@ window.addEventListener('DOMContentLoaded', () => {
         function jumpToQuickSearchLedger(partyId, query) {
             closeModal('globalQuickSearchModal');
             if (partyId) {
+                selectedLedgerCustomerId = partyId;
                 const sel = document.getElementById('partyFilterSelect');
                 if (sel) {
                     sel.value = partyId;
