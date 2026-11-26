@@ -1948,16 +1948,25 @@
                 </div>
 
                 <!-- Family member selector -->
-                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex items-center gap-2">
-                    <div class="flex-1 min-w-0">
-                        <label for="healthMemberFilter" class="block text-[10px] font-black text-slate-600 mb-1">Family Member / Patient</label>
-                        <select id="healthMemberFilter" onchange="setHealthMemberFilter(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2 text-xs font-bold">
-                            <option value="All">All Members</option>
-                        </select>
+                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm space-y-2">
+                    <div class="flex items-center gap-2">
+                        <div class="flex-1 min-w-0">
+                            <label for="healthMemberFilter" class="block text-[10px] font-black text-slate-600 mb-1">Family Member</label>
+                            <select id="healthMemberFilter" onchange="setHealthMemberFilter(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2 text-xs font-bold">
+                                <option value="All">All Members</option>
+                            </select>
+                        </div>
+                        <button type="button" onclick="addHealthFamilyMember()" class="mt-4 px-3 py-2 rounded-lg bg-emerald-600 text-white text-[10px] font-black whitespace-nowrap">
+                            <i class="fa-solid fa-user-plus mr-1"></i>Add Member
+                        </button>
                     </div>
-                    <button type="button" onclick="addHealthFamilyMember()" class="mt-4 px-3 py-2 rounded-lg bg-emerald-600 text-white text-[10px] font-black whitespace-nowrap">
-                        <i class="fa-solid fa-user-plus mr-1"></i>Add Member
-                    </button>
+                    <div id="healthMemberDemographicsBar" class="hidden flex flex-wrap items-center justify-between gap-2 pt-1.5 border-t border-slate-100 text-[10px]">
+                        <span class="font-bold text-slate-600"><i class="fa-solid fa-id-card-clip text-emerald-600 mr-1"></i>Profile: <strong id="healthMemberAgeGenderText" class="text-slate-900">--</strong></span>
+                        <span class="flex items-center gap-3">
+                            <button type="button" onclick="editSelectedMemberProfile()" class="text-emerald-700 font-black hover:underline">Edit Age / Gender</button>
+                            <button type="button" id="healthDeleteMemberBtn" onclick="deleteHealthFamilyMember()" class="text-rose-600 font-black hover:underline"><i class="fa-solid fa-user-xmark mr-1"></i>Delete Member</button>
+                        </span>
+                    </div>
                 </div>
 
                 <!-- Period Filter -->
@@ -2360,6 +2369,11 @@
             <!-- GST BILL INVOICE PRINT CONTAINER (5 FORMATS - CLEAN FIRM BRANDING ONLY) -->
             <div id="gstBillPrintContent" class="hidden">
                 <!-- Dynamically populated with selected format (1 to 5) -->
+            </div>
+
+            <!-- CLINICAL HEALTH REPORT PRINT CONTAINER -->
+            <div id="healthReportPrintContent" class="hidden space-y-4">
+                <!-- Dynamically populated from healthPrintableReportArea -->
             </div>
 
             <!-- STATEMENT BOTTOM FOOTER CREDITS -->
@@ -3113,24 +3127,26 @@
                     <label class="block font-bold text-slate-700 mb-1">Party / Borrower Name *</label>
                     <input type="text" id="partyName" required placeholder="e.g. Ramesh Kumar" oninput="updatePartyModalQrPreview()" class="w-full border border-slate-200 rounded-xl p-3 font-bold focus:ring-2 focus:ring-brandMagenta-500">
                 </div>
-                <div class="grid grid-cols-2 gap-2">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <div>
                         <div class="flex justify-between items-center mb-1">
                             <label class="block font-bold text-slate-700">Mobile / Phone Number</label>
-                            <button type="button" onclick="pickContactForParty()" class="text-[10px] text-amber-700 font-extrabold hover:underline flex items-center gap-1 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
-                                <i class="fa-solid fa-address-book"></i> Contacts
+                            <button type="button" onclick="pickContactForParty()" class="text-[10px] text-amber-800 font-extrabold hover:bg-amber-100 active:scale-95 flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-300 shadow-xs transition">
+                                <i class="fa-solid fa-address-book"></i> Fetch Contact
                             </button>
                         </div>
                         <div class="relative">
-                            <input type="password" id="partyPhone" inputmode="tel" autocomplete="off" placeholder="••••••••••" class="w-full border border-slate-200 rounded-xl p-3 font-bold pr-16 tracking-widest">
+                            <input type="password" id="partyPhone" inputmode="tel" autocomplete="tel" placeholder="••••••••••" class="w-full border border-slate-200 rounded-xl p-3 font-bold pr-16 tracking-widest">
                             <button type="button" onclick="togglePartyPhoneMask()" id="partyPhoneMaskToggle" class="absolute right-9 top-2.5 text-slate-500 hover:text-brandNavy-700 p-1" title="Show / Hide number">
                                 <i class="fa-solid fa-eye text-sm" id="partyPhoneMaskIcon"></i>
                             </button>
-                            <button type="button" onclick="pickContactForParty()" class="absolute right-2 top-2.5 text-slate-500 hover:text-amber-600 p-1" title="Pick from contacts">
-                                <i class="fa-solid fa-user-plus text-sm"></i>
+                            <button type="button" onclick="pickContactForParty()" class="absolute right-2 top-2.5 text-amber-600 hover:text-amber-700 p-1" title="Pick from mobile contacts or VCF file">
+                                <i class="fa-solid fa-address-book text-sm"></i>
                             </button>
                         </div>
-                        <p class="text-[9px] text-slate-500 font-semibold mt-1">Number is masked for privacy. Tap eye to show/hide.</p>
+                        <p class="text-[9px] text-slate-500 font-semibold mt-1">Tap <strong class="text-amber-700">Fetch Contact</strong> to pick from phonebook / .vcf. Tap eye to show/hide.</p>
+                        <!-- Hidden VCF / Contact File Fallback for Android APK WebViews -->
+                        <input type="file" id="partyVcfContactInput" accept=".vcf,text/vcard,text/x-vcard" class="hidden" onchange="handlePartyVcfFileSelect(event)">
                     </div>
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">ID Ref (Aadhaar / PAN)</label>
@@ -3651,13 +3667,14 @@
         const HTML_GOLD_RATE_24K = 12595; // 24K (999) Gold Rate per gram (₹)
         const HTML_GOLD_RATE_22K = 11540; // 22K (916) Gold Rate per gram (₹)
         const HTML_GOLD_RATE_18K = 9440; // 18K (750) Gold Rate per gram (₹)
+        const HTML_GOLD_RATE_UPDATED_AT = "26/11/2026, 12:08:00 pm"; // Fixed timestamp when rates were set
         // =========================================================================
 
         // Gold Rate State - Initialized from HTML Code Config & Updatable Manually
         let goldRate24k = HTML_GOLD_RATE_24K;
         let goldRate22k = HTML_GOLD_RATE_22K;
         let goldRate18k = HTML_GOLD_RATE_18K;
-        let lastGoldRateUpdateTimestamp = "";
+        let lastGoldRateUpdateTimestamp = HTML_GOLD_RATE_UPDATED_AT;
         let goldRateSourceType = "Manual Entry";
 
         // Dynamic Seasonal & Time Greetings Engine
@@ -3709,6 +3726,14 @@
         }
 
         // ==================== GOLD RATE SYNC & ESTIMATOR ENGINE ====================
+        function getFixedGoldRateTimestamp() {
+            if (!lastGoldRateUpdateTimestamp) {
+                const now = new Date();
+                lastGoldRateUpdateTimestamp = formatDateDDMMYYYY(now) + ', ' + now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+            }
+            return lastGoldRateUpdateTimestamp;
+        }
+
         function renderGoldRates() {
             if (!goldRate18k || goldRate18k === 0) {
                 goldRate18k = Math.round(goldRate24k * 0.75);
@@ -3731,20 +3756,17 @@
             const dash18k = document.getElementById('dashGoldRate18kDisplay');
             const dashDateLbl = document.getElementById('dashGoldRateDateLabel');
 
-            const now = new Date();
-            const sysDateStr = formatDateDDMMYYYY(now);
-            const sysTimeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
-            const liveDateTimeStr = `${sysDateStr}, ${sysTimeStr}`;
+            const fixedRateTimestamp = getFixedGoldRateTimestamp();
 
             if (dash24k) dash24k.innerText = `${formatINR(goldRate24k)} / g`;
             if (dash22k) dash22k.innerText = `${formatINR(goldRate22k)} / g`;
             if (dash18k) dash18k.innerText = `${formatINR(goldRate18k)} / g`;
-            if (dashDateLbl) dashDateLbl.innerText = `Updated: ${liveDateTimeStr}`;
+            if (dashDateLbl) dashDateLbl.innerText = `Updated: ${fixedRateTimestamp}`;
             
-            if (modalDateLbl) modalDateLbl.innerText = `System Date: ${sysDateStr} (${sysTimeStr})`;
+            if (modalDateLbl) modalDateLbl.innerText = `Rate Updated: ${fixedRateTimestamp}`;
             
             if (modalLastUpdatedLbl) {
-                modalLastUpdatedLbl.innerHTML = `<i class="fa-solid fa-clock text-amber-400/70 mr-1"></i>Rate Updated: ${liveDateTimeStr}`;
+                modalLastUpdatedLbl.innerHTML = `<i class="fa-solid fa-clock text-amber-400/70 mr-1"></i>Rate Updated: ${fixedRateTimestamp}`;
             }
             if (modalSourceLbl) {
                 modalSourceLbl.innerText = `Source: ${goldRateSourceType || 'Manual Entry'}`;
@@ -4159,31 +4181,134 @@
             return `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiUri)}`;
         }
 
-        async function pickContactForParty() {
-            if ('contacts' in navigator && 'ContactsManager' in window) {
-                const props = ['name', 'tel'];
-                try {
-                    const contacts = await navigator.contacts.select(props, { multiple: false });
-                    if (contacts && contacts.length > 0) {
-                        const contact = contacts[0];
-                        if (contact.tel && contact.tel.length > 0) {
-                            let cleanNum = contact.tel[0].replace(/[\s\-\(\)]/g, '');
-                            document.getElementById('partyPhone').value = cleanNum;
-                        }
-                        const partyNameInput = document.getElementById('partyName');
-                        if (contact.name && contact.name.length > 0 && !partyNameInput.value.trim()) {
-                            partyNameInput.value = contact.name[0];
-                            updatePartyModalQrPreview();
-                        }
-                        showToast("Contact loaded successfully!", "fa-address-book");
-                    }
-                } catch (err) {
-                    console.log('Contact picker error or cancelled:', err);
+        function applyPickedContactToParty(rawName, rawTel) {
+            const cleanNum = String(rawTel || '').replace(/[^\d+]/g, '');
+            const cleanName = String(rawName || '').trim();
+            if (cleanNum) {
+                const phoneEl = document.getElementById('partyPhone');
+                if (phoneEl) {
+                    phoneEl.value = cleanNum;
+                    phoneEl.type = 'text';
+                    phoneEl.classList.remove('tracking-widest');
                 }
+                const maskIcon = document.getElementById('partyPhoneMaskIcon');
+                if (maskIcon) {
+                    maskIcon.classList.remove('fa-eye');
+                    maskIcon.classList.add('fa-eye-slash');
+                }
+            }
+            const partyNameInput = document.getElementById('partyName');
+            if (cleanName && partyNameInput && !partyNameInput.value.trim()) {
+                partyNameInput.value = cleanName;
+                updatePartyModalQrPreview();
+            }
+            if (cleanNum || cleanName) {
+                showToast("Contact fetched: " + (cleanName || cleanNum), "fa-address-book");
             } else {
-                alert("Direct Contact fetching is supported on Mobile Browsers (Chrome/Edge). Please type the number manually.");
+                showToast("No phone number found in selected contact.", "fa-circle-exclamation", true);
             }
         }
+
+        function parseVCardSingle(vcfText) {
+            const unfolded = String(vcfText || '').replace(/\r?\n[ \t]/g, '');
+            const lines = unfolded.split(/\r?\n/);
+            let fn = '';
+            let nField = '';
+            const tels = [];
+            for (const line of lines) {
+                if (/^FN(?:;[^:]*)?:/i.test(line)) {
+                    fn = line.replace(/^FN(?:;[^:]*)?:/i, '').trim();
+                } else if (/^N(?:;[^:]*)?:/i.test(line)) {
+                    const parts = line.replace(/^N(?:;[^:]*)?:/i, '').split(';').map(s => s.trim()).filter(Boolean);
+                    if (parts.length) nField = parts.reverse().join(' ');
+                } else if (/^TEL(?:;[^:]*)?:/i.test(line)) {
+                    const num = line.replace(/^TEL(?:;[^:]*)?:/i, '').trim();
+                    if (num) tels.push(num);
+                }
+            }
+            return { name: fn || nField, tel: tels[0] || '' };
+        }
+
+        function handlePartyVcfFileSelect(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const parsed = parseVCardSingle(e.target.result || '');
+                applyPickedContactToParty(parsed.name, parsed.tel);
+                event.target.value = '';
+            };
+            reader.onerror = function() {
+                showToast("Could not read contact card file.", "fa-circle-exclamation", true);
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        async function pickContactForParty() {
+            // 1. Native Android APK / WebView JavaScript Bridges (if wrapped with Cordova, Capacitor, Median, WebIntoApp, Kodular, etc.)
+            try {
+                if (window.Android && typeof window.Android.pickContact === 'function') {
+                    window.Android.pickContact();
+                    return;
+                }
+                if (window.AndroidInterface && typeof window.AndroidInterface.pickContact === 'function') {
+                    window.AndroidInterface.pickContact();
+                    return;
+                }
+                if (navigator.contacts && typeof navigator.contacts.pickContact === 'function') {
+                    navigator.contacts.pickContact(['displayName', 'name', 'phoneNumbers'], function(c) {
+                        const name = (c && (c.displayName || (c.name && c.name.formatted))) || '';
+                        const tel = (c && c.phoneNumbers && c.phoneNumbers[0] && c.phoneNumbers[0].value) || '';
+                        applyPickedContactToParty(name, tel);
+                    }, function() {});
+                    return;
+                }
+            } catch (bridgeErr) {
+                console.log('Native bridge fallback:', bridgeErr);
+            }
+
+            // 2. Standard Web Contact Picker API (Supported in Chrome Android & TWA APKs)
+            if ('contacts' in navigator && 'ContactsManager' in window) {
+                try {
+                    const supportedProps = (typeof navigator.contacts.getProperties === 'function')
+                        ? await navigator.contacts.getProperties()
+                        : ['name', 'tel'];
+                    const props = ['name', 'tel'].filter(p => supportedProps.includes(p));
+                    const contacts = await navigator.contacts.select(props.length ? props : ['name', 'tel'], { multiple: false });
+                    if (contacts && contacts.length > 0) {
+                        const contact = contacts[0];
+                        const tel = (contact.tel && contact.tel.length > 0) ? contact.tel[0] : '';
+                        const name = (contact.name && contact.name.length > 0) ? contact.name[0] : '';
+                        applyPickedContactToParty(name, tel);
+                    }
+                    return;
+                } catch (err) {
+                    if (err && err.name === 'AbortError') return;
+                    console.log('Contact Picker API error, falling back to mobile contact picker:', err);
+                }
+            }
+
+            // 3. Universal Android APK WebView Fallback: Opens Android system chooser (Contacts / Share Contact .vcf)
+            const vcfInput = document.getElementById('partyVcfContactInput');
+            if (vcfInput) {
+                showToast("Select a contact or .vcf card from your phone...", "fa-address-book");
+                vcfInput.click();
+            } else {
+                const phoneEl = document.getElementById('partyPhone');
+                if (phoneEl) {
+                    phoneEl.type = 'tel';
+                    phoneEl.classList.remove('tracking-widest');
+                    phoneEl.focus();
+                }
+                showToast("Enter or paste mobile number from keyboard suggestions.", "fa-keyboard");
+            }
+        }
+
+        // Global callback hook so any custom Android APK WebView wrapper can pass selected contact back
+        window.onAndroidContactPicked = function(name, phone) {
+            applyPickedContactToParty(name, phone);
+        };
 
                 let splashDismissed = false;
         function dismissAppSplashScreen() {
@@ -4216,18 +4341,7 @@ window.addEventListener('DOMContentLoaded', () => {
             renderAdminProfilePhoto();
             selectedCustomerRating = 0;
             document.getElementById('printDate').innerText = formatDateDDMMYYYY(new Date());
-            setInterval(() => {
-                const liveNow = new Date();
-                const liveDate = formatDateDDMMYYYY(liveNow);
-                const liveTime = liveNow.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
-                const liveDateTimeStr = `${liveDate}, ${liveTime}`;
-                const modalDateLbl = document.getElementById('modalGoldRateDateLabel');
-                const dashDateLbl = document.getElementById('dashGoldRateDateLabel');
-                const modalLastUpdatedLbl = document.getElementById('modalGoldRateLastUpdatedLabel');
-                if (modalDateLbl) modalDateLbl.innerText = `System Date: ${liveDate} (${liveTime})`;
-                if (dashDateLbl) dashDateLbl.innerText = `Updated: ${liveDateTimeStr}`;
-                if (modalLastUpdatedLbl) modalLastUpdatedLbl.innerHTML = `<i class="fa-solid fa-clock text-amber-400/70 mr-1"></i>Rate Updated: ${liveDateTimeStr}`;
-            }, 1000);
+            // Keep gold rate updated date & time static (only updates when gold rates are changed)
 
             document.addEventListener('click', (e) => {
                 const menuWrapper = document.getElementById('topLeftMenuWrapper');
@@ -4580,16 +4694,18 @@ window.addEventListener('DOMContentLoaded', () => {
                     goldRate24k = HTML_GOLD_RATE_24K;
                     goldRate22k = HTML_GOLD_RATE_22K;
                     goldRate18k = HTML_GOLD_RATE_18K;
+                    lastGoldRateUpdateTimestamp = HTML_GOLD_RATE_UPDATED_AT;
                     localStorage.setItem('sfinsys_gold_html_sig', currentHtmlSig);
                     localStorage.setItem('sfinsys_gold_24k', goldRate24k.toString());
                     localStorage.setItem('sfinsys_gold_22k', goldRate22k.toString());
                     localStorage.setItem('sfinsys_gold_18k', goldRate18k.toString());
+                    localStorage.setItem('sfinsys_gold_last_update', lastGoldRateUpdateTimestamp);
                 } else {
                     if (localStorage.getItem('sfinsys_gold_24k')) goldRate24k = parseFloat(localStorage.getItem('sfinsys_gold_24k'));
                     if (localStorage.getItem('sfinsys_gold_22k')) goldRate22k = parseFloat(localStorage.getItem('sfinsys_gold_22k'));
                     if (localStorage.getItem('sfinsys_gold_18k')) goldRate18k = parseFloat(localStorage.getItem('sfinsys_gold_18k'));
+                    if (localStorage.getItem('sfinsys_gold_last_update')) lastGoldRateUpdateTimestamp = localStorage.getItem('sfinsys_gold_last_update');
                 }
-                if (localStorage.getItem('sfinsys_gold_last_update')) lastGoldRateUpdateTimestamp = localStorage.getItem('sfinsys_gold_last_update');
                 if (localStorage.getItem('sfinsys_gold_source')) goldRateSourceType = localStorage.getItem('sfinsys_gold_source');
             } catch (err) { console.error(err); }
         }
@@ -5472,6 +5588,7 @@ window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('individualPrintContent').classList.add('hidden');
             document.getElementById('masterPrintContent').classList.add('hidden');
             document.getElementById('goldEstimatePrintContent').classList.add('hidden');
+            document.getElementById('healthReportPrintContent')?.classList.add('hidden');
             document.getElementById('gstBillPrintContent')?.classList.add('hidden');
             document.getElementById('gstPrintFooter')?.classList.add('hidden');
             document.getElementById('defaultPrintFooter')?.classList.remove('hidden');
@@ -6477,6 +6594,7 @@ window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('individualPrintContent').classList.add('hidden');
             document.getElementById('masterPrintContent').classList.add('hidden');
             document.getElementById('goldEstimatePrintContent').classList.add('hidden');
+            document.getElementById('healthReportPrintContent')?.classList.add('hidden');
             document.getElementById('gstBillPrintContent')?.classList.add('hidden');
             document.getElementById('gstPrintFooter')?.classList.add('hidden');
             document.getElementById('defaultPrintFooter')?.classList.remove('hidden');
@@ -6578,6 +6696,7 @@ window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('masterPrintContent').classList.add('hidden');
             document.getElementById('cashVaultPrintContent').classList.add('hidden');
             document.getElementById('goldEstimatePrintContent').classList.add('hidden');
+            document.getElementById('healthReportPrintContent')?.classList.add('hidden');
             document.getElementById('gstBillPrintContent')?.classList.add('hidden');
             document.getElementById('gstPrintFooter')?.classList.add('hidden');
             document.getElementById('defaultPrintFooter')?.classList.remove('hidden');
@@ -6633,6 +6752,7 @@ window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('individualPrintContent').classList.add('hidden');
             document.getElementById('cashVaultPrintContent').classList.add('hidden');
             document.getElementById('goldEstimatePrintContent').classList.add('hidden');
+            document.getElementById('healthReportPrintContent')?.classList.add('hidden');
             document.getElementById('gstBillPrintContent')?.classList.add('hidden');
             document.getElementById('gstPrintFooter')?.classList.add('hidden');
             document.getElementById('defaultPrintFooter')?.classList.remove('hidden');
@@ -9184,6 +9304,7 @@ window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('masterPrintContent')?.classList.add('hidden');
             document.getElementById('cashVaultPrintContent')?.classList.add('hidden');
             document.getElementById('goldEstimatePrintContent')?.classList.add('hidden');
+            document.getElementById('healthReportPrintContent')?.classList.add('hidden');
             document.getElementById('defaultPrintFooter')?.classList.add('hidden');
             document.getElementById('gstPrintFooter')?.classList.add('hidden');
             gstPrintEl.classList.remove('hidden');
@@ -10059,6 +10180,7 @@ window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('individualPrintContent').classList.add('hidden');
             document.getElementById('masterPrintContent').classList.add('hidden');
             document.getElementById('goldEstimatePrintContent').classList.add('hidden');
+            document.getElementById('healthReportPrintContent')?.classList.add('hidden');
             document.getElementById('gstBillPrintContent')?.classList.add('hidden');
             document.getElementById('gstPrintFooter')?.classList.add('hidden');
             document.getElementById('defaultPrintFooter')?.classList.remove('hidden');
@@ -10092,8 +10214,79 @@ window.addEventListener('DOMContentLoaded', () => {
         let healthActiveChartTab = 'sugar';
         let healthChartInstance = null;
         let healthFamilyMembers = [];
+        let healthMemberProfiles = {};
         let healthSelectedMember = 'All';
         let selectedHealthRecordId = null;
+
+        function loadHealthMemberProfiles() {
+            try {
+                const saved = JSON.parse(localStorage.getItem('sfinsys_health_member_profiles_v1') || '{}');
+                healthMemberProfiles = (saved && typeof saved === 'object' && !Array.isArray(saved)) ? saved : {};
+            } catch (e) { healthMemberProfiles = {}; }
+            // Backfill from existing healthRecords if missing
+            (healthRecords || []).forEach(r => {
+                const name = (r.memberName || 'Self').trim();
+                if (!healthMemberProfiles[name]) healthMemberProfiles[name] = {};
+                if (r.age && !healthMemberProfiles[name].age) healthMemberProfiles[name].age = String(r.age);
+                if (r.gender && !healthMemberProfiles[name].gender) healthMemberProfiles[name].gender = String(r.gender);
+            });
+            saveHealthMemberProfiles();
+        }
+
+        function saveHealthMemberProfiles() {
+            try { localStorage.setItem('sfinsys_health_member_profiles_v1', JSON.stringify(healthMemberProfiles)); } catch(e) {}
+        }
+
+        function getMemberAgeGenderLabel(memberName, recordOverride = null) {
+            const prof = healthMemberProfiles[memberName] || {};
+            const age = (recordOverride && recordOverride.age) ? recordOverride.age : (prof.age || '');
+            const gender = (recordOverride && recordOverride.gender) ? recordOverride.gender : (prof.gender || '');
+            const parts = [];
+            if (age) parts.push(age + ' yrs');
+            if (gender) parts.push(gender);
+            return parts.join(' • ');
+        }
+
+        function updateHealthDemographicsBanner() {
+            const bar = document.getElementById('healthMemberDemographicsBar');
+            const txt = document.getElementById('healthMemberAgeGenderText');
+            if (!bar || !txt) return;
+            if (healthSelectedMember === 'All') {
+                bar.classList.add('hidden');
+                return;
+            }
+            bar.classList.remove('hidden');
+            const label = getMemberAgeGenderLabel(healthSelectedMember);
+            txt.innerText = label || 'Not set';
+            const delBtn = document.getElementById('healthDeleteMemberBtn');
+            if (delBtn) delBtn.classList.toggle('hidden', healthSelectedMember === 'Self');
+        }
+
+        function editSelectedMemberProfile() {
+            if (healthSelectedMember === 'All') return;
+            const prof = healthMemberProfiles[healthSelectedMember] || {};
+            const ageInput = prompt(`Enter Age (years) for ${healthSelectedMember}:`, prof.age || '');
+            if (ageInput === null) return;
+            const genderInput = prompt(`Enter Gender (Male / Female / Other) for ${healthSelectedMember}:`, prof.gender || '');
+            if (genderInput === null) return;
+            const cleanAge = ageInput.trim();
+            const gRaw = genderInput.trim();
+            const cleanGender = gRaw ? (gRaw.charAt(0).toUpperCase() + gRaw.slice(1).toLowerCase()) : '';
+            healthMemberProfiles[healthSelectedMember] = { age: cleanAge, gender: cleanGender };
+            saveHealthMemberProfiles();
+            updateHealthDemographicsBanner();
+            renderHealthTable();
+            showToast('Member age & gender updated!');
+        }
+
+        function syncModalMemberDemographics() {
+            const name = document.getElementById('hMemberName')?.value || 'Self';
+            const prof = healthMemberProfiles[name] || {};
+            const ageEl = document.getElementById('hAge');
+            const genderEl = document.getElementById('hGender');
+            if (ageEl) ageEl.value = prof.age || '';
+            if (genderEl) genderEl.value = prof.gender || '';
+        }
 
         function healthEscapeHtml(value) {
             return String(value ?? '').replace(/[&<>"']/g, ch => ({
@@ -10142,21 +10335,61 @@ window.addEventListener('DOMContentLoaded', () => {
         }
 
         function addHealthFamilyMember(fromEntry = false) {
-            const name = prompt('Enter family member / patient name:');
+            const name = prompt('Enter family member name:');
             if (!name || !name.trim()) return;
-            const clean = name.trim().replace(/\\s+/g, ' ');
+            const clean = name.trim().replace(/\s+/g, ' ');
             const existing = healthFamilyMembers.find(n => n.toLowerCase() === clean.toLowerCase());
+            const finalName = existing || clean;
             if (!existing) healthFamilyMembers.push(clean);
+            const ageInput = prompt(`Enter Age (years) for ${finalName} (optional):`, (healthMemberProfiles[finalName]?.age) || '');
+            const genderInput = prompt(`Enter Gender (Male / Female / Other) for ${finalName} (optional):`, (healthMemberProfiles[finalName]?.gender) || '');
+            if (!healthMemberProfiles[finalName]) healthMemberProfiles[finalName] = {};
+            if (ageInput !== null && ageInput.trim()) healthMemberProfiles[finalName].age = ageInput.trim();
+            if (genderInput !== null && genderInput.trim()) {
+                const gRaw = genderInput.trim();
+                healthMemberProfiles[finalName].gender = gRaw.charAt(0).toUpperCase() + gRaw.slice(1).toLowerCase();
+            }
             saveHealthFamilyMembers();
+            saveHealthMemberProfiles();
             refreshHealthMemberOptions();
-            if (fromEntry) document.getElementById('hMemberName').value = existing || clean;
-            else {
-                healthSelectedMember = existing || clean;
+            if (fromEntry) {
+                document.getElementById('hMemberName').value = finalName;
+                syncModalMemberDemographics();
+            } else {
+                healthSelectedMember = finalName;
                 const filter = document.getElementById('healthMemberFilter');
                 if (filter) filter.value = healthSelectedMember;
                 renderHealthModule();
             }
             showToast('Family member added');
+        }
+
+        function deleteHealthFamilyMember() {
+            const name = healthSelectedMember;
+            if (!name || name === 'All') return;
+            if (name === 'Self') { showToast('Self cannot be deleted', 'fa-circle-exclamation'); return; }
+            loadHealthFromStorage();
+            const count = healthRecords.filter(r => (r.memberName || 'Self').trim() === name).length;
+            const msg = count
+                ? `Delete family member "${name}"?\n\nThis will also permanently delete ${count} health record(s) of ${name}. This cannot be undone.`
+                : `Delete family member "${name}"?`;
+            if (!confirm(msg)) return;
+            if (count) {
+                healthRecords = healthRecords.filter(r => (r.memberName || 'Self').trim() !== name);
+                saveHealthToStorage();
+            }
+            healthFamilyMembers = healthFamilyMembers.filter(n => n !== name);
+            saveHealthFamilyMembers();
+            delete healthMemberProfiles[name];
+            saveHealthMemberProfiles();
+            healthSelectedMember = 'All';
+            selectedHealthRecordId = null;
+            document.getElementById('healthRecordsPanel')?.classList.add('hidden');
+            refreshHealthMemberOptions();
+            const filter = document.getElementById('healthMemberFilter');
+            if (filter) filter.value = 'All';
+            renderHealthModule();
+            showToast('Family member deleted', 'fa-trash-can');
         }
 
         function setHealthMemberFilter(name) {
@@ -10218,7 +10451,9 @@ window.addEventListener('DOMContentLoaded', () => {
         function renderHealthModule() {
             loadHealthFromStorage();
             loadHealthFamilyMembers();
+            loadHealthMemberProfiles();
             refreshHealthMemberOptions();
+            updateHealthDemographicsBanner();
             const records = getFilteredHealthRecords();
             computeAndDisplayHealthAverages(records);
             renderHealthTrendChart(records);
@@ -10345,7 +10580,20 @@ window.addEventListener('DOMContentLoaded', () => {
                     },
                     plugins: {
                         legend: { labels: { color: '#475569', font: { family: 'Inter', size: 10 } } },
-                        tooltip: { mode: 'index', intersect: false }
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                afterTitle: (items) => {
+                                    if (!items || !items.length) return '';
+                                    const rec = sorted[items[0].dataIndex];
+                                    if (!rec) return '';
+                                    const mName = rec.memberName || 'Self';
+                                    const ag = getMemberAgeGenderLabel(mName, rec);
+                                    return ag ? `${mName} (${ag})` : mName;
+                                }
+                            }
+                        }
                     },
                     scales: {
                         x: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { color: '#64748b', font: { size: 9 } } },
@@ -10392,7 +10640,7 @@ window.addEventListener('DOMContentLoaded', () => {
                             <div class="flex flex-wrap items-center gap-1.5 mb-1">
                                 <span class="font-black text-slate-900">${dateStr}</span>
                                 <span class="px-1.5 py-0.5 rounded text-[9px] font-black bg-emerald-100 text-emerald-800">${r.tag || 'Log'}</span>
-                                <span class="px-1.5 py-0.5 rounded text-[9px] font-black bg-sky-100 text-sky-800">${healthEscapeHtml(r.memberName || 'Self')}</span>
+                                <span class="px-1.5 py-0.5 rounded text-[9px] font-black bg-sky-100 text-sky-800">${healthEscapeHtml(r.memberName || 'Self')}${getMemberAgeGenderLabel(r.memberName || 'Self', r) ? ' • ' + healthEscapeHtml(getMemberAgeGenderLabel(r.memberName || 'Self', r)) : ''}</span>
                             </div>
                             ${sugar ? `<p class="font-bold text-emerald-700">${sugar}</p>` : ''}
                             ${bp ? `<p class="font-bold text-rose-700">${bp}${r.pulse ? ' • '+r.pulse+' bpm' : ''}</p>` : ''}
@@ -10414,8 +10662,10 @@ window.addEventListener('DOMContentLoaded', () => {
             if (form) form.reset();
             document.getElementById('hRecordId').value = '';
             loadHealthFamilyMembers();
+            loadHealthMemberProfiles();
             refreshHealthMemberOptions();
             document.getElementById('hMemberName').value = healthSelectedMember === 'All' ? 'Self' : healthSelectedMember;
+            syncModalMemberDemographics();
             document.getElementById('hDateTime').value = new Date().toISOString().slice(0, 16);
             document.getElementById('healthModalTitle').innerHTML = '<i class="fa-solid fa-heart-pulse"></i> Log Health Vitals &amp; Lab';
             document.getElementById('autoBmiVal').innerText = '--';
@@ -10440,9 +10690,18 @@ window.addEventListener('DOMContentLoaded', () => {
             const h = parseFloat(document.getElementById('hHeight').value);
             let bmiVal = null;
             if (w && h) bmiVal = (w / ((h/100)*(h/100))).toFixed(1);
+            const memberVal = document.getElementById('hMemberName').value || 'Self';
+            const ageVal = (document.getElementById('hAge')?.value || '').trim();
+            const genderVal = (document.getElementById('hGender')?.value || '').trim();
+            if (!healthMemberProfiles[memberVal]) healthMemberProfiles[memberVal] = {};
+            if (ageVal) healthMemberProfiles[memberVal].age = ageVal;
+            if (genderVal) healthMemberProfiles[memberVal].gender = genderVal;
+            saveHealthMemberProfiles();
             const record = {
                 id,
-                memberName: document.getElementById('hMemberName').value || 'Self',
+                memberName: memberVal,
+                age: ageVal,
+                gender: genderVal,
                 datetime: document.getElementById('hDateTime').value,
                 tag: document.getElementById('hTag').value,
                 fbs: document.getElementById('hFbs').value,
@@ -10483,8 +10742,12 @@ window.addEventListener('DOMContentLoaded', () => {
             if (!r) return;
             document.getElementById('hRecordId').value = r.id;
             loadHealthFamilyMembers();
+            loadHealthMemberProfiles();
             refreshHealthMemberOptions();
             document.getElementById('hMemberName').value = r.memberName || 'Self';
+            const prof = healthMemberProfiles[r.memberName || 'Self'] || {};
+            if (document.getElementById('hAge')) document.getElementById('hAge').value = r.age || prof.age || '';
+            if (document.getElementById('hGender')) document.getElementById('hGender').value = r.gender || prof.gender || '';
             document.getElementById('hDateTime').value = r.datetime || '';
             document.getElementById('hTag').value = r.tag || 'Routine Checkup';
             document.getElementById('hFbs').value = r.fbs || '';
@@ -10519,9 +10782,12 @@ window.addEventListener('DOMContentLoaded', () => {
         function exportHealthCSV() {
             loadHealthFromStorage();
             if (!healthRecords.length) { showToast('No health records to export', 'fa-circle-exclamation'); return; }
-            let csv = 'ID,Member,DateTime,Tag,FastingSugar,PPSugar,HbA1c,Systolic,Diastolic,Pulse,TotalCholesterol,LDL,HDL,Triglycerides,Weight,Height,BMI,SpO2,Sleep,Notes\n';
+            let csv = 'ID,Member,Age,Gender,DateTime,Tag,FastingSugar,PPSugar,HbA1c,Systolic,Diastolic,Pulse,TotalCholesterol,LDL,HDL,Triglycerides,Weight,Height,BMI,SpO2,Sleep,Notes\n';
             healthRecords.forEach(r => {
-                csv += `"${r.id}","${(r.memberName||'Self').replace(/"/g,'""')}","${r.datetime||''}","${r.tag||''}","${r.fbs||''}","${r.ppbs||''}","${r.hba1c||''}","${r.sys||''}","${r.dia||''}","${r.pulse||''}","${r.chol||''}","${r.ldl||''}","${r.hdl||''}","${r.trig||''}","${r.weight||''}","${r.height||''}","${r.bmi||''}","${r.spo2||''}","${r.sleep||''}","${(r.notes||'').replace(/"/g,'""')}"\n`;
+                const prof = healthMemberProfiles[r.memberName || 'Self'] || {};
+                const ageCsv = r.age || prof.age || '';
+                const genderCsv = r.gender || prof.gender || '';
+                csv += `"${r.id}","${(r.memberName||'Self').replace(/"/g,'""')}","${ageCsv}","${genderCsv}","${r.datetime||''}","${r.tag||''}","${r.fbs||''}","${r.ppbs||''}","${r.hba1c||''}","${r.sys||''}","${r.dia||''}","${r.pulse||''}","${r.chol||''}","${r.ldl||''}","${r.hdl||''}","${r.trig||''}","${r.weight||''}","${r.height||''}","${r.bmi||''}","${r.spo2||''}","${r.sleep||''}","${(r.notes||'').replace(/"/g,'""')}"\n`;
             });
             const blob = new Blob([csv], { type: 'text/csv' });
             const a = document.createElement('a');
@@ -10537,6 +10803,12 @@ window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('reportPeriodText').innerText = healthCurrentPeriod.toUpperCase();
             const patientLabel = document.getElementById('healthReportPatientName');
             if (patientLabel) patientLabel.innerText = healthSelectedMember === 'All' ? 'All Members' : healthSelectedMember;
+            const agReportEl = document.getElementById('healthReportAgeGender');
+            if (agReportEl) {
+                agReportEl.innerText = healthSelectedMember === 'All'
+                    ? 'All'
+                    : (getMemberAgeGenderLabel(healthSelectedMember, records[0]) || '--');
+            }
             document.getElementById('reportTotalLogs').innerText = records.length + ' Records';
             document.getElementById('rep-fbs').innerText = document.getElementById('avg-fbs')?.innerText || '--';
             document.getElementById('rep-ppbs').innerText = document.getElementById('avg-ppbs')?.innerText || '--';
@@ -10571,12 +10843,29 @@ window.addEventListener('DOMContentLoaded', () => {
 
         function printHealthReport() {
             const area = document.getElementById('healthPrintableReportArea');
-            if (!area) return;
-            const w = window.open('', '_blank');
-            w.document.write('<html><head><title>Sfinsys Health Report</title><style>body{font-family:Inter,Arial,sans-serif;padding:16px;color:#0f172a;font-size:12px} .grid{display:grid} .grid-cols-2{grid-template-columns:1fr 1fr;gap:8px} img{max-width:100%;height:auto;max-height:260px;object-fit:contain;display:block} h4{break-after:avoid} </style></head><body>' + area.innerHTML + '</body></html>');
-            w.document.close();
-            w.focus();
-            setTimeout(() => { w.print(); }, 300);
+            const healthPrintContainer = document.getElementById('healthReportPrintContent');
+            if (!area || !healthPrintContainer) return;
+
+            if (typeof resetPrintPageStyle === 'function') resetPrintPageStyle();
+            healthPrintContainer.innerHTML = area.innerHTML;
+
+            document.getElementById('individualPrintContent')?.classList.add('hidden');
+            document.getElementById('masterPrintContent')?.classList.add('hidden');
+            document.getElementById('cashVaultPrintContent')?.classList.add('hidden');
+            document.getElementById('goldEstimatePrintContent')?.classList.add('hidden');
+            document.getElementById('healthReportPrintContent')?.classList.add('hidden');
+            document.getElementById('gstBillPrintContent')?.classList.add('hidden');
+            document.getElementById('gstPrintFooter')?.classList.add('hidden');
+            document.getElementById('defaultPrintFooter')?.classList.remove('hidden');
+            healthPrintContainer.classList.remove('hidden');
+
+            closeModal('healthPrintReportModal');
+            setTimeout(() => {
+                window.print();
+                setTimeout(() => {
+                    healthPrintContainer.classList.add('hidden');
+                }, 400);
+            }, 150);
         }
 
         function openHealthGuideModal() {
@@ -10625,11 +10914,28 @@ window.addEventListener('DOMContentLoaded', () => {
             </div>
             <form id="healthForm" onsubmit="handleSaveHealthRecord(event)" class="p-4 space-y-3 text-xs">
                 <input type="hidden" id="hRecordId">
-                <div>
-                    <label class="block text-[10px] font-black text-slate-600 mb-1">Family Member / Patient Name</label>
-                    <div class="flex gap-2">
-                        <select id="hMemberName" class="flex-1 min-w-0 bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 font-bold"></select>
-                        <button type="button" onclick="addHealthFamilyMember(true)" class="px-3 rounded-xl bg-emerald-100 text-emerald-800 font-black text-[10px] whitespace-nowrap"><i class="fa-solid fa-user-plus mr-1"></i>Add</button>
+                <div class="space-y-2.5">
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-600 mb-1">Family Member Name</label>
+                        <div class="flex gap-2">
+                            <select id="hMemberName" onchange="syncModalMemberDemographics()" class="flex-1 min-w-0 bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 font-bold"></select>
+                            <button type="button" onclick="addHealthFamilyMember(true)" class="px-3 rounded-xl bg-emerald-100 text-emerald-800 font-black text-[10px] whitespace-nowrap"><i class="fa-solid fa-user-plus mr-1"></i>Add</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-600 mb-1">Age (Years)</label>
+                            <input type="number" min="0" max="130" id="hAge" placeholder="e.g. 35" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-600 mb-1">Gender</label>
+                            <select id="hGender" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 font-bold">
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2.5">
@@ -10757,15 +11063,16 @@ window.addEventListener('DOMContentLoaded', () => {
                 <div class="flex justify-between items-start border-b border-slate-200 pb-3">
                     <div>
                         <h2 class="text-base font-black tracking-wide">SFINSYS CLINICAL HEALTH REPORT</h2>
-                        <p class="text-[10px] text-slate-500 font-semibold">Patient Health Analytics &amp; Vitals Summary</p>
+                        <p class="text-[10px] text-slate-500 font-semibold">Health Analytics &amp; Vitals Summary</p>
                     </div>
                     <div class="text-right text-[10px] text-slate-600">
                         <p><span class="font-bold">Generated:</span> <span id="reportGenDate">--</span></p>
                         <p><span class="font-bold">Period:</span> <span id="reportPeriodText">All Time</span></p>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200 font-bold text-[10px]">
-                    <div><span class="text-slate-500">Patient:</span> <span class="text-slate-900" id="healthReportPatientName">User</span></div>
+                <div class="grid grid-cols-3 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200 font-bold text-[10px]">
+                    <div><span class="text-slate-500">Member:</span> <span class="text-slate-900" id="healthReportPatientName">User</span></div>
+                    <div><span class="text-slate-500">Age / Gender:</span> <span class="text-slate-900" id="healthReportAgeGender">--</span></div>
                     <div><span class="text-slate-500">Logs:</span> <span class="text-slate-900" id="reportTotalLogs">0 Records</span></div>
                 </div>
                 <div>
