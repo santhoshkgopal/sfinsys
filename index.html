@@ -583,7 +583,7 @@
                                 </span>
                                 <span class="text-[9px] font-bold bg-white/15 px-2 py-0.5 rounded-full border border-white/20">Sfinsys</span>
                             </div>
-                            <div class="p-1.5 space-y-1 text-xs font-extrabold">
+                            <div class="p-1.5 space-y-1 text-xs font-extrabold max-h-[75vh] overflow-y-auto">
                                 <button type="button" onclick="selectTopMenuAction('health')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-emerald-50 text-slate-800 transition text-left">
                                     <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
                                         <i class="fa-solid fa-heart-pulse text-sm"></i>
@@ -637,6 +637,15 @@
                                     <div>
                                         <span class="block text-xs font-black text-slate-900">GST Invoice & Quotation</span>
                                         <span class="block text-[9px] font-semibold text-slate-500">Tax Invoice / Customer Quotation</span>
+                                    </div>
+                                </button>
+                                <button type="button" onclick="selectTopMenuAction('gold')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-amber-50 text-slate-800 transition text-left">
+                                    <span class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                                        <i class="fa-solid fa-coins text-sm"></i>
+                                    </span>
+                                    <div class="min-w-0">
+                                        <span class="block text-xs font-black text-slate-900">Today's Gold Rate</span>
+                                        <span id="menuGoldRateSubtext" class="block text-[9px] font-semibold text-slate-500 truncate">24K, 22K, 18K & Jewellery Estimator</span>
                                     </div>
                                 </button>
                                 <button type="button" onclick="selectTopMenuAction('security')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-amber-50 text-slate-800 transition text-left">
@@ -832,44 +841,6 @@
                     <button onclick="openModal('partyModal')" class="py-3.5 bg-brandNavy-700 active:bg-brandNavy-800 text-white font-bold text-xs rounded-2xl shadow transition flex items-center justify-center gap-2">
                         <i class="fa-solid fa-user-plus"></i>
                         <span>New Party</span>
-                    </button>
-                </div>
-
-                <!-- MAIN PAGE TODAY'S GOLD RATE & JEWELLERY ESTIMATOR -->
-                <div class="bg-gradient-to-br from-brandNavy-800 via-brandNavy-900 to-brandMagenta-900 text-white p-4 rounded-2xl border border-brandMagenta-400/40 shadow-md space-y-3">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-2.5">
-                            <div class="w-10 h-10 bg-brandMagenta-500 text-white font-black text-base rounded-2xl flex items-center justify-center shadow">
-                                <i class="fa-solid fa-coins"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-black text-sm uppercase tracking-wider text-white">Today's Gold Rate</h3>
-                                <p class="text-[10px] text-slate-300" id="dashGoldRateDateLabel">24K, 22K & 18K Gold Rates</p>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <!-- Live Gold Rate Display Cards on Main Dashboard -->
-                    <div class="grid grid-cols-3 gap-2">
-                        <div onclick="openGoldRateModal()" class="cursor-pointer bg-brandNavy-950/70 hover:bg-brandNavy-900/80 p-2.5 rounded-xl border border-brandMagenta-400/40 text-center transition">
-                            <span class="bg-brandMagenta-500/30 text-brandMagenta-200 text-[8px] font-black px-1.5 py-0.5 rounded uppercase block mb-1">24K (999)</span>
-                            <p id="dashGoldRate24kDisplay" class="text-xs font-black text-white">₹14,416 / g</p>
-                        </div>
-                        <div onclick="openGoldRateModal()" class="cursor-pointer bg-brandNavy-950/70 hover:bg-brandNavy-900/80 p-2.5 rounded-xl border border-brandMagenta-400/40 text-center transition">
-                            <span class="bg-brandMagenta-500/30 text-brandMagenta-200 text-[8px] font-black px-1.5 py-0.5 rounded uppercase block mb-1">22K (916)</span>
-                            <p id="dashGoldRate22kDisplay" class="text-xs font-black text-brandMagenta-200">₹13,210 / g</p>
-                        </div>
-                        <div onclick="openGoldRateModal()" class="cursor-pointer bg-brandNavy-950/70 hover:bg-brandNavy-900/80 p-2.5 rounded-xl border border-brandMagenta-400/40 text-center transition">
-                            <span class="bg-brandMagenta-500/30 text-brandMagenta-200 text-[8px] font-black px-1.5 py-0.5 rounded uppercase block mb-1">18K (750)</span>
-                            <p id="dashGoldRate18kDisplay" class="text-xs font-black text-brandNavy-100">₹10,810 / g</p>
-                        </div>
-                    </div>
-
-                    <!-- Main Page Click Button to Open Jewellery Estimator -->
-                    <button onclick="openGoldRateModal()" class="w-full py-3.5 bg-gradient-to-r from-brandMagenta-600 via-brandMagenta-500 to-brandNavy-600 text-white font-black text-xs rounded-xl shadow-lg transition transform active:scale-98 flex items-center justify-center gap-2 border border-white/40">
-                        <i class="fa-solid fa-calculator text-sm"></i>
-                        <span>Jewellery Estimator Know More</span>
                     </button>
                 </div>
 
@@ -1557,10 +1528,30 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
+                        <div class="grid grid-cols-2 sm:grid-cols-7 gap-1.5">
                             <div>
                                 <label class="block text-[9px] font-bold text-slate-600 mb-0.5">Nos / Qty</label>
                                 <input type="number" id="gstEntryQty" step="0.01" min="0" value="1" oninput="onGstEntryInputChange('qty')" class="w-full bg-slate-50 focus:bg-white border border-slate-300 rounded-xl p-2 font-black text-center">
+                            </div>
+                            <div>
+                                <label class="block text-[9px] font-bold text-slate-600 mb-0.5">Unit</label>
+                                <input type="text" id="gstEntryUnit" list="gstUnitOptionsList" value="Nos" placeholder="Nos/Kg/Pcs" class="w-full bg-slate-50 focus:bg-white border border-slate-300 rounded-xl p-2 font-black text-center">
+                                <datalist id="gstUnitOptionsList">
+                                    <option value="Nos">
+                                    <option value="Pcs">
+                                    <option value="Kg">
+                                    <option value="Gm">
+                                    <option value="Ltr">
+                                    <option value="Mtr">
+                                    <option value="Box">
+                                    <option value="Set">
+                                    <option value="Pair">
+                                    <option value="Bag">
+                                    <option value="Roll">
+                                    <option value="Sqft">
+                                    <option value="Hrs">
+                                    <option value="Job">
+                                </datalist>
                             </div>
                             <div>
                                 <label class="block text-[9px] font-bold text-slate-700 mb-0.5">Base Rate (₹)</label>
@@ -1621,6 +1612,7 @@
                                         <th class="p-1.5 text-center">#</th>
                                         <th class="p-1.5 text-left">Item</th>
                                         <th class="p-1.5 text-right">Nos</th>
+                                        <th class="p-1.5 text-center">Unit</th>
                                         <th class="p-1.5 text-right">Rate</th>
                                         <th class="p-1.5 text-right">Disc</th>
                                         <th class="p-1.5 text-right">Taxable</th>
@@ -3667,7 +3659,7 @@
         const HTML_GOLD_RATE_24K = 12845; // 24K (999) Gold Rate per gram (₹)
         const HTML_GOLD_RATE_22K = 11770; // 22K (916) Gold Rate per gram (₹)
         const HTML_GOLD_RATE_18K = 9630; // 18K (750) Gold Rate per gram (₹)
-        const HTML_GOLD_RATE_UPDATED_AT = "27/11/2026, 18:34:00 pm"; // Fixed timestamp when rates were set
+        const HTML_GOLD_RATE_UPDATED_AT = "26/11/2026, 12:08:00 pm"; // Fixed timestamp when rates were set
         // =========================================================================
 
         // Gold Rate State - Initialized from HTML Code Config & Updatable Manually
@@ -3760,6 +3752,8 @@
 
             if (dash24k) dash24k.innerText = `${formatINR(goldRate24k)} / g`;
             if (dash22k) dash22k.innerText = `${formatINR(goldRate22k)} / g`;
+            const menuGoldSub = document.getElementById('menuGoldRateSubtext');
+            if (menuGoldSub) menuGoldSub.innerText = `22K: ${formatINR(goldRate22k)}/g • Estimator`;
             if (dash18k) dash18k.innerText = `${formatINR(goldRate18k)} / g`;
             if (dashDateLbl) dashDateLbl.innerText = `Updated: ${fixedRateTimestamp}`;
             
@@ -4851,6 +4845,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 switchTab('gst');
                 const docMode = document.getElementById('gstDocumentTypeSelect')?.value || 'INVOICE';
                 document.getElementById('topBarSubtitle').innerText = docMode === 'QUOTATION' ? 'Customer Quotation' : 'GST Bill & Tax Invoice';
+            } else if (action === 'gold') {
+                openGoldRateModal();
             } else if (action === 'security') {
                 openModal('securitySettingsModal');
             } else if (action === 'backup') {
@@ -7472,7 +7468,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 sel.innerHTML = '<option value="">-- Fetch Stored Item (Auto-Fill) --</option>';
                 gstItemCatalog.forEach(item => {
                     const hsnTxt = item.hsn ? ` [HSN: ${item.hsn}]` : '';
-                    sel.innerHTML += `<option value="${item.id}">${item.name}${hsnTxt} • ₹${Number(item.rate || 0).toFixed(2)} (${item.gstRate}% GST)</option>`;
+                    const unitTxt = item.unit ? ` / ${item.unit}` : '';
+                    sel.innerHTML += `<option value="${item.id}">${item.name}${hsnTxt} • ₹${Number(item.rate || 0).toFixed(2)}${unitTxt} (${item.gstRate}% GST)</option>`;
                 });
                 if (selectedId) sel.value = selectedId;
             }
@@ -7493,6 +7490,7 @@ window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('gstEntryName').value = item.name || '';
             document.getElementById('gstEntryHsn').value = item.hsn || '';
             document.getElementById('gstEntryQty').value = item.defaultQty && item.defaultQty > 0 ? item.defaultQty : 1;
+            if (document.getElementById('gstEntryUnit')) document.getElementById('gstEntryUnit').value = item.unit || 'Nos';
             document.getElementById('gstEntryGstRate').value = normalizeGstRateOption(item.gstRate);
 
             if (item.rateIncl && item.rateIncl > 0 && (!item.rate || item.rate <= 0)) {
@@ -7618,6 +7616,7 @@ window.addEventListener('DOMContentLoaded', () => {
             const name = (document.getElementById('gstEntryName')?.value || '').trim();
             const hsn = (document.getElementById('gstEntryHsn')?.value || '').trim();
             const qty = Math.max(1, parseFloat(document.getElementById('gstEntryQty')?.value) || 1);
+            const unit = (document.getElementById('gstEntryUnit')?.value || 'Nos').trim() || 'Nos';
             const rate = Math.max(0, parseFloat(document.getElementById('gstEntryRate')?.value) || 0);
             const gstRate = normalizeGstRateOption(document.getElementById('gstEntryGstRate')?.value);
 
@@ -7635,6 +7634,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 id: existingIdx !== -1 ? gstItemCatalog[existingIdx].id : ('cat_' + Date.now() + '_' + Math.floor(Math.random() * 1000)),
                 name,
                 hsn,
+                unit,
                 rate,
                 gstRate,
                 defaultQty: qty
@@ -7718,9 +7718,14 @@ window.addEventListener('DOMContentLoaded', () => {
                         ])).trim();
 
                         const rawQtyVal = parseFloat(String(findExcelColumnValue(row, [
-                            'nosqty', 'qty', 'quantity', 'nos', 'unit', 'units'
+                            'nosqty', 'qty', 'quantity', 'nos'
                         ])).replace(/[^0-9.\-]/g, ''));
                         const defaultQty = !isNaN(rawQtyVal) && rawQtyVal > 0 ? rawQtyVal : 1;
+
+                        const rawUnitVal = String(findExcelColumnValue(row, [
+                            'unit', 'units', 'uom', 'measure', 'unitofmeasure'
+                        ])).trim();
+                        const unit = rawUnitVal || 'Nos';
 
                         const rawRateVal = parseFloat(String(findExcelColumnValue(row, [
                             'baserate', 'rate', 'unitprice', 'price', 'taxablerate', 'mrp', 'amount'
@@ -7746,6 +7751,7 @@ window.addEventListener('DOMContentLoaded', () => {
                             id: existingIdx !== -1 ? gstItemCatalog[existingIdx].id : ('cat_' + Date.now() + '_' + idx + '_' + Math.floor(Math.random() * 1000)),
                             name: rawName,
                             hsn: rawHsn,
+                            unit,
                             rate: rate > 0 ? rate : (rateIncl > 0 ? Number((rateIncl / (1 + gstRate / 100)).toFixed(2)) : 0),
                             rateIncl,
                             gstRate,
@@ -7779,9 +7785,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
         function downloadSampleGstItemsExcel() {
             const sampleRows = [
-                { "Item Name": "Sample Product A", "HSN / SAC": "8471", "Nos / Qty": 1, "Base Rate": 1000, "GST %": 18 },
-                { "Item Name": "Sample Service B", "HSN / SAC": "9983", "Nos / Qty": 1, "Base Rate": 500, "GST %": 18 },
-                { "Item Name": "Sample Item C", "HSN / SAC": "7113", "Nos / Qty": 1, "Base Rate": 2500, "GST %": 3 }
+                { "Item Name": "Sample Product A", "HSN / SAC": "8471", "Nos / Qty": 1, "Unit": "Nos", "Base Rate": 1000, "GST %": 18 },
+                { "Item Name": "Sample Service B", "HSN / SAC": "9983", "Nos / Qty": 1, "Unit": "Job", "Base Rate": 500, "GST %": 18 },
+                { "Item Name": "Sample Item C", "HSN / SAC": "7113", "Nos / Qty": 1, "Unit": "Gm", "Base Rate": 2500, "GST %": 3 }
             ];
 
             if (typeof XLSX !== 'undefined') {
@@ -7791,7 +7797,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 XLSX.writeFile(wb, "Sfinsys_GST_Items_Template.xlsx");
                 showToast("Sample Excel Template Downloaded!", "fa-file-excel");
             } else {
-                const csv = "Item Name,HSN / SAC,Nos / Qty,Base Rate,GST %\nSample Product A,8471,1,1000,18\nSample Service B,9983,1,500,18\nSample Item C,7113,1,2500,3\n";
+                const csv = "Item Name,HSN / SAC,Nos / Qty,Unit,Base Rate,GST %\nSample Product A,8471,1,Nos,1000,18\nSample Service B,9983,1,Job,500,18\nSample Item C,7113,1,Gm,2500,3\n";
                 const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -8238,6 +8244,7 @@ window.addEventListener('DOMContentLoaded', () => {
             if (document.getElementById('gstEntryName')) document.getElementById('gstEntryName').value = '';
             if (document.getElementById('gstEntryHsn')) document.getElementById('gstEntryHsn').value = '';
             if (document.getElementById('gstEntryQty')) document.getElementById('gstEntryQty').value = '1';
+            if (document.getElementById('gstEntryUnit')) document.getElementById('gstEntryUnit').value = 'Nos';
             if (document.getElementById('gstEntryRate')) document.getElementById('gstEntryRate').value = '';
             if (document.getElementById('gstEntryDiscPct')) document.getElementById('gstEntryDiscPct').value = '';
             if (document.getElementById('gstEntryDiscAmt')) document.getElementById('gstEntryDiscAmt').value = '';
@@ -8250,6 +8257,7 @@ window.addEventListener('DOMContentLoaded', () => {
             const name = document.getElementById('gstEntryName')?.value.trim() || '';
             const hsn = document.getElementById('gstEntryHsn')?.value.trim() || '';
             const qty = Math.max(0, parseFloat(document.getElementById('gstEntryQty')?.value) || 0);
+            const unit = document.getElementById('gstEntryUnit')?.value.trim() || 'Nos';
             const rate = Math.max(0, parseFloat(document.getElementById('gstEntryRate')?.value) || 0);
             const discPct = Math.min(100, Math.max(0, parseFloat(document.getElementById('gstEntryDiscPct')?.value) || 0));
             const rawDiscAmt = Math.max(0, parseFloat(document.getElementById('gstEntryDiscAmt')?.value) || 0);
@@ -8275,6 +8283,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 name: name || `Item #${gstBillItems.length + 1}`,
                 hsn,
                 qty: effectiveQty,
+                unit,
                 rate,
                 discountPct,
                 discountAmt,
@@ -8357,6 +8366,7 @@ window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('gstEntryName').value = item.name || '';
             document.getElementById('gstEntryHsn').value = item.hsn || '';
             document.getElementById('gstEntryQty').value = qty;
+            if (document.getElementById('gstEntryUnit')) document.getElementById('gstEntryUnit').value = item.unit || 'Nos';
             document.getElementById('gstEntryRate').value = rate > 0 ? rate.toFixed(2) : '';
             document.getElementById('gstEntryDiscPct').value = discPct > 0 ? discPct.toFixed(2) : '';
             document.getElementById('gstEntryDiscAmt').value = discAmt > 0 ? discAmt.toFixed(2) : '';
@@ -8400,12 +8410,13 @@ window.addEventListener('DOMContentLoaded', () => {
             if (!previewBody) return;
 
             if (gstBillItems.length === 0) {
-                previewBody.innerHTML = `<tr><td colspan="9" class="p-3 text-center text-slate-400 italic">No items in Main Bill yet. Enter item details above and click "Add Items".</td></tr>`;
+                previewBody.innerHTML = `<tr><td colspan="10" class="p-3 text-center text-slate-400 italic">No items in Main Bill yet. Enter item details above and click "Add Items".</td></tr>`;
                 return;
             }
 
             previewBody.innerHTML = gstBillItems.map((item, idx) => {
                 const qty = Math.max(0, parseFloat(item.qty) || 0);
+                const unit = (item.unit && item.unit.trim()) ? item.unit.trim() : 'Nos';
                 const rate = Math.max(0, parseFloat(item.rate) || 0);
                 const gross = qty * rate;
                 const discAmt = Math.min(gross, Math.max(0, parseFloat(item.discountAmt) || 0));
@@ -8421,6 +8432,7 @@ window.addEventListener('DOMContentLoaded', () => {
                         <td class="p-1.5 text-center font-bold text-slate-500">${idx + 1}</td>
                         <td class="p-1.5 font-extrabold text-slate-900">${desc}${hsnTag}</td>
                         <td class="p-1.5 text-right font-bold text-slate-700">${qty}</td>
+                        <td class="p-1.5 text-center font-bold text-slate-600">${unit}</td>
                         <td class="p-1.5 text-right font-bold text-slate-700">${formatINR(rate)}</td>
                         <td class="p-1.5 text-right font-bold ${discAmt > 0 ? 'text-amber-700' : 'text-slate-400'}">${discLabel}</td>
                         <td class="p-1.5 text-right font-extrabold text-brandNavy-800">${formatINR(taxable)}</td>
@@ -8448,6 +8460,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
             const rawComputed = gstBillItems.map((item, index) => {
                 const qty = Math.max(0, parseFloat(item.qty) || 0);
+                const unit = (item.unit && item.unit.trim()) ? item.unit.trim() : 'Nos';
                 const rate = Math.max(0, parseFloat(item.rate) || 0);
                 const gross = qty * rate;
                 const discountAmt = Math.min(gross, Math.max(0, parseFloat(item.discountAmt) || 0));
@@ -8464,6 +8477,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     name: item.name || `Item ${index + 1}`,
                     hsn: item.hsn || '-',
                     qty,
+                    unit,
                     rate,
                     gross,
                     discountPct,
@@ -8505,6 +8519,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     name: it.name,
                     hsn: it.hsn,
                     qty: it.qty,
+                    unit: it.unit,
                     rate: it.rate,
                     gross: it.gross,
                     discountPct: it.discountPct,
@@ -8683,7 +8698,7 @@ window.addEventListener('DOMContentLoaded', () => {
             msg += `------------------------------------\n`;
             summary.items.forEach(it => {
                 const discStr = it.discountAmt > 0 ? ` - Disc ${formatINR(it.discountAmt)}` : '';
-                msg += `${it.srNo}. ${it.name} (${it.qty} x ${formatINR(it.rate)}${discStr} + ${it.gstRate}% GST) = *${formatINR(it.lineTotal)}*\n`;
+                msg += `${it.srNo}. ${it.name} (${it.qty} ${it.unit} x ${formatINR(it.rate)}${discStr} + ${it.gstRate}% GST) = *${formatINR(it.lineTotal)}*\n`;
             });
             msg += `------------------------------------\n`;
             if (summary.hasDiscount) {
@@ -8768,6 +8783,20 @@ window.addEventListener('DOMContentLoaded', () => {
                 </div>
             ` : `<p class="text-[10px] text-slate-500 mt-3 pt-2 border-t border-slate-200">${termsLine}</p>`;
 
+            const signatureBlockHtml = `
+                <div class="mt-4 pt-3 border-t flex items-end justify-between gap-6 text-xs" style="border-color: ${t.borderHex};">
+                    <div class="text-left">
+                        <div class="h-10"></div>
+                        <p class="border-t border-slate-400 pt-1 px-4 font-bold text-slate-800 inline-block">Customer Signature</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] font-bold text-slate-600">For ${firm.name}</p>
+                        <div class="h-8"></div>
+                        <p class="border-t border-slate-400 pt-1 px-4 font-bold text-slate-800 inline-block">Authorized Signature</p>
+                    </div>
+                </div>
+            `;
+
             // DEDICATED THERMAL POS 80MM (72MM PRINTABLE AREA) COMPACT RECEIPT LAYOUT
             if (gstPrintSize === 'THERMAL') {
                 return `
@@ -8797,10 +8826,11 @@ window.addEventListener('DOMContentLoaded', () => {
                         <table style="width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 9px; margin-bottom: 4px;">
                             <thead>
                                 <tr style="border-bottom: 1px solid #000000; font-weight: 900; text-align: left;">
-                                    <th style="width: 40%; padding: 2px 1px;">Item</th>
-                                    <th style="width: 14%; padding: 2px 1px; text-align: right;">Qty</th>
-                                    <th style="width: 22%; padding: 2px 1px; text-align: right;">Rate</th>
-                                    <th style="width: 24%; padding: 2px 1px; text-align: right;">Amt</th>
+                                    <th style="width: 34%; padding: 2px 1px;">Item</th>
+                                    <th style="width: 12%; padding: 2px 1px; text-align: right;">Qty</th>
+                                    <th style="width: 11%; padding: 2px 1px; text-align: center;">Unit</th>
+                                    <th style="width: 20%; padding: 2px 1px; text-align: right;">Rate</th>
+                                    <th style="width: 23%; padding: 2px 1px; text-align: right;">Amt</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -8811,6 +8841,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                             <div style="font-size: 8px; font-weight: 600; color: #334155;">${it.hsn !== '-' ? `HSN:${it.hsn} ` : ''}${it.discountAmt > 0 ? `Disc:-${Number(it.discountAmt).toFixed(2)} ` : ''}GST:${it.gstRate}%</div>
                                         </td>
                                         <td style="padding: 2.5px 1px; text-align: right; vertical-align: top;">${it.qty}</td>
+                                        <td style="padding: 2.5px 1px; text-align: center; vertical-align: top;">${it.unit}</td>
                                         <td style="padding: 2.5px 1px; text-align: right; vertical-align: top;">${Number(it.rate).toFixed(2)}</td>
                                         <td style="padding: 2.5px 1px; text-align: right; font-weight: 900; vertical-align: top;">${Number(it.lineTotal).toFixed(2)}</td>
                                     </tr>
@@ -8856,6 +8887,15 @@ window.addEventListener('DOMContentLoaded', () => {
                                 ${firm.upi ? `<div style="font-size: 8px;">${firm.upi}</div>` : ''}
                             </div>
                         ` : ''}
+
+                        <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 6px; margin-top: 14px; padding-top: 4px; border-top: 1px dashed #000000; font-size: 8.5px; font-weight: 800;">
+                            <div style="text-align: left; padding-top: 14px;">
+                                <span style="border-top: 1px solid #000000; padding-top: 2px; display: inline-block;">Customer Signature</span>
+                            </div>
+                            <div style="text-align: right; padding-top: 14px;">
+                                <span style="border-top: 1px solid #000000; padding-top: 2px; display: inline-block;">Authorized Signature</span>
+                            </div>
+                        </div>
 
                         <div style="text-align: center; font-size: 8.5px; font-weight: 700; margin-top: 5px; padding-top: 4px; border-top: 1px dashed #000000;">
                             ${termsLine}<br>Thank You! Visit Again
@@ -8905,6 +8945,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                         <th class="p-2 border-r text-left" style="border-color: ${t.borderHex};">Description of Goods / Services</th>
                                         <th class="p-2 border-r text-center" style="border-color: ${t.borderHex};">HSN</th>
                                         <th class="p-2 border-r text-right" style="border-color: ${t.borderHex};">Qty</th>
+                                        <th class="p-2 border-r text-center" style="border-color: ${t.borderHex};">Unit</th>
                                         <th class="p-2 border-r text-right" style="border-color: ${t.borderHex};">Rate</th>
                                         ${summary.hasDiscount ? `<th class="p-2 border-r text-right" style="border-color: ${t.borderHex};">Disc</th>` : ''}
                                         <th class="p-2 border-r text-right" style="border-color: ${t.borderHex};">Taxable</th>
@@ -8919,6 +8960,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                             <td class="p-2 border-r border-slate-200 font-bold">${it.name}</td>
                                             <td class="p-2 border-r border-slate-200 text-center">${it.hsn}</td>
                                             <td class="p-2 border-r border-slate-200 text-right">${it.qty}</td>
+                                            <td class="p-2 border-r border-slate-200 text-center font-semibold">${it.unit}</td>
                                             <td class="p-2 border-r border-slate-200 text-right">${formatINR(it.rate)}</td>
                                             ${summary.hasDiscount ? `<td class="p-2 border-r border-slate-200 text-right text-amber-700 font-semibold">${it.discountAmt > 0 ? '-' + formatINR(it.discountAmt) : '-'}</td>` : ''}
                                             <td class="p-2 border-r border-slate-200 text-right font-semibold">${formatINR(it.taxable)}</td>
@@ -8930,24 +8972,27 @@ window.addEventListener('DOMContentLoaded', () => {
                             </table>
                         </div>
 
-                        <div class="p-3.5 grid grid-cols-2 gap-4 text-xs border-t" style="background-color: ${t.lightBgHex}; border-color: ${t.borderHex};">
-                            <div class="flex flex-col justify-between">
-                                <div>
-                                    <p class="text-[9px] font-black uppercase" style="color: ${t.accentTextHex};">Amount in Words</p>
-                                    <p class="font-extrabold text-slate-900 italic mt-0.5">${amountWords}</p>
+                        <div class="p-3.5 text-xs border-t" style="background-color: ${t.lightBgHex}; border-color: ${t.borderHex};">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="flex flex-col justify-between">
+                                    <div>
+                                        <p class="text-[9px] font-black uppercase" style="color: ${t.accentTextHex};">Amount in Words</p>
+                                        <p class="font-extrabold text-slate-900 italic mt-0.5">${amountWords}</p>
+                                    </div>
+                                    ${paymentFooterHtml}
                                 </div>
-                                ${paymentFooterHtml}
-                            </div>
-                            <div class="border rounded-lg p-3 bg-white space-y-1" style="border-color: ${t.borderHex};">
-                                ${summary.hasDiscount ? `<div class="flex justify-between py-1"><span>Gross Subtotal:</span><strong>${formatINR(summary.grossSubtotal)}</strong></div><div class="flex justify-between py-1 text-amber-700"><span>Discount Saved:</span><strong>-${formatINR(summary.totalDiscount)}</strong></div>` : ''}
-                                <div class="flex justify-between py-1"><span>Total Taxable Value:</span><strong>${formatINR(summary.totalTaxable)}</strong></div>
-                                ${taxBreakdownBlock}
-                                <div class="flex justify-between py-1 border-t border-slate-200"><span>Total GST Tax:</span><strong>${formatINR(summary.totalGst)}</strong></div>
-                                <div class="flex justify-between py-2 px-2.5 rounded font-black text-sm mt-1 border" style="background-color: ${t.primaryHex}; border-color: ${t.secondaryHex}; color: ${t.headerTextHex};">
-                                    <span>GRAND TOTAL</span>
-                                    <span>${formatINR(summary.grandTotal)}</span>
+                                <div class="border rounded-lg p-3 bg-white space-y-1" style="border-color: ${t.borderHex};">
+                                    ${summary.hasDiscount ? `<div class="flex justify-between py-1"><span>Gross Subtotal:</span><strong>${formatINR(summary.grossSubtotal)}</strong></div><div class="flex justify-between py-1 text-amber-700"><span>Discount Saved:</span><strong>-${formatINR(summary.totalDiscount)}</strong></div>` : ''}
+                                    <div class="flex justify-between py-1"><span>Total Taxable Value:</span><strong>${formatINR(summary.totalTaxable)}</strong></div>
+                                    ${taxBreakdownBlock}
+                                    <div class="flex justify-between py-1 border-t border-slate-200"><span>Total GST Tax:</span><strong>${formatINR(summary.totalGst)}</strong></div>
+                                    <div class="flex justify-between py-2 px-2.5 rounded font-black text-sm mt-1 border" style="background-color: ${t.primaryHex}; border-color: ${t.secondaryHex}; color: ${t.headerTextHex};">
+                                        <span>GRAND TOTAL</span>
+                                        <span>${formatINR(summary.grandTotal)}</span>
+                                    </div>
                                 </div>
                             </div>
+                            ${signatureBlockHtml}
                         </div>
                     </div>
                 `;
@@ -8992,6 +9037,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                             <th class="p-2 rounded-tl-lg text-center">#</th>
                                             <th class="p-2 text-left">Item & HSN</th>
                                             <th class="p-2 text-right">Qty</th>
+                                            <th class="p-2 text-center">Unit</th>
                                             <th class="p-2 text-right">Unit Rate</th>
                                             ${summary.hasDiscount ? `<th class="p-2 text-right">Disc</th>` : ''}
                                             <th class="p-2 text-right">Taxable</th>
@@ -9005,6 +9051,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                                 <td class="p-2 text-center font-bold">${it.srNo}</td>
                                                 <td class="p-2 font-bold">${it.name} <span class="text-[10px] text-slate-500">(HSN: ${it.hsn})</span></td>
                                                 <td class="p-2 text-right">${it.qty}</td>
+                                                <td class="p-2 text-center font-semibold">${it.unit}</td>
                                                 <td class="p-2 text-right">${formatINR(it.rate)}</td>
                                                 ${summary.hasDiscount ? `<td class="p-2 text-right text-amber-700 font-semibold">${it.discountAmt > 0 ? '-' + formatINR(it.discountAmt) : '-'}</td>` : ''}
                                                 <td class="p-2 text-right">${formatINR(it.taxable)}</td>
@@ -9017,21 +9064,24 @@ window.addEventListener('DOMContentLoaded', () => {
                             </div>
                         </div>
 
-                        <div class="p-3.5 pt-2 flex justify-between items-start gap-4 text-xs border-t" style="border-color: ${t.borderHex};">
-                            <div class="max-w-xs">
-                                <p class="text-[9px] font-black uppercase text-slate-500">Total In Words</p>
-                                <p class="font-bold text-slate-800">${amountWords}</p>
-                                ${paymentFooterHtml}
-                            </div>
-                            <div class="w-64 p-3 rounded-xl border space-y-1" style="background-color: ${t.lightBgHex}; border-color: ${t.borderHex};">
-                                ${summary.hasDiscount ? `<div class="flex justify-between"><span>Gross Subtotal:</span><strong>${formatINR(summary.grossSubtotal)}</strong></div><div class="flex justify-between text-amber-700"><span>Discount:</span><strong>-${formatINR(summary.totalDiscount)}</strong></div>` : ''}
-                                <div class="flex justify-between"><span>Taxable Subtotal:</span><strong>${formatINR(summary.totalTaxable)}</strong></div>
-                                ${taxBreakdownBlock}
-                                <div class="flex justify-between pt-2 border-t text-sm font-black" style="border-color: ${t.borderHex}; color: ${t.accentTextHex};">
-                                    <span>NET PAYABLE:</span>
-                                    <span>${formatINR(summary.grandTotal)}</span>
+                        <div class="p-3.5 pt-2 text-xs border-t" style="border-color: ${t.borderHex};">
+                            <div class="flex justify-between items-start gap-4">
+                                <div class="max-w-xs">
+                                    <p class="text-[9px] font-black uppercase text-slate-500">Total In Words</p>
+                                    <p class="font-bold text-slate-800">${amountWords}</p>
+                                    ${paymentFooterHtml}
+                                </div>
+                                <div class="w-64 p-3 rounded-xl border space-y-1" style="background-color: ${t.lightBgHex}; border-color: ${t.borderHex};">
+                                    ${summary.hasDiscount ? `<div class="flex justify-between"><span>Gross Subtotal:</span><strong>${formatINR(summary.grossSubtotal)}</strong></div><div class="flex justify-between text-amber-700"><span>Discount:</span><strong>-${formatINR(summary.totalDiscount)}</strong></div>` : ''}
+                                    <div class="flex justify-between"><span>Taxable Subtotal:</span><strong>${formatINR(summary.totalTaxable)}</strong></div>
+                                    ${taxBreakdownBlock}
+                                    <div class="flex justify-between pt-2 border-t text-sm font-black" style="border-color: ${t.borderHex}; color: ${t.accentTextHex};">
+                                        <span>NET PAYABLE:</span>
+                                        <span>${formatINR(summary.grandTotal)}</span>
+                                    </div>
                                 </div>
                             </div>
+                            ${signatureBlockHtml}
                         </div>
                     </div>
                 `;
@@ -9074,6 +9124,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                         <th class="py-2 px-2 text-left">Item Description</th>
                                         <th class="py-2 px-2 text-center">HSN</th>
                                         <th class="py-2 px-2 text-right">Qty</th>
+                                        <th class="py-2 px-2 text-center">Unit</th>
                                         <th class="py-2 px-2 text-right">Rate</th>
                                         ${summary.hasDiscount ? `<th class="py-2 px-2 text-right">Disc</th>` : ''}
                                         <th class="py-2 px-2 text-right">Tax %</th>
@@ -9086,6 +9137,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                             <td class="py-2 px-2 font-bold">${it.name}</td>
                                             <td class="py-2 px-2 text-center text-slate-600">${it.hsn}</td>
                                             <td class="py-2 px-2 text-right">${it.qty}</td>
+                                            <td class="py-2 px-2 text-center font-semibold">${it.unit}</td>
                                             <td class="py-2 px-2 text-right">${formatINR(it.rate)}</td>
                                             ${summary.hasDiscount ? `<td class="py-2 px-2 text-right text-amber-700 font-semibold">${it.discountAmt > 0 ? '-' + formatINR(it.discountAmt) : '-'}</td>` : ''}
                                             <td class="py-2 px-2 text-right">${it.gstRate}%</td>
@@ -9110,6 +9162,7 @@ window.addEventListener('DOMContentLoaded', () => {
                             </div>
                             <p class="text-[10px] font-bold text-slate-600 mt-2">In Words: ${amountWords}</p>
                             ${paymentFooterHtml}
+                            ${signatureBlockHtml}
                         </div>
                     </div>
                 `;
@@ -9147,6 +9200,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                     <tr class="border-b font-black" style="background-color: ${t.badgeBgHex}; border-color: ${t.secondaryHex}; color: ${t.accentTextHex};">
                                         <th class="py-1.5 px-2 text-left">Item</th>
                                         <th class="py-1.5 px-2 text-right">Qty</th>
+                                        <th class="py-1.5 px-2 text-center">Unit</th>
                                         <th class="py-1.5 px-2 text-right">Rate</th>
                                         ${summary.hasDiscount ? `<th class="py-1.5 px-2 text-right">Disc</th>` : ''}
                                         <th class="py-1.5 px-2 text-right">GST</th>
@@ -9158,6 +9212,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                         <tr class="border-b border-slate-200/80 bg-white/70">
                                             <td class="py-1.5 px-2 font-bold">${it.name}</td>
                                             <td class="py-1.5 px-2 text-right">${it.qty}</td>
+                                            <td class="py-1.5 px-2 text-center font-semibold">${it.unit}</td>
                                             <td class="py-1.5 px-2 text-right">${formatINR(it.rate)}</td>
                                             ${summary.hasDiscount ? `<td class="py-1.5 px-2 text-right text-amber-700 font-semibold">${it.discountAmt > 0 ? '-' + formatINR(it.discountAmt) : '-'}</td>` : ''}
                                             <td class="py-1.5 px-2 text-right">${it.gstRate}%</td>
@@ -9179,6 +9234,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                 </div>
                             </div>
                             ${upiQrUrl ? `<div class="text-center mt-3"><img src="${upiQrUrl}" class="w-16 h-16 mx-auto border p-1 bg-white rounded" style="border-color: ${t.borderHex};"><p class="text-[9px] font-bold mt-0.5">Scan UPI QR to Pay</p></div>` : ''}
+                            ${signatureBlockHtml}
                             <p class="text-center text-[10px] font-bold mt-2" style="color: ${t.accentTextHex};">Thank You! Visit Again</p>
                         </div>
                     </div>
@@ -9224,6 +9280,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                     <th class="p-1.5 border text-left" style="border-color: ${t.borderHex};">Item</th>
                                     <th class="p-1.5 border" style="border-color: ${t.borderHex};">HSN</th>
                                     <th class="p-1.5 border text-right" style="border-color: ${t.borderHex};">Qty</th>
+                                    <th class="p-1.5 border text-center" style="border-color: ${t.borderHex};">Unit</th>
                                     <th class="p-1.5 border text-right" style="border-color: ${t.borderHex};">Rate</th>
                                     ${summary.hasDiscount ? `<th class="p-1.5 border text-right" style="border-color: ${t.borderHex};">Disc</th>` : ''}
                                     <th class="p-1.5 border text-right" style="border-color: ${t.borderHex};">Taxable</th>
@@ -9241,6 +9298,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                         <td class="p-1.5 border-r border-slate-300 font-bold">${it.name}</td>
                                         <td class="p-1.5 border-r border-slate-300 text-center">${it.hsn}</td>
                                         <td class="p-1.5 border-r border-slate-300 text-right">${it.qty}</td>
+                                        <td class="p-1.5 border-r border-slate-300 text-center font-semibold">${it.unit}</td>
                                         <td class="p-1.5 border-r border-slate-300 text-right">${formatINR(it.rate)}</td>
                                         ${summary.hasDiscount ? `<td class="p-1.5 border-r border-slate-300 text-right text-amber-700 font-semibold">${it.discountAmt > 0 ? '-' + formatINR(it.discountAmt) : '-'}</td>` : ''}
                                         <td class="p-1.5 border-r border-slate-300 text-right font-semibold">${formatINR(it.taxable)}</td>
@@ -9255,21 +9313,24 @@ window.addEventListener('DOMContentLoaded', () => {
                         </table>
                     </div>
 
-                    <div class="p-3.5 grid grid-cols-2 gap-4 text-xs border-t" style="background-color: ${t.lightBgHex}; border-color: ${t.borderHex};">
-                        <div>
-                            <p class="text-[9px] font-black uppercase" style="color: ${t.accentTextHex};">Total Amount in Words</p>
-                            <p class="font-bold italic">${amountWords}</p>
-                            ${paymentFooterHtml}
-                        </div>
-                        <div class="bg-white p-3 rounded-lg border space-y-1" style="border-color: ${t.borderHex};">
-                            ${summary.hasDiscount ? `<div class="flex justify-between"><span>Gross Subtotal:</span><strong>${formatINR(summary.grossSubtotal)}</strong></div><div class="flex justify-between text-amber-700"><span>Discount:</span><strong>-${formatINR(summary.totalDiscount)}</strong></div>` : ''}
-                            <div class="flex justify-between"><span>Taxable Value:</span><strong>${formatINR(summary.totalTaxable)}</strong></div>
-                            ${taxBreakdownBlock}
-                            <div class="flex justify-between font-black text-sm px-2.5 py-1.5 rounded mt-1 border" style="background-color: ${t.primaryHex}; border-color: ${t.secondaryHex}; color: ${t.headerTextHex};">
-                                <span>GRAND TOTAL</span>
-                                <span>${formatINR(summary.grandTotal)}</span>
+                    <div class="p-3.5 text-xs border-t" style="background-color: ${t.lightBgHex}; border-color: ${t.borderHex};">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-[9px] font-black uppercase" style="color: ${t.accentTextHex};">Total Amount in Words</p>
+                                <p class="font-bold italic">${amountWords}</p>
+                                ${paymentFooterHtml}
+                            </div>
+                            <div class="bg-white p-3 rounded-lg border space-y-1" style="border-color: ${t.borderHex};">
+                                ${summary.hasDiscount ? `<div class="flex justify-between"><span>Gross Subtotal:</span><strong>${formatINR(summary.grossSubtotal)}</strong></div><div class="flex justify-between text-amber-700"><span>Discount:</span><strong>-${formatINR(summary.totalDiscount)}</strong></div>` : ''}
+                                <div class="flex justify-between"><span>Taxable Value:</span><strong>${formatINR(summary.totalTaxable)}</strong></div>
+                                ${taxBreakdownBlock}
+                                <div class="flex justify-between font-black text-sm px-2.5 py-1.5 rounded mt-1 border" style="background-color: ${t.primaryHex}; border-color: ${t.secondaryHex}; color: ${t.headerTextHex};">
+                                    <span>GRAND TOTAL</span>
+                                    <span>${formatINR(summary.grandTotal)}</span>
+                                </div>
                             </div>
                         </div>
+                        ${signatureBlockHtml}
                     </div>
                 </div>
             `;
